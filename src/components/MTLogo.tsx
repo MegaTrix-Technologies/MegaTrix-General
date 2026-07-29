@@ -1,39 +1,26 @@
-// Pixelated "MT" logo rendered as pure SVG (no image assets).
-// Grid is 13 columns x 7 rows of pixel blocks.
+// Pixelated "MT." logo rendered as pure SVG (no image assets).
+// Grid extracted directly from the reference image: 14 columns × 8 rows.
 //
-// M (cols 0-4)          gap (col 5)   T (cols 6-12, 7 wide)
-//  X . . . X                          X X X X X X X
-//  X X . X X                          . . . X . . .
-//  X X X X X                          . . . X . . .
-//  X . X . X                          . . . X . . .
-//  X . . . X                          . . . X . . .
-//  X . . . X                          . . . X . . .
-//  X . . . X                          . . . X . . .
+// ##....#######.
+// ###..########.
+// ########.##...
+// ##.##.##.##...
+// ##....##.##...
+// ##....##.##...
+// ##....##.##.##
+// ##....##.##.##
 
 type Variant = "white" | "blue" | "black";
 
-const PIXELS: [number, number][] = [
-  // ---- M ----
-  // row 0
-  [0, 0], [0, 4],
-  // row 1
-  [1, 0], [1, 1], [1, 3], [1, 4],
-  // row 2
-  [2, 0], [2, 1], [2, 2], [2, 3], [2, 4],
-  // row 3
-  [3, 0], [3, 2], [3, 4],
-  // row 4
-  [4, 0], [4, 4],
-  // row 5
-  [5, 0], [5, 4],
-  // row 6
-  [6, 0], [6, 4],
-
-  // ---- T ---- (offset by 6 on x-axis)
-  // row 0 (top bar)
-  [0, 6], [0, 7], [0, 8], [0, 9], [0, 10], [0, 11], [0, 12],
-  // stem (col 9)
-  [1, 9], [2, 9], [3, 9], [4, 9], [5, 9], [6, 9],
+const GRID: string[] = [
+  "##....#######.",
+  "###..########.",
+  "########.##...",
+  "##.##.##.##...",
+  "##....##.##...",
+  "##....##.##...",
+  "##....##.##.##",
+  "##....##.##.##",
 ];
 
 interface Props {
@@ -50,8 +37,8 @@ export default function MTLogo({
   block = 10,
   title = "MEGATRIX",
 }: Props) {
-  const cols = 13;
-  const rows = 7;
+  const rows = GRID.length;
+  const cols = GRID[0].length;
   const gap = 1;
   const size = block + gap;
   const width = cols * size - gap;
@@ -74,16 +61,20 @@ export default function MTLogo({
       className={className}
     >
       <title>{title}</title>
-      {PIXELS.map(([row, col], i) => (
-        <rect
-          key={i}
-          x={col * size}
-          y={row * size}
-          width={block}
-          height={block}
-          fill={fg}
-        />
-      ))}
+      {GRID.flatMap((line, row) =>
+        line.split("").map((ch, col) =>
+          ch === "#" ? (
+            <rect
+              key={`${row}-${col}`}
+              x={col * size}
+              y={row * size}
+              width={block}
+              height={block}
+              fill={fg}
+            />
+          ) : null,
+        ),
+      )}
     </svg>
   );
 }
