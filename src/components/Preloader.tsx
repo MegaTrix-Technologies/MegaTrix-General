@@ -11,7 +11,7 @@ interface PreloaderProps {
 
 export default function Preloader({
   onComplete,
-  duration = 1800,
+  duration = 1000,
   title = "RENDER_MT.exe",
   statusText = "LOADING MEGATRIX CORE...",
 }: PreloaderProps) {

@@ -182,7 +182,7 @@ export default function Footer() {
       <div className="relative z-10 border-t border-[#1E2538] bg-[#090A0F] py-6">
         <div className="mx-auto flex max-w-[1600px] flex-wrap items-center justify-between gap-4 px-8 md:px-12">
           <div className="font-mono text-xs tracking-widest text-[#94A3B8]">
-            © 2026 MEGATRIX. ALL RIGHTS RESERVED.
+            © 2026 MEGATRIX SOFTWARE HOUSE. ALL RIGHTS RESERVED.
           </div>
 
           <button
