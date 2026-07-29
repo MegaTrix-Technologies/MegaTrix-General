@@ -16,6 +16,15 @@ import logoNav from "@/assets/mt-white-on-black.png.asset.json";
 
 
 export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "MEGATRIX // Enterprise Software Engineering" },
+      { name: "description", content: "Megatrix delivers high-performance full-stack applications, secure cloud infrastructure, and custom AI pipelines." },
+      { property: "og:title", content: "MEGATRIX // Enterprise Software Engineering" },
+      { property: "og:description", content: "Building next-gen digital systems & platforms." },
+      { property: "og:type", content: "website" },
+    ],
+  }),
   component: Home,
 });
 
