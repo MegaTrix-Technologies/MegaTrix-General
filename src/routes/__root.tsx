@@ -83,14 +83,16 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:title", content: "MEGATRIX // Enterprise Software Engineering" },
       { property: "og:description", content: "Building next-gen digital systems & platforms." },
       { property: "og:type", content: "website" },
+      { property: "og:image", content: "https://id-preview--50dc930c-9422-4311-b7c5-a70f8d3d5b8a.lovable.app/__l5e/assets-v1/7ef533fd-cc23-40a2-88e0-4bc02c50ba36/mt-white-on-blue.png" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:image", content: "https://id-preview--50dc930c-9422-4311-b7c5-a70f8d3d5b8a.lovable.app/__l5e/assets-v1/7ef533fd-cc23-40a2-88e0-4bc02c50ba36/mt-white-on-blue.png" },
     ],
     links: [
       {
         rel: "stylesheet",
         href: appCss,
       },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "icon", type: "image/png", href: "/__l5e/assets-v1/7ef533fd-cc23-40a2-88e0-4bc02c50ba36/mt-white-on-blue.png" },
     ],
   }),
   shellComponent: RootShell,
