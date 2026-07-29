@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import mtLogo from "@/assets/mt-white-on-black.png.asset.json";
+import MTLogo from "@/components/MTLogo";
 
 export default function Preloader({ onComplete }: { onComplete: () => void }) {
   const [dots, setDots] = useState(1);
@@ -19,10 +19,9 @@ export default function Preloader({ onComplete }: { onComplete: () => void }) {
       <div className="absolute inset-0 scanlines" />
 
       <div className="relative flex flex-col items-center gap-6">
-        <img
-          src={mtLogo.url}
-          alt="MEGATRIX"
-          className="h-40 w-40 pixel-blink [image-rendering:pixelated] drop-shadow-[0_0_25px_rgba(0,85,255,0.55)]"
+        <MTLogo
+          variant="white"
+          className="h-24 w-auto pixel-blink drop-shadow-[0_0_25px_rgba(0,85,255,0.55)]"
         />
 
         <div className="text-center">

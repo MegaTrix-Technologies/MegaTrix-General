@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import Preloader from "@/components/Preloader";
-import mtLogo from "@/assets/mt-white-on-black.png.asset.json";
+import MTLogo from "@/components/MTLogo";
 
 export const Route = createFileRoute("/")({
   component: Home,
@@ -56,11 +56,7 @@ function Home() {
       <nav className="relative z-10 border-b border-[#1E2538] bg-[#090A0F]/80 backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
           <a href="#top" className="flex items-center gap-3">
-            <img
-              src={mtLogo.url}
-              alt="MEGATRIX"
-              className="h-9 w-9 [image-rendering:pixelated]"
-            />
+            <MTLogo variant="white" className="h-6 w-auto" />
             <span className="text-sm font-bold tracking-[0.35em]">MEGATRIX</span>
           </a>
           <div className="hidden gap-8 text-[11px] tracking-widest text-[#B8C4DE] md:flex">
@@ -262,11 +258,7 @@ function Home() {
       <footer id="contact" className="relative z-10 border-t border-[#1E2538] py-10">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-6">
           <div className="flex items-center gap-3">
-            <img
-              src={mtLogo.url}
-              alt="MEGATRIX"
-              className="h-8 w-8 [image-rendering:pixelated]"
-            />
+            <MTLogo variant="white" className="h-5 w-auto" />
             <span className="text-[10px] tracking-widest text-[#B8C4DE]">
               © 2026 MEGATRIX SOFTWARE HOUSE. ALL RIGHTS RESERVED.
             </span>
