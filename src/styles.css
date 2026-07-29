@@ -73,7 +73,7 @@
   --secondary: #1E2538;
   --secondary-foreground: #F8FAFC;
   --muted: #12151E;
-  --muted-foreground: #7C89A8;
+  --muted-foreground: #B8C4DE;
   --accent: #0055FF;
   --accent-foreground: #FFFFFF;
   --destructive: #ff3355;
@@ -108,7 +108,7 @@
   --secondary: #1E2538;
   --secondary-foreground: #F8FAFC;
   --muted: #12151E;
-  --muted-foreground: #7C89A8;
+  --muted-foreground: #B8C4DE;
   --accent: #0055FF;
   --accent-foreground: #FFFFFF;
   --destructive: #ff3355;
@@ -195,4 +195,17 @@
 }
 .pixel-blink {
   animation: pixel-blink 0.9s steps(2) infinite;
+}
+
+/* Isometric blocks background (Render.com inspired) */
+.iso-blocks {
+  background-color: #090A0F;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='104' viewBox='0 0 120 104'><g fill='none' stroke='%231b2540' stroke-width='1'><polygon points='60,4 112,34 112,74 60,104 8,74 8,34'/><polyline points='60,4 60,52 8,74'/><polyline points='60,52 112,74'/></g><g fill='none' stroke='%230055FF' stroke-width='1' opacity='0.35'><polygon points='60,20 96,40 96,68 60,88 24,68 24,40'/></g></svg>");
+  background-size: 120px 104px;
+  background-position: center;
+}
+
+/* Soft radial vignette to focus content */
+.bg-radial-fade {
+  background: radial-gradient(ellipse at center, transparent 0%, transparent 40%, rgba(9,10,15,0.85) 100%);
 }
