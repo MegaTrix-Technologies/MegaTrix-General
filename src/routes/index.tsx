@@ -9,7 +9,6 @@ import {
   Layers,
   ArrowRight,
   Code2,
-  Lock,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import Preloader from "@/components/Preloader";
@@ -48,8 +47,10 @@ function Home() {
 
   return (
     <div className="relative min-h-screen bg-[#090A0F] text-white font-mono">
-      <div className="pointer-events-none fixed inset-0 retro-grid opacity-30" />
-      <div className="pointer-events-none fixed inset-0 scanlines opacity-40" />
+      <div className="pointer-events-none fixed inset-0 iso-blocks opacity-60" />
+      <div className="pointer-events-none fixed inset-0 retro-grid opacity-20" />
+      <div className="pointer-events-none fixed inset-0 scanlines opacity-25" />
+      <div className="pointer-events-none fixed inset-0 bg-radial-fade" />
 
       {/* NAV */}
       <nav className="relative z-10 border-b border-[#1E2538] bg-[#090A0F]/80 backdrop-blur">
@@ -67,13 +68,13 @@ function Home() {
             <a href="#architecture" className="hover:text-white">// ARCHITECTURE</a>
             <a href="#contact" className="hover:text-white">// CONTACT</a>
           </div>
-          <Link
-            to="/admin"
-            className="flex items-center gap-2 border border-[#1E2538] px-3 py-2 text-[10px] tracking-widest hover:border-[#0055FF] hover:text-[#0055FF]"
+          <a
+            href="#contact"
+            className="flex items-center gap-2 border border-[#2A3552] bg-[#12151E] px-3 py-2 text-[10px] tracking-widest text-white hover:border-[#0055FF] hover:text-[#0055FF]"
           >
-            <Lock size={12} />
-            ADMIN_LOGIN
-          </Link>
+            <Terminal size={12} />
+            CONTACT
+          </a>
         </div>
       </nav>
 
