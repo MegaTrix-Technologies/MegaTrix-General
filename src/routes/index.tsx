@@ -82,7 +82,6 @@ function Home() {
                 href="#contact"
                 className="inline-flex items-center gap-2 border border-[#1E2538] px-6 py-3 text-xs font-bold tracking-widest text-white hover:border-[#0055FF] hover:text-[#0055FF]"
               >
-              >
                 <Code2 size={14} />
                 INITIATE PROJECT
               </a>
