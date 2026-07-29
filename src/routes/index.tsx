@@ -161,7 +161,7 @@ function Home() {
             </span>
           </div>
           <div className="flex gap-6 text-[10px] tracking-widest text-[#B8C4DE]">
-            <a href="#projects" className="hover:text-white">Projects</a>
+            <Link to="/projects" className="hover:text-white">Projects</Link>
             <a href="#architecture" className="hover:text-white">Architecture</a>
             <a href="#contact" className="hover:text-white">Contact</a>
           </div>
