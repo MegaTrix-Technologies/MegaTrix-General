@@ -13,6 +13,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import Preloader from "@/components/Preloader";
 import MTLogo from "@/components/MTLogo";
+import logoNav from "@/assets/mt-white-on-black.png.asset.json";
 
 export const Route = createFileRoute("/")({
   component: Home,
