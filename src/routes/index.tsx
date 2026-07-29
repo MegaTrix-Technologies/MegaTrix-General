@@ -55,9 +55,9 @@ function Home() {
       {/* NAV */}
       <nav className="relative z-10 border-b border-[#1E2538] bg-[#090A0F]/80 backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-          <a href="#top" className="flex items-center gap-3">
-            <MTLogo variant="white" className="h-6 w-auto" />
-            <span className="text-sm font-bold tracking-[0.35em]">MEGATRIX</span>
+          <a href="#top" className="flex items-end gap-3 leading-none">
+            <MTLogo variant="white" className="h-7 w-auto" />
+            <span className="translate-y-[-2px] text-sm font-bold tracking-[0.35em]">MEGATRIX</span>
           </a>
           <div className="hidden gap-8 text-[11px] tracking-widest text-[#B8C4DE] md:flex">
             <a href="#projects" className="hover:text-white">// PROJECTS</a>
