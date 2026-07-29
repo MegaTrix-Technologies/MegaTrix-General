@@ -77,14 +77,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "MEGATRIX // Enterprise Software Engineering" },
+      { name: "description", content: "Megatrix delivers high-performance full-stack applications, secure cloud infrastructure, and custom AI pipelines." },
+      { name: "author", content: "Megatrix" },
+      { property: "og:title", content: "MEGATRIX // Enterprise Software Engineering" },
+      { property: "og:description", content: "Building next-gen digital systems & platforms." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
       {
