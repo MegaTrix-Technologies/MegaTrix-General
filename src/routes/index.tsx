@@ -47,7 +47,7 @@ function Home() {
   if (loading) return <Preloader onComplete={() => setLoading(false)} />;
 
   return (
-    <div className="relative min-h-screen bg-[#090A0F] text-white font-mono">
+    <div className="relative min-h-screen bg-[#090A0F] text-white">
       <div className="pointer-events-none fixed inset-0 iso-blocks opacity-60" />
       <div className="pointer-events-none fixed inset-0 retro-grid opacity-20" />
       <div className="pointer-events-none fixed inset-0 scanlines opacity-25" />
