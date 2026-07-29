@@ -2,8 +2,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import {
   Terminal,
-  ExternalLink,
-  Github,
   Cpu,
   ShieldCheck,
   Layers,
@@ -11,8 +9,10 @@ import {
   Code2,
 } from "lucide-react";
 import Preloader from "@/components/Preloader";
+import MTLogo from "@/components/MTLogo";
 import AnimatedMTLogo from "@/components/AnimatedMTLogo";
 import logoNav from "@/assets/mt-white-on-black.png.asset.json";
+
 
 
 export const Route = createFileRoute("/")({
