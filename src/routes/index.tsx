@@ -13,6 +13,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import Preloader from "@/components/Preloader";
 import MTLogo from "@/components/MTLogo";
+import AnimatedMTLogo from "@/components/AnimatedMTLogo";
 import logoNav from "@/assets/mt-white-on-black.png.asset.json";
 
 export const Route = createFileRoute("/")({
@@ -76,35 +77,56 @@ function Home() {
 
       {/* HERO */}
       <section id="top" className="relative z-10 mx-auto max-w-7xl px-6 py-24 md:py-32">
-        <div className="mb-6 inline-flex items-center gap-2 border border-[#1E2538] bg-[#12151E] px-3 py-1.5 text-[10px] tracking-widest text-[#B8C4DE]">
-          <Terminal size={12} className="text-[#0055FF]" />
-          ENTERPRISE SOFTWARE ENGINEERING & ARCHITECTURE
-        </div>
-        <h1 className="max-w-4xl text-4xl font-bold leading-tight tracking-tight md:text-6xl">
-          BUILDING NEXT-GEN
-          <br />
-          <span className="text-[#0055FF] glow-text">DIGITAL SYSTEMS</span> & PLATFORMS
-        </h1>
-        <p className="mt-6 max-w-2xl text-sm leading-relaxed text-[#B8C4DE] md:text-base">
-          Megatrix delivers high-performance full-stack applications, secure cloud
-          infrastructure, and custom artificial intelligence pipelines with
-          uncompromising execution.
-        </p>
-        <div className="mt-10 flex flex-wrap gap-4">
-          <a
-            href="#projects"
-            className="group inline-flex items-center gap-2 bg-[#0055FF] px-6 py-3 text-xs font-bold tracking-widest text-white shadow-[0_0_25px_rgba(0,85,255,0.4)] transition-all hover:bg-[#0044cc]"
-          >
-            EXPLORE WORK
-            <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
-          </a>
-          <a
-            href="#contact"
-            className="inline-flex items-center gap-2 border border-[#1E2538] px-6 py-3 text-xs font-bold tracking-widest text-white hover:border-[#0055FF] hover:text-[#0055FF]"
-          >
-            <Code2 size={14} />
-            INITIATE PROJECT
-          </a>
+        <div className="grid items-center gap-12 md:grid-cols-[minmax(0,1fr)_auto]">
+          <div className="min-w-0">
+            <div className="mb-6 inline-flex items-center gap-2 border border-[#1E2538] bg-[#12151E] px-3 py-1.5 text-[10px] tracking-widest text-[#B8C4DE]">
+              <Terminal size={12} className="text-[#0055FF]" />
+              ENTERPRISE SOFTWARE ENGINEERING & ARCHITECTURE
+            </div>
+            <h1 className="max-w-4xl text-4xl font-bold leading-tight tracking-tight md:text-6xl">
+              BUILDING NEXT-GEN
+              <br />
+              <span className="text-[#0055FF] glow-text">DIGITAL SYSTEMS</span> & PLATFORMS
+            </h1>
+            <p className="mt-6 max-w-2xl text-sm leading-relaxed text-[#B8C4DE] md:text-base">
+              Megatrix delivers high-performance full-stack applications, secure cloud
+              infrastructure, and custom artificial intelligence pipelines with
+              uncompromising execution.
+            </p>
+            <div className="mt-10 flex flex-wrap gap-4">
+              <a
+                href="#projects"
+                className="group inline-flex items-center gap-2 bg-[#0055FF] px-6 py-3 text-xs font-bold tracking-widest text-white shadow-[0_0_25px_rgba(0,85,255,0.4)] transition-all hover:bg-[#0044cc]"
+              >
+                EXPLORE WORK
+                <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
+              </a>
+              <a
+                href="#contact"
+                className="inline-flex items-center gap-2 border border-[#1E2538] px-6 py-3 text-xs font-bold tracking-widest text-white hover:border-[#0055FF] hover:text-[#0055FF]"
+              >
+                <Code2 size={14} />
+                INITIATE PROJECT
+              </a>
+            </div>
+          </div>
+
+          {/* Animated pixel logo — builds dot by dot, then restarts */}
+          <div className="hidden md:block">
+            <div className="relative border border-[#1E2538] bg-[#0B0D14]/70 p-6 shadow-[0_0_60px_-20px_rgba(0,85,255,0.5)]">
+              <div className="mb-3 flex items-center justify-between text-[9px] tracking-widest text-[#B8C4DE]">
+                <span className="text-[#0055FF]">// RENDER_MT.exe</span>
+                <span className="flex items-center gap-1">
+                  <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#0055FF]" />
+                  BUILDING
+                </span>
+              </div>
+              <AnimatedMTLogo className="h-52 w-auto" />
+              <div className="mt-3 text-center text-[9px] tracking-[0.35em] text-[#B8C4DE]">
+                M E G A T R I X
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
