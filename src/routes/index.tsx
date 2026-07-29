@@ -274,7 +274,7 @@ function Home() {
           <div className="flex gap-6 text-[10px] tracking-widest text-[#B8C4DE]">
             <a href="#projects" className="hover:text-white">Projects</a>
             <a href="#architecture" className="hover:text-white">Architecture</a>
-            <Link to="/admin" className="hover:text-white">Admin Portal</Link>
+            <a href="#contact" className="hover:text-white">Contact</a>
           </div>
         </div>
       </footer>
