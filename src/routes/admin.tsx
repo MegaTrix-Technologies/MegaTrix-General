@@ -1,8 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState, type FormEvent } from "react";
 import {
-  Terminal,
-  Lock,
   Plus,
   Trash2,
   ArrowLeft,
