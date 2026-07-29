@@ -63,7 +63,7 @@ function Home() {
             />
             <span className="text-sm font-bold tracking-[0.35em]">MEGATRIX</span>
           </a>
-          <div className="hidden gap-8 text-[11px] tracking-widest text-[#7C89A8] md:flex">
+          <div className="hidden gap-8 text-[11px] tracking-widest text-[#B8C4DE] md:flex">
             <a href="#projects" className="hover:text-white">// PROJECTS</a>
             <a href="#architecture" className="hover:text-white">// ARCHITECTURE</a>
             <a href="#contact" className="hover:text-white">// CONTACT</a>
@@ -80,7 +80,7 @@ function Home() {
 
       {/* HERO */}
       <section id="top" className="relative z-10 mx-auto max-w-7xl px-6 py-24 md:py-32">
-        <div className="mb-6 inline-flex items-center gap-2 border border-[#1E2538] bg-[#12151E] px-3 py-1.5 text-[10px] tracking-widest text-[#7C89A8]">
+        <div className="mb-6 inline-flex items-center gap-2 border border-[#1E2538] bg-[#12151E] px-3 py-1.5 text-[10px] tracking-widest text-[#B8C4DE]">
           <Terminal size={12} className="text-[#0055FF]" />
           ENTERPRISE SOFTWARE ENGINEERING & ARCHITECTURE
         </div>
@@ -89,7 +89,7 @@ function Home() {
           <br />
           <span className="text-[#0055FF] glow-text">DIGITAL SYSTEMS</span> & PLATFORMS
         </h1>
-        <p className="mt-6 max-w-2xl text-sm leading-relaxed text-[#7C89A8] md:text-base">
+        <p className="mt-6 max-w-2xl text-sm leading-relaxed text-[#B8C4DE] md:text-base">
           Megatrix delivers high-performance full-stack applications, secure cloud
           infrastructure, and custom artificial intelligence pipelines with
           uncompromising execution.
@@ -122,7 +122,7 @@ function Home() {
               </div>
               <h2 className="text-3xl font-bold md:text-4xl">FEATURED DEPLOYMENTS</h2>
             </div>
-            <div className="text-[10px] tracking-widest text-[#7C89A8]">
+            <div className="text-[10px] tracking-widest text-[#B8C4DE]">
               TOTAL SYSTEMS RECORDED: [ {String(projects.length).padStart(3, "0")} ]
             </div>
           </div>
@@ -130,7 +130,7 @@ function Home() {
           {projects.length === 0 ? (
             <div className="border border-dashed border-[#1E2538] bg-[#12151E]/50 p-16 text-center">
               <Terminal size={32} className="mx-auto mb-4 text-[#0055FF]" />
-              <p className="text-xs tracking-widest text-[#7C89A8]">
+              <p className="text-xs tracking-widest text-[#B8C4DE]">
                 NO PROJECTS UPLOADED TO DATABASE YET.
                 <br />
                 LOG IN TO THE ADMIN PANEL TO ADD DEPLOYMENTS.
@@ -167,14 +167,14 @@ function Home() {
                       <h3 className="text-base font-bold tracking-wide text-white">
                         {project.title}
                       </h3>
-                      <p className="mt-2 line-clamp-3 text-xs leading-relaxed text-[#7C89A8]">
+                      <p className="mt-2 line-clamp-3 text-xs leading-relaxed text-[#B8C4DE]">
                         {project.description}
                       </p>
                       <div className="mt-4 flex flex-wrap gap-1">
                         {project.tools?.map((tool, idx) => (
                           <span
                             key={idx}
-                            className="border border-[#1E2538] bg-[#090A0F] px-2 py-0.5 text-[9px] tracking-widest text-[#7C89A8]"
+                            className="border border-[#1E2538] bg-[#090A0F] px-2 py-0.5 text-[9px] tracking-widest text-[#B8C4DE]"
                           >
                             {tool}
                           </span>
@@ -198,7 +198,7 @@ function Home() {
                           href={project.github_link}
                           target="_blank"
                           rel="noreferrer"
-                          className="inline-flex items-center gap-1.5 text-[10px] tracking-widest text-[#7C89A8] hover:text-white"
+                          className="inline-flex items-center gap-1.5 text-[10px] tracking-widest text-[#B8C4DE] hover:text-white"
                         >
                           <Github size={12} />
                           SOURCE
@@ -221,7 +221,7 @@ function Home() {
               // CORE COMPETENCIES
             </div>
             <h2 className="text-3xl font-bold md:text-4xl">ENGINEERED FOR SCALE</h2>
-            <p className="mt-4 text-sm leading-relaxed text-[#7C89A8]">
+            <p className="mt-4 text-sm leading-relaxed text-[#B8C4DE]">
               We build robust digital architecture combining retro-futuristic design
               principles with cutting-edge backend engineering.
             </p>
@@ -251,7 +251,7 @@ function Home() {
               >
                 <Icon size={28} className="text-[#0055FF]" />
                 <h3 className="mt-5 text-base font-bold">{title}</h3>
-                <p className="mt-2 text-xs leading-relaxed text-[#7C89A8]">{body}</p>
+                <p className="mt-2 text-xs leading-relaxed text-[#B8C4DE]">{body}</p>
               </div>
             ))}
           </div>
@@ -267,11 +267,11 @@ function Home() {
               alt="MEGATRIX"
               className="h-8 w-8 [image-rendering:pixelated]"
             />
-            <span className="text-[10px] tracking-widest text-[#7C89A8]">
+            <span className="text-[10px] tracking-widest text-[#B8C4DE]">
               © 2026 MEGATRIX SOFTWARE HOUSE. ALL RIGHTS RESERVED.
             </span>
           </div>
-          <div className="flex gap-6 text-[10px] tracking-widest text-[#7C89A8]">
+          <div className="flex gap-6 text-[10px] tracking-widest text-[#B8C4DE]">
             <a href="#projects" className="hover:text-white">Projects</a>
             <a href="#architecture" className="hover:text-white">Architecture</a>
             <Link to="/admin" className="hover:text-white">Admin Portal</Link>
