@@ -7,6 +7,7 @@ import {
   LogOut,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import MTLogo from "@/components/MTLogo";
 
 export const Route = createFileRoute("/admin")({
   component: AdminPage,
@@ -120,12 +121,10 @@ function AdminPage() {
           onSubmit={handleLogin}
           className="relative z-10 w-full max-w-md border border-[#1E2538] bg-[#12151E] p-8 shadow-[0_0_40px_rgba(0,85,255,0.15)]"
         >
-          <div className="mb-6 flex items-center gap-3">
-            <img
-              src="/__l5e/assets-v1/7ef533fd-cc23-40a2-88e0-4bc02c50ba36/mt-white-on-blue.png"
-              alt="MEGATRIX"
-              className="h-12 w-12 [image-rendering:pixelated]"
-            />
+          <div className="mb-6 flex items-center gap-4">
+            <div className="flex h-14 w-14 items-center justify-center bg-[#0055FF] p-2 shadow-[0_0_20px_rgba(0,85,255,0.4)]">
+              <MTLogo variant="white" className="h-full w-auto" />
+            </div>
             <div>
               <h1 className="text-sm font-bold tracking-widest">ADMIN PORTAL</h1>
               <p className="text-[10px] tracking-widest text-[#7C89A8]">
@@ -197,11 +196,7 @@ function AdminPage() {
       <div className="relative z-10 mx-auto max-w-7xl px-6 py-10">
         <div className="mb-8 flex flex-wrap items-center justify-between gap-4 border-b border-[#1E2538] pb-6">
           <div className="flex items-center gap-3">
-            <img
-              src="/__l5e/assets-v1/792f0ad4-8ed9-4456-b0db-064c67c28bc5/mt-white-on-black.png"
-              alt="MEGATRIX"
-              className="h-10 w-10 [image-rendering:pixelated]"
-            />
+            <MTLogo variant="white" className="h-7 w-auto" />
             <div>
               <h1 className="text-sm font-bold tracking-widest">MEGATRIX // COMMAND CENTER</h1>
               <p className="text-[10px] tracking-widest text-[#7C89A8]">
