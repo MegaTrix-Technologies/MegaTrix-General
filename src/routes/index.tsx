@@ -1,5 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
 import {
   Terminal,
   ExternalLink,
@@ -10,40 +10,17 @@ import {
   ArrowRight,
   Code2,
 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
 import Preloader from "@/components/Preloader";
-import MTLogo from "@/components/MTLogo";
 import AnimatedMTLogo from "@/components/AnimatedMTLogo";
 import logoNav from "@/assets/mt-white-on-black.png.asset.json";
+
 
 export const Route = createFileRoute("/")({
   component: Home,
 });
 
-interface Project {
-  id: string;
-  title: string;
-  description: string;
-  tools: string[];
-  image_url: string | null;
-  project_link: string | null;
-  github_link: string | null;
-  deployed_on: string | null;
-}
-
 function Home() {
   const [loading, setLoading] = useState(true);
-  const [projects, setProjects] = useState<Project[]>([]);
-
-  useEffect(() => {
-    (async () => {
-      const { data } = await supabase
-        .from("projects")
-        .select("*")
-        .order("created_at", { ascending: false });
-      if (data) setProjects(data as Project[]);
-    })();
-  }, []);
 
   if (loading) return <Preloader onComplete={() => setLoading(false)} />;
 
