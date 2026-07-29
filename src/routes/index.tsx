@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import Preloader from "@/components/Preloader";
+import mtLogo from "@/assets/mt-white-on-black.png.asset.json";
 
 export const Route = createFileRoute("/")({
   component: Home,
@@ -54,7 +55,11 @@ function Home() {
       <nav className="relative z-10 border-b border-[#1E2538] bg-[#090A0F]/80 backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
           <a href="#top" className="flex items-center gap-3">
-            <PixelLogo />
+            <img
+              src={mtLogo.url}
+              alt="MEGATRIX"
+              className="h-9 w-9 [image-rendering:pixelated]"
+            />
             <span className="text-sm font-bold tracking-[0.35em]">MEGATRIX</span>
           </a>
           <div className="hidden gap-8 text-[11px] tracking-widest text-[#7C89A8] md:flex">
@@ -256,7 +261,11 @@ function Home() {
       <footer id="contact" className="relative z-10 border-t border-[#1E2538] py-10">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-6">
           <div className="flex items-center gap-3">
-            <PixelLogo />
+            <img
+              src={mtLogo.url}
+              alt="MEGATRIX"
+              className="h-8 w-8 [image-rendering:pixelated]"
+            />
             <span className="text-[10px] tracking-widest text-[#7C89A8]">
               © 2026 MEGATRIX SOFTWARE HOUSE. ALL RIGHTS RESERVED.
             </span>
@@ -272,21 +281,3 @@ function Home() {
   );
 }
 
-function PixelLogo() {
-  const pattern = [
-    1, 0, 1, 0, 1, 1, 1,
-    1, 1, 1, 0, 0, 1, 0,
-    1, 0, 1, 0, 0, 1, 0,
-    1, 0, 1, 0, 0, 1, 0,
-  ];
-  return (
-    <div className="grid grid-cols-7 gap-[2px]">
-      {pattern.map((c, i) => (
-        <div
-          key={i}
-          className={c ? "h-1.5 w-1.5 bg-[#0055FF]" : "h-1.5 w-1.5 bg-[#1E2538]"}
-        />
-      ))}
-    </div>
-  );
-}
