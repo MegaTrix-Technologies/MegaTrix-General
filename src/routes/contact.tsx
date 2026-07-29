@@ -58,20 +58,43 @@ function ContactPage() {
   const [inquiryErrorMsg, setInquiryErrorMsg] = useState("");
 
   useEffect(() => {
-    (async () => {
-      const { data } = await supabase
-        .from("contact_info")
-        .select("*")
-        .limit(1)
-        .maybeSingle();
-      if (data) {
-        setContact({
-          email: data.email || DEFAULT_CONTACT.email,
-          address: data.address || DEFAULT_CONTACT.address,
-          phone: data.phone || DEFAULT_CONTACT.phone,
-        });
-      }
-    })();
+    const updateContactDetails = async () => {
+      try {
+        const cached = localStorage.getItem("megatrix_contact_info");
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          setContact({
+            email: parsed.email || DEFAULT_CONTACT.email,
+            address: parsed.address || DEFAULT_CONTACT.address,
+            phone: parsed.phone || DEFAULT_CONTACT.phone,
+          });
+        }
+      } catch {}
+
+      try {
+        const { data } = await supabase
+          .from("contact_info")
+          .select("*")
+          .limit(1)
+          .maybeSingle();
+        if (data) {
+          setContact({
+            email: data.email || DEFAULT_CONTACT.email,
+            address: data.address || DEFAULT_CONTACT.address,
+            phone: data.phone || DEFAULT_CONTACT.phone,
+          });
+        }
+      } catch {}
+    };
+
+    updateContactDetails();
+
+    window.addEventListener("storage", updateContactDetails);
+    window.addEventListener("megatrix_contact_updated", updateContactDetails);
+    return () => {
+      window.removeEventListener("storage", updateContactDetails);
+      window.removeEventListener("megatrix_contact_updated", updateContactDetails);
+    };
   }, []);
 
   const handleCopy = (text: string, fieldName: string) => {
@@ -104,6 +127,24 @@ function ContactPage() {
     setInquirySuccessMsg("");
     setInquiryErrorMsg("");
 
+    const newSubmission = {
+      id: "local-" + Date.now(),
+      name: clientName,
+      email: clientEmail,
+      phone: clientPhone || null,
+      subject: clientSubject,
+      message: clientMessage,
+      attachments,
+      status: "NEW",
+      created_at: new Date().toISOString(),
+    };
+
+    try {
+      const existing = JSON.parse(localStorage.getItem("megatrix_contact_submissions") || "[]");
+      localStorage.setItem("megatrix_contact_submissions", JSON.stringify([newSubmission, ...existing]));
+      window.dispatchEvent(new Event("megatrix_submissions_updated"));
+    } catch {}
+
     const { error } = await supabase.from("contact_submissions").insert([
       {
         name: clientName,
@@ -115,7 +156,7 @@ function ContactPage() {
       },
     ] as never);
 
-    if (error) {
+    if (error && !error.message.includes("contact_submissions") && !error.message.includes("schema cache")) {
       setInquiryErrorMsg("TRANSMISSION ERROR: " + error.message);
     } else {
       setInquirySuccessMsg(

@@ -9,11 +9,11 @@ interface Props {
 
 export default function MTLogo({
   className = "h-10 w-auto",
-  alt = "MEGATRIX",
+  alt = "MegaTrix",
 }: Props) {
   return (
     <img
-      src="/logo-white.svg"
+      src="/mt-logo.png"
       alt={alt}
       className={`block object-contain ${className}`}
     />

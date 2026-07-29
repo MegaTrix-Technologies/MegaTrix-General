@@ -35,6 +35,7 @@ interface Project {
   project_link: string | null;
   github_link: string | null;
   deployed_on: string | null;
+  sort_order?: number;
 }
 
 const SEED_PROJECTS = [
@@ -81,48 +82,55 @@ const SEED_PROJECTS = [
 ];
 
 function Projects() {
-  const [loading, setLoading] = useState(() => {
-    if (typeof window !== "undefined") {
-      return !sessionStorage.getItem("mt_preloader_seen");
-    }
-    return false;
-  });
+  const [animationDone, setAnimationDone] = useState(false);
   const [fetching, setFetching] = useState(true);
+  const [showLoader, setShowLoader] = useState(false);
   const [projects, setProjects] = useState<Project[]>([]);
 
   useEffect(() => {
+    const loaderTimer = setTimeout(() => {
+      if (fetching) {
+        setShowLoader(true);
+      }
+    }, 400);
+
     (async () => {
       setFetching(true);
-      const { data } = await supabase
+      let res = await supabase
         .from("projects")
         .select("*")
+        .order("sort_order", { ascending: true })
         .order("created_at", { ascending: false });
 
-      if (data && data.length > 0) {
-        setProjects(data as Project[]);
-      } else {
-        const { data: insertedData } = await supabase
+      if (res.error && (res.error.message.includes("sort_order") || res.error.code === "42703")) {
+        res = await supabase
           .from("projects")
-          .insert(SEED_PROJECTS as never)
-          .select();
-        if (insertedData && insertedData.length > 0) {
-          setProjects(insertedData as Project[]);
-        } else {
-          setProjects(SEED_PROJECTS as unknown as Project[]);
-        }
+          .select("*")
+          .order("created_at", { ascending: false });
+      }
+
+      const data = res.data;
+
+      if (data) {
+        setProjects(data as Project[]);
       }
       setFetching(false);
+      clearTimeout(loaderTimer);
     })();
+
+    return () => clearTimeout(loaderTimer);
   }, []);
 
-  const handlePreloaderComplete = () => {
-    if (typeof window !== "undefined") {
-      sessionStorage.setItem("mt_preloader_seen", "true");
-    }
-    setLoading(false);
-  };
-
-  if (loading) return <Preloader onComplete={handlePreloaderComplete} />;
+  if (showLoader && (!animationDone || fetching)) {
+    return (
+      <Preloader
+        onComplete={() => setAnimationDone(true)}
+        title="PROJECTS_LOAD.exe"
+        statusText="LOADING PROJECTS..."
+        duration={1500}
+      />
+    );
+  }
 
   return (
     <div className="relative min-h-screen bg-[#090A0F] text-white">
@@ -171,19 +179,7 @@ function Projects() {
           </div>
 
           {fetching ? (
-            <div className="flex flex-col items-center justify-center py-28 space-y-4 border border-dashed border-[#1E2538] bg-[#12151E]/40">
-              <div className="relative flex items-center justify-center">
-                <div className="h-16 w-16 rounded-full border-2 border-[#0055FF] animate-ping opacity-60" />
-                <div className="absolute h-10 w-10 rounded-full border-2 border-t-[#00FFFF] border-r-transparent border-b-[#0055FF] border-l-transparent animate-spin" />
-                <Terminal size={22} className="text-[#0055FF]" />
-              </div>
-              <div className="font-mono text-xs md:text-sm font-bold tracking-widest text-[#0055FF] animate-pulse">
-                LOADING PROJECT ARCHIVES FROM DATABASE...
-              </div>
-              <div className="font-mono text-[10px] tracking-widest text-[#7C89A8]">
-                INITIALIZING SUPABASE DATA STREAM [ 200 OK ]
-              </div>
-            </div>
+            null
           ) : projects.length === 0 ? (
             <div className="border border-dashed border-[#1E2538] bg-[#12151E]/50 p-16 text-center">
               <Terminal size={32} className="mx-auto mb-4 text-[#0055FF]" />
@@ -196,9 +192,11 @@ function Projects() {
           ) : (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {projects.map((project) => (
-                <article
+                <Link
                   key={project.id}
-                  className="group flex flex-col border border-[#1E2538] bg-[#12151E] transition-all hover:border-[#0055FF] hover:shadow-[0_0_30px_rgba(0,85,255,0.25)]"
+                  to="/project-details"
+                  search={{ id: project.id }}
+                  className="group flex flex-col border border-[#1E2538] bg-black transition-all hover:border-[#0055FF] hover:shadow-[0_0_30px_rgba(0,85,255,0.25)] cursor-pointer"
                 >
                   {project.image_url ? (
                     <div className="relative aspect-video overflow-hidden border-b border-[#1E2538]">
@@ -225,12 +223,17 @@ function Projects() {
                         {project.title}
                       </h3>
 
+                      {/* DESCRIPTION */}
+                      <p className="mt-2.5 text-xs text-[#B8C4DE] line-clamp-3 leading-relaxed whitespace-pre-wrap">
+                        {project.description}
+                      </p>
+
                       {/* TECHNOLOGIES TAGS */}
                       <div className="mt-4 flex flex-wrap gap-1.5">
                         {project.tools?.map((tool, i) => (
                           <span
                             key={i}
-                            className="border border-[#2A3552] bg-[#090A0F] px-2.5 py-1 font-pixel text-[9px] font-bold tracking-widest text-[#B8C4DE]"
+                            className="border border-[#2A3552] bg-[#090A0F] px-2.5 py-1 font-mono text-[10px] font-bold tracking-widest text-[#B8C4DE]"
                           >
                             {tool}
                           </span>
@@ -240,17 +243,15 @@ function Projects() {
 
                     {/* VIEW PROJECT DETAILS LINK */}
                     <div className="border-t border-[#1E2538] pt-4">
-                      <Link
-                        to="/project-details"
-                        search={{ id: project.id }}
-                        className="flex items-center justify-between border border-[#0055FF] bg-[#0055FF]/10 px-4 py-2.5 font-pixel text-[10px] font-bold tracking-widest text-white hover:bg-[#0055FF] hover:shadow-[0_0_20px_rgba(0,85,255,0.4)] transition-all"
+                      <div
+                        className="flex items-center justify-between border border-[#0055FF] bg-[#0055FF]/10 px-4 py-2.5 font-mono text-xs font-bold tracking-widest text-white group-hover:bg-[#0055FF] group-hover:shadow-[0_0_20px_rgba(0,85,255,0.4)] transition-all"
                       >
                         <span>VIEW PROJECT DETAILS</span>
                         <ArrowRight size={14} />
-                      </Link>
+                      </div>
                     </div>
                   </div>
-                </article>
+                </Link>
               ))}
             </div>
           )}

@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { Cpu, RefreshCw, RotateCcw } from "lucide-react";
 
 // Dense, high-resolution grid configuration for complex maze paths
@@ -34,6 +34,8 @@ export default function StickmanStage() {
   const [isWalking, setIsWalking] = useState(false);
   const [facingRight, setFacingRight] = useState(true);
   const walkPhaseRef = useRef(0);
+  const pathRef = useRef<Point[]>([]);
+  const pathIndexRef = useRef<number>(0);
   const [limbAngles, setLimbAngles] = useState({
     legLeft: 0,
     legRight: 0,
@@ -143,13 +145,19 @@ export default function StickmanStage() {
 
     setWalls(grid);
     setStickmanCell({ r: 1, c: 1 });
+    setStickmanPos(getCellCenter(1, 1));
     setPath([]);
+    pathRef.current = [];
+    pathIndexRef.current = 0;
   };
 
   // Reset Stickman to start cell
   const handleResetPosition = () => {
     setStickmanCell({ r: 1, c: 1 });
+    setStickmanPos(getCellCenter(1, 1));
     setPath([]);
+    pathRef.current = [];
+    pathIndexRef.current = 0;
   };
 
   // Resize listener to get exact arena pixel dimensions
@@ -168,33 +176,15 @@ export default function StickmanStage() {
   const cellWidth = dimensions.width / COLS;
   const cellHeight = dimensions.height / ROWS;
 
-  // Clamp pixel coordinates strictly inside the arena container box
-  const clampPos = useCallback(
-    (rawX: number, rawY: number, r: number, c: number): Point => {
-      const halfWidth = 16;
-      const halfHeight = 24;
-      const margin = 8;
-      const clampedX = Math.max(halfWidth + margin, Math.min(dimensions.width - halfWidth - margin, rawX));
-      const clampedY = Math.max(halfHeight + margin, Math.min(dimensions.height - halfHeight - margin, rawY));
-      return { x: clampedX, y: clampedY, r, c };
-    },
-    [dimensions.width, dimensions.height],
-  );
-
-  // Convert (r, c) to center pixel position (x, y) with clamping
+  // Convert (r, c) to exact center pixel position (x, y)
   const getCellCenter = useCallback(
     (r: number, c: number): Point => {
-      const rawX = (c + 0.5) * cellWidth;
-      const rawY = (r + 0.5) * cellHeight;
-      return clampPos(rawX, rawY, r, c);
+      const x = (c + 0.5) * cellWidth;
+      const y = (r + 0.5) * cellHeight;
+      return { x, y, r, c };
     },
-    [cellWidth, cellHeight, clampPos],
+    [cellWidth, cellHeight],
   );
-
-  // Sync stickman pixel position to current cell
-  useEffect(() => {
-    setStickmanPos(getCellCenter(stickmanCell.r, stickmanCell.c));
-  }, [stickmanCell, getCellCenter]);
 
   // DIJKSTRA'S ALGORITHM IMPLEMENTATION
   const runDijkstra = useCallback(
@@ -275,6 +265,8 @@ export default function StickmanStage() {
       const endTime = performance.now();
       setComputationTime(Math.round((endTime - startTime) * 100) / 100);
       setPath(pathPoints);
+      pathRef.current = pathPoints;
+      pathIndexRef.current = 0;
     },
     [walls, getCellCenter],
   );
@@ -308,43 +300,47 @@ export default function StickmanStage() {
     let animId: number;
 
     const moveAlongPath = () => {
-      if (path.length > 1) {
-        const nextWaypoint = path[1];
+      const currentPath = pathRef.current;
+      const currentIndex = pathIndexRef.current;
+
+      if (currentPath.length > 1 && currentIndex < currentPath.length - 1) {
+        const nextWaypoint = currentPath[currentIndex + 1];
 
         setStickmanPos((prev) => {
           const dx = nextWaypoint.x - prev.x;
           const dy = nextWaypoint.y - prev.y;
           const dist = Math.sqrt(dx * dx + dy * dy);
+          const speed = Math.max(14, Math.min(dist * 0.75, 24));
 
-          if (dist > 3) {
+          if (dist > speed) {
             setIsWalking(true);
             setFacingRight(dx >= 0);
 
-            // Continuous sine wave for butter-smooth leg/arm walking movement
-            walkPhaseRef.current += 0.22;
+            // High-speed cyber sprint leg/arm animation phase
+            walkPhaseRef.current += 0.5;
             const swing = Math.sin(walkPhaseRef.current);
             setLimbAngles({
-              legLeft: swing * 26,
-              legRight: -swing * 26,
-              armLeft: -swing * 20,
-              armRight: swing * 20,
+              legLeft: swing * 30,
+              legRight: -swing * 30,
+              armLeft: -swing * 25,
+              armRight: swing * 25,
             });
 
-            // Speed factor suited for higher resolution grid
-            const speed = Math.min(dist * 0.16, 5);
-            const rawX = prev.x + (dx / dist) * speed;
-            const rawY = prev.y + (dy / dist) * speed;
-
-            return clampPos(rawX, rawY, prev.r, prev.c);
+            return {
+              x: prev.x + (dx / dist) * speed,
+              y: prev.y + (dy / dist) * speed,
+              r: prev.r,
+              c: prev.c,
+            };
           } else {
-            // Reached waypoint node! Advance stickmanCell to next node
+            // Reached waypoint node! Advance pathIndexRef and cell coordinate
+            pathIndexRef.current = currentIndex + 1;
             setStickmanCell({ r: nextWaypoint.r, c: nextWaypoint.c });
-            return nextWaypoint;
+            return { x: nextWaypoint.x, y: nextWaypoint.y, r: nextWaypoint.r, c: nextWaypoint.c };
           }
         });
       } else {
         setIsWalking(false);
-        // Smoothly return limbs to natural standing stance
         setLimbAngles((prev) => ({
           legLeft: prev.legLeft * 0.7,
           legRight: prev.legRight * 0.7,
@@ -357,7 +353,16 @@ export default function StickmanStage() {
 
     animId = requestAnimationFrame(moveAlongPath);
     return () => cancelAnimationFrame(animId);
-  }, [path, clampPos]);
+  }, []);
+
+  // Dynamically attach polyline start point directly to stickmanPos
+  const polylinePoints = useMemo(() => {
+    if (!path || path.length <= 1) return "";
+    const activeIndex = pathIndexRef.current;
+    const remaining = path.slice(Math.max(1, activeIndex));
+    const points = [{ x: stickmanPos.x, y: stickmanPos.y }, ...remaining];
+    return points.map((p) => `${p.x},${p.y}`).join(" ");
+  }, [path, stickmanPos]);
 
   return (
     <section className="relative z-10 py-20 mx-auto max-w-[1600px] px-8 md:px-12">
@@ -430,7 +435,7 @@ export default function StickmanStage() {
           {/* DIJKSTRA SHORTEST PATH OVERLAY LINE */}
           {path.length > 1 && (
             <polyline
-              points={path.map((p) => `${p.x},${p.y}`).join(" ")}
+              points={polylinePoints}
               fill="none"
               stroke="#0055FF"
               strokeWidth="3.5"
@@ -455,10 +460,11 @@ export default function StickmanStage() {
         {/* TARGET RETICLE AT DESTINATION CELL */}
         {targetCell && !walls[targetCell.r]?.[targetCell.c] && (
           <div
-            className="pointer-events-none absolute -translate-x-1/2 -translate-y-1/2 transition-all duration-75"
+            className="pointer-events-none absolute transition-all duration-75"
             style={{
               left: (targetCell.c + 0.5) * cellWidth,
               top: (targetCell.r + 0.5) * cellHeight,
+              transform: "translate(-50%, -50%)",
             }}
           >
             <div className="relative flex items-center justify-center">
@@ -470,7 +476,7 @@ export default function StickmanStage() {
 
         {/* STICKMAN CHARACTER SVG NAVIGATING MAZE */}
         <div
-          className="pointer-events-none absolute -translate-x-1/2 -translate-y-1/2 transition-all duration-75 z-20"
+          className="pointer-events-none absolute transition-all duration-75 z-20"
           style={{
             left: stickmanPos.x,
             top: stickmanPos.y,

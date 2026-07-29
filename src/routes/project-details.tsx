@@ -40,12 +40,8 @@ interface Project {
 
 function ProjectDetailPage() {
   const { id: projectId } = Route.useSearch();
-  const [loading, setLoading] = useState(() => {
-    if (typeof window !== "undefined") {
-      return !sessionStorage.getItem("mt_preloader_seen");
-    }
-    return false;
-  });
+  const [animationDone, setAnimationDone] = useState(false);
+  const [showLoader, setShowLoader] = useState(false);
 
   const [project, setProject] = useState<Project | null>(null);
   const [fetching, setFetching] = useState(true);
@@ -53,10 +49,17 @@ function ProjectDetailPage() {
   const [lightboxOpen, setLightboxOpen] = useState(false);
 
   useEffect(() => {
+    const loaderTimer = setTimeout(() => {
+      if (fetching) {
+        setShowLoader(true);
+      }
+    }, 400);
+
     (async () => {
       setFetching(true);
       if (!projectId) {
         setFetching(false);
+        clearTimeout(loaderTimer);
         return;
       }
 
@@ -80,17 +83,22 @@ function ProjectDetailPage() {
         }
       }
       setFetching(false);
+      clearTimeout(loaderTimer);
     })();
+
+    return () => clearTimeout(loaderTimer);
   }, [projectId]);
 
-  const handlePreloaderComplete = () => {
-    if (typeof window !== "undefined") {
-      sessionStorage.setItem("mt_preloader_seen", "true");
-    }
-    setLoading(false);
-  };
-
-  if (loading) return <Preloader onComplete={handlePreloaderComplete} />;
+  if (showLoader && (!animationDone || fetching)) {
+    return (
+      <Preloader
+        onComplete={() => setAnimationDone(true)}
+        title="PROJECTS_LOAD.exe"
+        statusText="LOADING PROJECT DETAILS..."
+        duration={1200}
+      />
+    );
+  }
 
   const allImages: string[] = [];
   if (project?.image_url) allImages.push(project.image_url);
@@ -111,19 +119,7 @@ function ProjectDetailPage() {
       <Navbar />
 
       {fetching ? (
-        <div className="flex flex-col items-center justify-center py-32 space-y-4">
-          <div className="relative flex items-center justify-center">
-            <div className="h-16 w-16 rounded-full border-2 border-[#0055FF] animate-ping opacity-60" />
-            <div className="absolute h-10 w-10 rounded-full border-2 border-t-[#00FFFF] border-r-transparent border-b-[#0055FF] border-l-transparent animate-spin" />
-            <Terminal size={22} className="text-[#0055FF]" />
-          </div>
-          <div className="font-mono text-xs md:text-sm font-bold tracking-widest text-[#0055FF] animate-pulse">
-            LOADING PROJECT SPECIFICATIONS FROM DATABASE...
-          </div>
-          <div className="font-mono text-[10px] tracking-widest text-[#7C89A8]">
-            FETCHING SYSTEM ARCHITECTURE & ATTACHMENTS [ 200 OK ]
-          </div>
-        </div>
+        null
       ) : !project ? (
         <div className="relative z-10 mx-auto max-w-[1600px] px-8 md:px-12 py-32 text-center">
           <h2 className="text-2xl font-bold text-red-400">PROJECT RECORD NOT FOUND</h2>
@@ -179,9 +175,38 @@ function ProjectDetailPage() {
                     alt={project.title}
                     className="h-full w-full object-cover transition-all duration-300 group-hover:scale-105"
                   />
+
+                  {/* SIDE NAVIGATION ARROWS ON BIG IMAGE */}
+                  {allImages.length > 1 && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setActiveImageIndex((prev) => (prev === 0 ? allImages.length - 1 : prev - 1));
+                        }}
+                        className="absolute left-4 top-1/2 -translate-y-1/2 z-20 flex h-12 w-12 items-center justify-center border border-[#1E2538] bg-[#090A0F]/80 text-white backdrop-blur-md transition-all hover:border-[#0055FF] hover:bg-[#0055FF] hover:scale-110 shadow-2xl"
+                        title="Previous Image"
+                      >
+                        <ChevronLeft size={24} />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setActiveImageIndex((prev) => (prev === allImages.length - 1 ? 0 : prev + 1));
+                        }}
+                        className="absolute right-4 top-1/2 -translate-y-1/2 z-20 flex h-12 w-12 items-center justify-center border border-[#1E2538] bg-[#090A0F]/80 text-white backdrop-blur-md transition-all hover:border-[#0055FF] hover:bg-[#0055FF] hover:scale-110 shadow-2xl"
+                        title="Next Image"
+                      >
+                        <ChevronRight size={24} />
+                      </button>
+                    </>
+                  )}
+
                   <button
                     onClick={() => setLightboxOpen(true)}
-                    className="absolute right-4 top-4 flex items-center gap-2 border border-[#1E2538] bg-[#090A0F]/90 px-4 py-2 font-sans text-xs font-bold tracking-widest text-white hover:border-[#0055FF] hover:text-[#0055FF] transition-all shadow-lg"
+                    className="absolute right-4 top-4 z-20 flex items-center gap-2 border border-[#1E2538] bg-[#090A0F]/90 px-4 py-2 font-sans text-xs font-bold tracking-widest text-white hover:border-[#0055FF] hover:text-[#0055FF] transition-all shadow-lg"
                   >
                     <Maximize2 size={14} /> EXPAND VIEW
                   </button>
@@ -249,6 +274,46 @@ function ProjectDetailPage() {
                 ))}
               </div>
             </div>
+
+            {/* DEDICATED GALLERY IMAGES GRID */}
+            {allImages.length > 0 && (
+              <div className="space-y-4 pt-4 border-t border-[#1E2538]">
+                <div className="flex items-center justify-between font-mono text-xs font-bold tracking-widest text-[#0055FF]">
+                  <span className="flex items-center gap-2">
+                    <ImageIcon size={16} />
+                    PROJECT GALLERY & ATTACHED SCREENSHOTS ({allImages.length})
+                  </span>
+                  <span className="text-[#7C89A8]">CLICK TO PREVIEW</span>
+                </div>
+                <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
+                  {allImages.map((imgUrl, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => {
+                        setActiveImageIndex(idx);
+                        window.scrollTo({ top: 300, behavior: "smooth" });
+                      }}
+                      className={`group relative aspect-video overflow-hidden border bg-[#12151E] p-1 text-left transition-all ${
+                        activeImageIndex === idx
+                          ? "border-[#0055FF] shadow-[0_0_25px_rgba(0,85,255,0.4)]"
+                          : "border-[#1E2538] hover:border-[#0055FF]/60 opacity-85 hover:opacity-100"
+                      }`}
+                    >
+                      <img
+                        src={imgUrl}
+                        alt={`${project.title} Gallery Image ${idx + 1}`}
+                        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-2.5">
+                        <span className="font-mono text-[10px] font-bold tracking-wider text-white flex items-center gap-1.5">
+                          <Maximize2 size={12} className="text-[#0055FF]" /> VIEW ATTACHMENT #{idx + 1}
+                        </span>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* CENTERED ACTION BUTTONS */}
             <div className="flex flex-wrap items-center justify-center gap-6 pt-6 border-t border-[#1E2538]">

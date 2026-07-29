@@ -5,9 +5,16 @@ interface PreloaderProps {
   onComplete: () => void;
   /** Custom duration in ms (defaults to 1800ms) */
   duration?: number;
+  title?: string;
+  statusText?: string;
 }
 
-export default function Preloader({ onComplete, duration = 1800 }: PreloaderProps) {
+export default function Preloader({
+  onComplete,
+  duration = 1800,
+  title = "RENDER_MT.exe",
+  statusText = "LOADING MEGATRIX CORE...",
+}: PreloaderProps) {
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
@@ -32,7 +39,7 @@ export default function Preloader({ onComplete, duration = 1800 }: PreloaderProp
 
       <div className="relative z-10 w-full max-w-md mx-4 border border-[#1E2538] bg-[#0B0D14]/90 p-8 shadow-[0_0_80px_-15px_rgba(0,85,255,0.4)]">
         <div className="mb-4 flex items-center justify-between border-b border-[#1E2538] pb-3 text-[10px] tracking-widest text-[#B8C4DE]">
-          <span className="text-[#0055FF]">RENDER_MT.exe</span>
+          <span className="text-[#0055FF]">{title}</span>
           <span className="flex items-center gap-1.5">
             <span className="h-2 w-2 animate-pulse rounded-full bg-[#0055FF]" />
             INITIALIZING
@@ -47,7 +54,7 @@ export default function Preloader({ onComplete, duration = 1800 }: PreloaderProp
         {/* Progress bar and status */}
         <div className="mt-4 space-y-2.5 border-t border-[#1E2538] pt-4">
           <div className="flex items-center justify-between text-[9px] tracking-widest text-[#7C89A8]">
-            <span>LOADING MEGATRIX CORE...</span>
+            <span>{statusText}</span>
             <span className="font-bold text-[#0055FF]">{progress}%</span>
           </div>
           <div className="h-1.5 w-full overflow-hidden border border-[#1E2538] bg-[#12151E]">

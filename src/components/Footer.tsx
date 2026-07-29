@@ -1,8 +1,63 @@
+import { useState, useEffect } from "react";
 import { Link } from "@tanstack/react-router";
-import { Terminal, Mail, Phone, MapPin, ArrowUpRight, Cpu, ShieldCheck, Globe } from "lucide-react";
+import { Terminal, Mail, Phone, MapPin, ArrowUpRight, Cpu, Globe } from "lucide-react";
 import MTLogo from "@/components/MTLogo";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function Footer() {
+  const [contact, setContact] = useState({
+    email: "contact@megatrix.com",
+    phone: "+1 (800) 555-0199",
+    address: "100 Cybernetic Way, Suite 400, San Francisco, CA 94107",
+  });
+
+  useEffect(() => {
+    const updateFromCacheOrDB = async () => {
+      try {
+        const cached = localStorage.getItem("megatrix_contact_info");
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (parsed.email || parsed.phone || parsed.address) {
+            setContact((prev) => ({
+              email: parsed.email || prev.email,
+              phone: parsed.phone || prev.phone,
+              address: parsed.address || prev.address,
+            }));
+          }
+        }
+      } catch {}
+
+      try {
+        const { data } = await supabase
+          .from("contact_info")
+          .select("*")
+          .limit(1)
+          .maybeSingle();
+
+        if (data) {
+          setContact({
+            email: data.email || "contact@megatrix.com",
+            address: data.address || "100 Cybernetic Way, Suite 400, San Francisco, CA 94107",
+            phone: data.phone || "+1 (800) 555-0199",
+          });
+        }
+      } catch {}
+    };
+
+    updateFromCacheOrDB();
+
+    const handleStorageChange = () => {
+      updateFromCacheOrDB();
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    window.addEventListener("megatrix_contact_updated", handleStorageChange);
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener("megatrix_contact_updated", handleStorageChange);
+    };
+  }, []);
+
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -104,19 +159,19 @@ export default function Footer() {
             <ul className="space-y-3 text-xs md:text-sm text-[#CBD5E1]">
               <li className="flex items-start gap-2.5">
                 <Mail size={16} className="text-[#0055FF] flex-shrink-0 mt-0.5" />
-                <a href="mailto:contact@megatrix.com" className="hover:text-white break-all">
-                  contact@megatrix.com
+                <a href={`mailto:${contact.email}`} className="hover:text-white break-all">
+                  {contact.email}
                 </a>
               </li>
               <li className="flex items-center gap-2.5">
                 <Phone size={16} className="text-[#0055FF] flex-shrink-0" />
-                <a href="tel:+18005550199" className="hover:text-white">
-                  +1 (800) 555-0199
+                <a href={`tel:${contact.phone.replace(/[^0-9+]/g, '')}`} className="hover:text-white">
+                  {contact.phone}
                 </a>
               </li>
               <li className="flex items-start gap-2.5">
                 <MapPin size={16} className="text-[#0055FF] flex-shrink-0 mt-0.5" />
-                <span>100 Cybernetic Way, Suite 400, San Francisco, CA</span>
+                <span>{contact.address}</span>
               </li>
             </ul>
           </div>
@@ -127,7 +182,7 @@ export default function Footer() {
       <div className="relative z-10 border-t border-[#1E2538] bg-[#090A0F] py-6">
         <div className="mx-auto flex max-w-[1600px] flex-wrap items-center justify-between gap-4 px-8 md:px-12">
           <div className="font-mono text-xs tracking-widest text-[#94A3B8]">
-            © 2026 MEGATRIX SOFTWARE HOUSE. ALL RIGHTS RESERVED.
+            © 2026 MEGATRIX. ALL RIGHTS RESERVED.
           </div>
 
           <button
