@@ -8,9 +8,10 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import Navbar from "@/components/Navbar";
 import Preloader from "@/components/Preloader";
 import MTLogo from "@/components/MTLogo";
-import logoNav from "@/assets/mt-white-on-black.png.asset.json";
+import Footer from "@/components/Footer";
 
 export const Route = createFileRoute("/projects")({
   head: () => ({
@@ -36,21 +37,92 @@ interface Project {
   deployed_on: string | null;
 }
 
+const SEED_PROJECTS = [
+  {
+    title: "AsanShipping.com",
+    description:
+      "An advanced multi-tenant fulfillment & logistics SaaS platform built for Pakistani e-commerce merchants to automate courier selection, prevent Cash-on-Delivery fraud via IVR verification calls, and streamline reverse logistics scrap ledgers.",
+    tools: ["React", "TypeScript", "Node.js", "Express", "MongoDB", "Python"],
+    image_url: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=1200",
+    project_link: "https://asanshipping.com",
+    github_link: "https://github.com/HashirFarooq0023",
+    deployed_on: "AWS & Vercel",
+  },
+  {
+    title: "Talent Vector (HR-Helper)",
+    description:
+      "A production-grade system that automates top-of-funnel corporate recruitment using Multinomial Naive Bayes classification, TF-IDF vector corpus weighting, and custom Levenshtein distance string optimization with sub-3ms match speed.",
+    tools: ["Python", "FastAPI", "Scikit-Learn", "React", "TailwindCSS", "MongoDB"],
+    image_url: "https://images.unsplash.com/photo-1586281380349-632531db7ed4?q=80&w=1200",
+    project_link: "https://talentvector-xi.vercel.app/",
+    github_link: "https://github.com/HashirFarooq0023/Talentvector",
+    deployed_on: "Vercel & Render",
+  },
+  {
+    title: "PSX Quantitative & AI Oracle",
+    description:
+      "A sophisticated data analytics engine that ingests historical Pakistan Stock Exchange equities data, computes statistical tendencies, beta indicators, and Ordinary Least Squares (OLS) linear regressions.",
+    tools: ["Python", "FastAPI", "NumPy", "Pandas", "Statsmodels", "React"],
+    image_url: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?q=80&w=1200",
+    project_link: "https://prob-project.vercel.app/",
+    github_link: "https://github.com/HashirFarooq0023",
+    deployed_on: "Vercel",
+  },
+  {
+    title: "Aesthetic MERN E-Commerce (TrendsStore)",
+    description:
+      "A sleek, high-performance e-commerce platform featuring an aesthetic theme layout, real-time cart management, multi-address checkout logic, dynamic product filters, and a secure role-based admin inventory portal.",
+    tools: ["Next.js", "React", "Node.js", "Express.js", "MongoDB", "TailwindCSS"],
+    image_url: "https://images.unsplash.com/photo-1472851294608-062f824d29cc?q=80&w=1200",
+    project_link: "https://www.trendsstorepk.com/",
+    github_link: "https://github.com/HashirFarooq0023/E-com-Theme-2",
+    deployed_on: "Vercel & Render",
+  },
+];
+
 function Projects() {
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(() => {
+    if (typeof window !== "undefined") {
+      return !sessionStorage.getItem("mt_preloader_seen");
+    }
+    return false;
+  });
+  const [fetching, setFetching] = useState(true);
   const [projects, setProjects] = useState<Project[]>([]);
 
   useEffect(() => {
     (async () => {
+      setFetching(true);
       const { data } = await supabase
         .from("projects")
         .select("*")
         .order("created_at", { ascending: false });
-      if (data) setProjects(data as Project[]);
+
+      if (data && data.length > 0) {
+        setProjects(data as Project[]);
+      } else {
+        const { data: insertedData } = await supabase
+          .from("projects")
+          .insert(SEED_PROJECTS as never)
+          .select();
+        if (insertedData && insertedData.length > 0) {
+          setProjects(insertedData as Project[]);
+        } else {
+          setProjects(SEED_PROJECTS as unknown as Project[]);
+        }
+      }
+      setFetching(false);
     })();
   }, []);
 
-  if (loading) return <Preloader onComplete={() => setLoading(false)} />;
+  const handlePreloaderComplete = () => {
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem("mt_preloader_seen", "true");
+    }
+    setLoading(false);
+  };
+
+  if (loading) return <Preloader onComplete={handlePreloaderComplete} />;
 
   return (
     <div className="relative min-h-screen bg-[#090A0F] text-white">
@@ -59,30 +131,22 @@ function Projects() {
       <div className="pointer-events-none fixed inset-0 scanlines opacity-25" />
       <div className="pointer-events-none fixed inset-0 bg-radial-fade" />
 
-      {/* NAV */}
-      <nav className="relative z-10 border-b border-[#1E2538] bg-[#090A0F]/80 backdrop-blur">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-          <Link to="/" className="flex items-center gap-3">
-            <img src={logoNav.url} alt="MEGATRIX" className="h-8 w-auto" />
-          </Link>
-          <div className="hidden gap-8 text-[11px] tracking-widest text-[#B8C4DE] md:flex">
-            <Link to="/" className="hover:text-white">// HOME</Link>
-            <Link to="/projects" className="text-white hover:text-white">// PROJECTS</Link>
-            <a href="/architecture" className="hover:text-white">// ARCHITECTURE</a>
-            <a href="/contact" className="hover:text-white">// CONTACT</a>
-          </div>
-          <Link
-            to="/"
-            className="flex items-center gap-2 border border-[#2A3552] bg-[#12151E] px-3 py-2 text-[10px] tracking-widest text-white hover:border-[#0055FF] hover:text-[#0055FF]"
-          >
-            <ArrowLeft size={12} />
-            HOME
-          </Link>
-        </div>
-      </nav>
+      {/* REUSABLE NAVBAR */}
+      <Navbar />
+
+      {/* BACK BUTTON */}
+      <div className="relative z-10 mx-auto max-w-[1600px] px-8 md:px-12 pt-8">
+        <Link
+          to="/"
+          className="group inline-flex items-center gap-2.5 border border-[#1E2538] bg-black px-4 py-2 font-mono text-xs font-bold tracking-widest text-[#B8C4DE] hover:text-white hover:border-[#0055FF] hover:shadow-[0_0_15px_rgba(0,85,255,0.2)] transition-all rounded-sm"
+        >
+          <ArrowLeft size={14} className="transition-transform group-hover:-translate-x-0.5 text-[#0055FF]" />
+          RETURN TO BASE
+        </Link>
+      </div>
 
       {/* HERO */}
-      <section className="relative z-10 mx-auto max-w-7xl px-6 py-20 md:py-28">
+      <section className="relative z-10 mx-auto max-w-[1600px] px-8 md:px-12 py-10 md:py-16">
         <div className="mb-12 max-w-2xl">
           <div className="mb-3 inline-flex items-center gap-2 border border-[#1E2538] bg-[#12151E] px-3 py-1.5 text-[10px] tracking-widest text-[#B8C4DE]">
             <Terminal size={12} className="text-[#0055FF]" />
@@ -99,21 +163,28 @@ function Projects() {
         </div>
 
         {/* PROJECTS */}
-        <div className="border-t border-[#1E2538] pt-16">
+        <div className="pt-8">
           <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
             <div className="text-[10px] tracking-widest text-[#0055FF]">
-              // TOTAL SYSTEMS RECORDED: [ {String(projects.length).padStart(3, "0")} ]
+              TOTAL SYSTEMS RECORDED: [ {String(projects.length).padStart(3, "0")} ]
             </div>
-            <Link
-              to="/"
-              className="group inline-flex items-center gap-2 text-[10px] tracking-widest text-[#B8C4DE] hover:text-white"
-            >
-              <ArrowLeft size={12} />
-              RETURN TO BASE
-            </Link>
           </div>
 
-          {projects.length === 0 ? (
+          {fetching ? (
+            <div className="flex flex-col items-center justify-center py-28 space-y-4 border border-dashed border-[#1E2538] bg-[#12151E]/40">
+              <div className="relative flex items-center justify-center">
+                <div className="h-16 w-16 rounded-full border-2 border-[#0055FF] animate-ping opacity-60" />
+                <div className="absolute h-10 w-10 rounded-full border-2 border-t-[#00FFFF] border-r-transparent border-b-[#0055FF] border-l-transparent animate-spin" />
+                <Terminal size={22} className="text-[#0055FF]" />
+              </div>
+              <div className="font-mono text-xs md:text-sm font-bold tracking-widest text-[#0055FF] animate-pulse">
+                LOADING PROJECT ARCHIVES FROM DATABASE...
+              </div>
+              <div className="font-mono text-[10px] tracking-widest text-[#7C89A8]">
+                INITIALIZING SUPABASE DATA STREAM [ 200 OK ]
+              </div>
+            </div>
+          ) : projects.length === 0 ? (
             <div className="border border-dashed border-[#1E2538] bg-[#12151E]/50 p-16 text-center">
               <Terminal size={32} className="mx-auto mb-4 text-[#0055FF]" />
               <p className="text-xs tracking-widest text-[#B8C4DE]">
@@ -144,52 +215,39 @@ function Projects() {
                     </div>
                   ) : (
                     <div className="flex aspect-video items-center justify-center border-b border-[#1E2538] bg-[#090A0F] text-[10px] tracking-widest text-[#1E2538]">
-                      // NO_IMAGE_PROVIDED
+                      NO IMAGE PROVIDED
                     </div>
                   )}
 
                   <div className="flex flex-1 flex-col justify-between gap-4 p-5">
                     <div>
-                      <h3 className="text-base font-bold tracking-wide text-white">
+                      <h3 className="text-base font-bold tracking-wide text-white group-hover:text-[#0055FF] transition-colors">
                         {project.title}
                       </h3>
-                      <p className="mt-2 line-clamp-3 text-xs leading-relaxed text-[#B8C4DE]">
-                        {project.description}
-                      </p>
-                      <div className="mt-4 flex flex-wrap gap-1">
-                        {project.tools?.map((tool, idx) => (
+
+                      {/* TECHNOLOGIES TAGS */}
+                      <div className="mt-4 flex flex-wrap gap-1.5">
+                        {project.tools?.map((tool, i) => (
                           <span
-                            key={idx}
-                            className="border border-[#1E2538] bg-[#090A0F] px-2 py-0.5 text-[9px] tracking-widest text-[#B8C4DE]"
+                            key={i}
+                            className="border border-[#2A3552] bg-[#090A0F] px-2.5 py-1 font-pixel text-[9px] font-bold tracking-widest text-[#B8C4DE]"
                           >
                             {tool}
                           </span>
                         ))}
                       </div>
                     </div>
-                    <div className="flex flex-wrap gap-2 border-t border-[#1E2538] pt-2">
-                      {project.project_link && (
-                        <a
-                          href={project.project_link}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="inline-flex items-center gap-1.5 text-[10px] tracking-widest text-[#0055FF] hover:underline"
-                        >
-                          <ExternalLink size={12} />
-                          LIVE DEMO
-                        </a>
-                      )}
-                      {project.github_link && (
-                        <a
-                          href={project.github_link}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="inline-flex items-center gap-1.5 text-[10px] tracking-widest text-[#B8C4DE] hover:text-white"
-                        >
-                          <Github size={12} />
-                          SOURCE
-                        </a>
-                      )}
+
+                    {/* VIEW PROJECT DETAILS LINK */}
+                    <div className="border-t border-[#1E2538] pt-4">
+                      <Link
+                        to="/project-details"
+                        search={{ id: project.id }}
+                        className="flex items-center justify-between border border-[#0055FF] bg-[#0055FF]/10 px-4 py-2.5 font-pixel text-[10px] font-bold tracking-widest text-white hover:bg-[#0055FF] hover:shadow-[0_0_20px_rgba(0,85,255,0.4)] transition-all"
+                      >
+                        <span>VIEW PROJECT DETAILS</span>
+                        <ArrowRight size={14} />
+                      </Link>
                     </div>
                   </div>
                 </article>
@@ -199,23 +257,8 @@ function Projects() {
         </div>
       </section>
 
-      {/* FOOTER */}
-      <footer className="relative z-10 border-t border-[#1E2538] py-10">
-        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-6">
-          <div className="flex items-center gap-3">
-            <MTLogo variant="white" className="h-5 w-auto" />
-            <span className="text-[10px] tracking-widest text-[#B8C4DE]">
-              © 2026 MEGATRIX SOFTWARE HOUSE. ALL RIGHTS RESERVED.
-            </span>
-          </div>
-          <div className="flex gap-6 text-[10px] tracking-widest text-[#B8C4DE]">
-            <Link to="/" className="hover:text-white">Home</Link>
-            <Link to="/projects" className="text-white hover:text-white">Projects</Link>
-            <a href="/architecture" className="hover:text-white">Architecture</a>
-            <a href="/contact" className="hover:text-white">Contact</a>
-          </div>
-        </div>
-      </footer>
+      {/* ENHANCED FOOTER */}
+      <Footer />
     </div>
   );
 }

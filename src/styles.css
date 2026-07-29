@@ -50,8 +50,16 @@
   --color-matrix-border: var(--matrix-border);
   --color-matrix-blue: var(--matrix-blue);
   --color-matrix-glow: var(--matrix-glow);
-  --font-mono: "Courier New", Courier, monospace;
+  --font-mono: "Share Tech Mono", "Courier New", monospace;
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-pixel: "Silkscreen", monospace;
+}
+
+.font-pixel {
+  font-family: "Silkscreen", "Courier New", monospace;
+}
+.font-tech {
+  font-family: "Share Tech Mono", monospace;
 }
 
 :root {
