@@ -8,14 +8,15 @@ interface Props {
 }
 
 export default function MTLogo({
-  className = "h-10 w-auto",
+  className = "h-12 w-auto",
   alt = "MegaTrix",
 }: Props) {
   return (
     <img
-      src="/mt-logo.png"
+      src="/favicon.png"
       alt={alt}
       className={`block object-contain ${className}`}
     />
   );
 }
+
