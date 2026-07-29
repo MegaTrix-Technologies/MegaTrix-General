@@ -38,7 +38,7 @@ function Home() {
             <img src={logoNav.url} alt="MEGATRIX" className="h-8 w-auto" />
           </a>
           <div className="hidden gap-8 text-[11px] tracking-widest text-[#B8C4DE] md:flex">
-            <a href="#projects" className="hover:text-white">// PROJECTS</a>
+            <Link to="/projects" className="hover:text-white">// PROJECTS</Link>
             <a href="#architecture" className="hover:text-white">// ARCHITECTURE</a>
             <a href="#contact" className="hover:text-white">// CONTACT</a>
           </div>
@@ -71,16 +71,17 @@ function Home() {
               uncompromising execution.
             </p>
             <div className="mt-10 flex flex-wrap gap-4">
-              <a
-                href="#projects"
+              <Link
+                to="/projects"
                 className="group inline-flex items-center gap-2 bg-[#0055FF] px-6 py-3 text-xs font-bold tracking-widest text-white shadow-[0_0_25px_rgba(0,85,255,0.4)] transition-all hover:bg-[#0044cc]"
               >
                 EXPLORE WORK
                 <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
-              </a>
+              </Link>
               <a
                 href="#contact"
                 className="inline-flex items-center gap-2 border border-[#1E2538] px-6 py-3 text-xs font-bold tracking-widest text-white hover:border-[#0055FF] hover:text-[#0055FF]"
+              >
               >
                 <Code2 size={14} />
                 INITIATE PROJECT
