@@ -92,29 +92,31 @@ export default function Footer() {
               NAVIGATION ARCHIVE
             </h3>
             <ul className="space-y-2.5 font-sans text-xs md:text-sm font-semibold text-[#CBD5E1]">
+              {[
+                { to: "/", label: "Home" },
+                { to: "/projects", label: "Projects Catalog" },
+                { to: "/architecture", label: "System Architecture" },
+                { to: "/contact", label: "Contact Us" },
+              ].map(({ to, label }) => (
+                <li key={to}>
+                  <Link
+                    to={to}
+                    className="group inline-flex items-center gap-2 transition-colors hover:text-white"
+                  >
+                    <span className="text-[#0055FF] transition-transform duration-200 group-hover:translate-x-1">
+                      &rarr;
+                    </span>
+                    <span className="link-underline">{label}</span>
+                  </Link>
+                </li>
+              ))}
               <li>
-                <Link to="/" className="hover:text-[#0055FF] transition-colors flex items-center gap-1.5">
-                  &rarr; Home
-                </Link>
-              </li>
-              <li>
-                <Link to="/projects" className="hover:text-[#0055FF] transition-colors flex items-center gap-1.5">
-                  &rarr; Projects Catalog
-                </Link>
-              </li>
-              <li>
-                <Link to="/architecture" className="hover:text-[#0055FF] transition-colors flex items-center gap-1.5">
-                  &rarr; System Architecture
-                </Link>
-              </li>
-              <li>
-                <Link to="/contact" className="hover:text-[#0055FF] transition-colors flex items-center gap-1.5">
-                  &rarr; Contact Us
-                </Link>
-              </li>
-              <li>
-                <Link to="/admin" className="hover:text-[#0055FF] transition-colors flex items-center gap-1.5 text-[#7C89A8]">
-                  &rarr; Command Center (Admin)
+                <Link
+                  to="/admin"
+                  className="group inline-flex items-center gap-2 text-[#7C89A8] transition-colors hover:text-[#B8C4DE]"
+                >
+                  <span className="transition-transform duration-200 group-hover:translate-x-1">&rarr;</span>
+                  <span className="link-underline">Command Center (Admin)</span>
                 </Link>
               </li>
             </ul>
