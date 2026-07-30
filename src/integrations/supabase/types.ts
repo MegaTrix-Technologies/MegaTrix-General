@@ -14,72 +14,11 @@ export type Database = {
   }
   public: {
     Tables: {
-      contact_info: {
-        Row: {
-          address: string
-          email: string
-          id: string
-          phone: string
-          updated_at: string
-        }
-        Insert: {
-          address: string
-          email: string
-          id?: string
-          phone: string
-          updated_at?: string
-        }
-        Update: {
-          address?: string
-          email?: string
-          id?: string
-          phone?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      contact_submissions: {
-        Row: {
-          attachments: string[]
-          created_at: string
-          email: string
-          id: string
-          message: string
-          name: string
-          phone: string | null
-          status: string
-          subject: string
-        }
-        Insert: {
-          attachments?: string[]
-          created_at?: string
-          email: string
-          id?: string
-          message: string
-          name: string
-          phone?: string | null
-          status?: string
-          subject: string
-        }
-        Update: {
-          attachments?: string[]
-          created_at?: string
-          email?: string
-          id?: string
-          message?: string
-          name?: string
-          phone?: string | null
-          status?: string
-          subject?: string
-        }
-        Relationships: []
-      }
       projects: {
         Row: {
           created_at: string
           deployed_on: string | null
           description: string
-          gallery_images: string[]
           github_link: string | null
           id: string
           image_url: string | null
@@ -91,7 +30,6 @@ export type Database = {
           created_at?: string
           deployed_on?: string | null
           description: string
-          gallery_images?: string[]
           github_link?: string | null
           id?: string
           image_url?: string | null
@@ -103,7 +41,6 @@ export type Database = {
           created_at?: string
           deployed_on?: string | null
           description?: string
-          gallery_images?: string[]
           github_link?: string | null
           id?: string
           image_url?: string | null
