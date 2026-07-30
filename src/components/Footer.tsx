@@ -160,20 +160,20 @@ export default function Footer() {
             </h3>
             <ul className="space-y-3 text-xs md:text-sm text-[#CBD5E1]">
               <li className="flex items-start gap-2.5">
-                <Mail size={16} className="text-[#0055FF] flex-shrink-0 mt-0.5" />
-                <a href={`mailto:${contact.email}`} className="hover:text-white break-all">
+                <Mail size={16} className="mt-0.5 shrink-0 text-[#0055FF]" />
+                <a href={`mailto:${contact.email}`} className="link-underline break-all hover:text-white">
                   {contact.email}
                 </a>
               </li>
               <li className="flex items-center gap-2.5">
-                <Phone size={16} className="text-[#0055FF] flex-shrink-0" />
-                <a href={`tel:${contact.phone.replace(/[^0-9+]/g, '')}`} className="hover:text-white">
+                <Phone size={16} className="shrink-0 text-[#0055FF]" />
+                <a href={`tel:${contact.phone.replace(/[^0-9+]/g, "")}`} className="link-underline hover:text-white">
                   {contact.phone}
                 </a>
               </li>
               <li className="flex items-start gap-2.5">
-                <MapPin size={16} className="text-[#0055FF] flex-shrink-0 mt-0.5" />
-                <span>{contact.address}</span>
+                <MapPin size={16} className="mt-0.5 shrink-0 text-[#0055FF]" />
+                <span className="leading-6">{contact.address}</span>
               </li>
             </ul>
           </div>
