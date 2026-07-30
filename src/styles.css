@@ -246,3 +246,92 @@
 .bg-radial-fade {
   background: radial-gradient(ellipse at center, transparent 0%, transparent 40%, rgba(9,10,15,0.85) 100%);
 }
+
+/* ---------------------------------------------------------------
+   Shared surface + interaction utilities
+   Keeps hover/elevation/typography behaviour identical everywhere
+   --------------------------------------------------------------- */
+
+/* Panel: the standard content surface (cards, form blocks, stat tiles) */
+@utility panel {
+  position: relative;
+  border: 1px solid var(--matrix-border);
+  background-image: linear-gradient(160deg, rgba(24, 30, 47, 0.9) 0%, rgba(9, 10, 15, 0.95) 60%);
+  background-color: var(--matrix-card);
+  border-radius: 0.25rem;
+  transition:
+    border-color 220ms ease,
+    box-shadow 220ms ease,
+    transform 220ms ease,
+    background-color 220ms ease;
+}
+
+/* Interactive panel: adds the lift + blue bloom on hover/focus */
+@utility panel-interactive {
+  &:hover,
+  &:focus-visible {
+    border-color: var(--matrix-blue);
+    transform: translateY(-3px);
+    box-shadow:
+      0 0 0 1px rgba(0, 85, 255, 0.35),
+      0 18px 40px -22px rgba(0, 85, 255, 0.75),
+      0 8px 24px -16px rgba(0, 0, 0, 0.9);
+  }
+}
+
+/* Small uppercase mono label used for section eyebrows and meta rows */
+@utility label-mono {
+  font-family: "Share Tech Mono", monospace;
+  font-size: 0.6875rem;
+  line-height: 1.2;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+/* Technology / metadata chip */
+@utility chip {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid #2a3552;
+  background-color: rgba(9, 10, 15, 0.9);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.125rem;
+  font-family: "Share Tech Mono", monospace;
+  font-size: 0.625rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #b8c4de;
+  transition:
+    border-color 180ms ease,
+    color 180ms ease,
+    background-color 180ms ease;
+
+  &:hover {
+    border-color: rgba(0, 85, 255, 0.6);
+    color: #ffffff;
+  }
+}
+
+/* Underline that grows in from the left on hover — used for text links */
+@utility link-underline {
+  position: relative;
+  transition: color 180ms ease;
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -2px;
+    height: 1px;
+    width: 100%;
+    transform: scaleX(0);
+    transform-origin: left;
+    background-color: var(--matrix-blue);
+    transition: transform 220ms ease;
+  }
+
+  &:hover::after,
+  &:focus-visible::after {
+    transform: scaleX(1);
+  }
+}
