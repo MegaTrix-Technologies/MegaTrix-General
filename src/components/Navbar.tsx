@@ -2,53 +2,84 @@ import { Link, useLocation } from "@tanstack/react-router";
 import { Terminal } from "lucide-react";
 import MTLogo from "@/components/MTLogo";
 
+const NAV_LINKS = [
+  { to: "/", label: "HOME" },
+  { to: "/projects", label: "PROJECTS" },
+  { to: "/architecture", label: "ARCHITECTURE" },
+] as const;
+
 export default function Navbar() {
-  const location = useLocation();
-  const pathname = location.pathname;
+  const { pathname } = useLocation();
 
   return (
-    <nav className="relative z-50 border-b border-[#1E2538] bg-black">
-      <div className="mx-auto flex max-w-[1600px] items-center justify-between px-8 md:px-12 py-3.5">
-        <div className="flex items-center gap-12">
+    <nav className="sticky top-0 z-50 border-b border-[#1E2538] bg-black/80 backdrop-blur-md supports-[backdrop-filter]:bg-black/65">
+      <div className="mx-auto flex max-w-[1600px] items-center justify-between gap-6 px-6 py-3 md:px-12 md:py-4">
+        <div className="flex items-center gap-10 lg:gap-14">
           {/* LOGO */}
-          <Link to="/" className="flex items-center gap-3 flex-shrink-0">
-            <MTLogo className="h-10 w-auto" />
+          <Link
+            to="/"
+            aria-label="Megatrix home"
+            className="flex shrink-0 items-center opacity-90 transition-opacity hover:opacity-100"
+          >
+            <MTLogo className="h-9 w-auto md:h-10" />
           </Link>
 
-          {/* CLEAN, CRISP NAVIGATION LINKS */}
-          <div className="hidden gap-8 font-sans text-xs md:text-sm font-bold tracking-widest text-[#B8C4DE] md:flex">
-            <Link
-              to="/"
-              className={`transition-colors hover:text-white ${pathname === "/" ? "text-white underline underline-offset-8 decoration-[#0055FF] decoration-2" : ""
-                }`}
-            >
-              HOME
-            </Link>
-            <Link
-              to="/projects"
-              className={`transition-colors hover:text-white ${pathname === "/projects" ? "text-white underline underline-offset-8 decoration-[#0055FF] decoration-2" : ""
-                }`}
-            >
-              PROJECTS
-            </Link>
-            <Link
-              to="/architecture"
-              className={`transition-colors hover:text-white ${pathname === "/architecture" ? "text-white underline underline-offset-8 decoration-[#0055FF] decoration-2" : ""
-                }`}
-            >
-              ARCHITECTURE
-            </Link>
+          {/* PRIMARY NAVIGATION */}
+          <div className="hidden items-center gap-1 md:flex">
+            {NAV_LINKS.map(({ to, label }) => {
+              const isActive = pathname === to;
+              return (
+                <Link
+                  key={to}
+                  to={to}
+                  aria-current={isActive ? "page" : undefined}
+                  className={`relative rounded-sm px-3 py-2 font-sans text-xs font-bold tracking-[0.14em] transition-colors md:text-[13px] ${
+                    isActive
+                      ? "text-white"
+                      : "text-[#B8C4DE] hover:bg-white/5 hover:text-white"
+                  }`}
+                >
+                  {label}
+                  <span
+                    className={`pointer-events-none absolute inset-x-3 -bottom-[3px] h-[2px] origin-left bg-[#0055FF] transition-transform duration-200 ${
+                      isActive ? "scale-x-100" : "scale-x-0"
+                    }`}
+                  />
+                </Link>
+              );
+            })}
           </div>
         </div>
 
-        {/* PROMINENT RIGHT ACTION BUTTON */}
+        {/* PRIMARY ACTION */}
         <Link
           to="/contact"
-          className="group flex items-center gap-2 border border-[#0055FF] bg-[#0055FF] px-5 py-2.5 font-sans text-xs md:text-sm font-bold tracking-widest text-white shadow-[0_0_20px_rgba(0,85,255,0.4)] hover:bg-[#0044cc] hover:shadow-[0_0_30px_rgba(0,85,255,0.6)] transition-all"
+          className="group flex shrink-0 items-center gap-2 rounded-sm bg-[#0055FF] px-4 py-2.5 font-sans text-[11px] font-bold tracking-[0.14em] text-white shadow-[0_6px_20px_-8px_rgba(0,85,255,0.9)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#1A66FF] hover:shadow-[0_10px_28px_-8px_rgba(0,85,255,1)] md:px-5 md:text-[13px]"
         >
-          <Terminal size={15} />
+          <Terminal size={15} className="transition-transform duration-200 group-hover:scale-110" />
           CONTACT US
         </Link>
+      </div>
+
+      {/* MOBILE NAVIGATION ROW — links were previously unreachable below md */}
+      <div className="flex items-center gap-1 overflow-x-auto border-t border-[#1E2538] px-4 py-2 md:hidden">
+        {NAV_LINKS.map(({ to, label }) => {
+          const isActive = pathname === to;
+          return (
+            <Link
+              key={to}
+              to={to}
+              aria-current={isActive ? "page" : undefined}
+              className={`whitespace-nowrap rounded-sm px-3 py-1.5 font-sans text-[11px] font-bold tracking-[0.14em] transition-colors ${
+                isActive
+                  ? "bg-[#0055FF]/15 text-white"
+                  : "text-[#B8C4DE] hover:text-white"
+              }`}
+            >
+              {label}
+            </Link>
+          );
+        })}
       </div>
     </nav>
   );
