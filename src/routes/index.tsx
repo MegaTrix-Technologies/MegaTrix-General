@@ -328,7 +328,7 @@ function Home() {
           ].map(({ step, title, description }, idx, arr) => (
             <div key={step} className="relative flex flex-col">
               {/* NODE CONTAINER CARD (SOLID PITCH BLACK BG) */}
-              <div className="group relative flex flex-1 flex-col justify-between border-2 border-[#1E2538] bg-black p-7 transition-all hover:border-[#0055FF] hover:shadow-[0_0_35px_rgba(0,85,255,0.35)] rounded-sm">
+              <div className="group panel panel-interactive relative flex flex-1 flex-col justify-between p-7">
                 <div>
                   <div className="flex items-center justify-between border-b border-[#1E2538] pb-3.5 mb-4">
                     <span className="font-mono text-xs md:text-sm font-extrabold tracking-widest text-[#0055FF] flex items-center gap-2">
@@ -418,7 +418,7 @@ function Home() {
           ].map(({ quote, client, role, status }, idx) => (
             <div
               key={idx}
-              className="group relative border border-[#1E2538] bg-[#12151E]/60 p-7 transition-all hover:border-[#0055FF] hover:shadow-[0_0_30px_rgba(0,85,255,0.25)] flex flex-col justify-between"
+              className="group panel panel-interactive flex flex-col justify-between p-7"
             >
               <div>
                 <div className="flex items-center justify-between border-b border-[#1E2538] pb-3 mb-4">
@@ -464,7 +464,7 @@ function Home() {
         {/* CONTACT INFO CARDS */}
         <div className="mb-12 grid gap-6 md:grid-cols-3">
           {/* EMAIL CARD */}
-          <div className="group border-2 border-[#1E2538] bg-black p-7 transition-all hover:border-[#0055FF] hover:shadow-[0_0_30px_rgba(0,85,255,0.2)]">
+          <div className="group panel panel-interactive p-7">
             <div className="flex items-center justify-between">
               <div className="flex h-12 w-12 items-center justify-center border border-[#1E2538] bg-[#090A0F] text-[#0055FF]">
                 <Mail size={22} />
@@ -496,7 +496,7 @@ function Home() {
           </div>
 
           {/* PHONE / CONTACT NUMBER CARD */}
-          <div className="group border-2 border-[#1E2538] bg-black p-7 transition-all hover:border-[#0055FF] hover:shadow-[0_0_30px_rgba(0,85,255,0.2)]">
+          <div className="group panel panel-interactive p-7">
             <div className="flex items-center justify-between">
               <div className="flex h-12 w-12 items-center justify-center border border-[#1E2538] bg-[#090A0F] text-[#0055FF]">
                 <Phone size={22} />
@@ -528,7 +528,7 @@ function Home() {
           </div>
 
           {/* ADDRESS CARD */}
-          <div className="group border-2 border-[#1E2538] bg-black p-7 transition-all hover:border-[#0055FF] hover:shadow-[0_0_30px_rgba(0,85,255,0.2)]">
+          <div className="group panel panel-interactive p-7">
             <div className="flex items-center justify-between">
               <div className="flex h-12 w-12 items-center justify-center border border-[#1E2538] bg-[#090A0F] text-[#0055FF]">
                 <MapPin size={22} />
@@ -600,7 +600,7 @@ function Home() {
                   value={clientName}
                   onChange={(e) => setClientName(e.target.value)}
                   placeholder="e.g. John Doe / TechCorp"
-                  className="w-full border border-[#1E2538] bg-[#090A0F] px-4 py-3.5 text-sm text-white placeholder-[#64748B] focus:outline-none focus:border-[#0055FF]"
+                  className="w-full rounded-sm border border-[#1E2538] bg-[#090A0F] px-4 py-3.5 text-sm text-white placeholder-[#64748B] transition-colors duration-200 hover:border-[#2A3552] focus:border-[#0055FF] focus:outline-none focus:ring-1 focus:ring-[#0055FF]/40"
                 />
               </div>
 
@@ -614,7 +614,7 @@ function Home() {
                   value={clientEmail}
                   onChange={(e) => setClientEmail(e.target.value)}
                   placeholder="client@techcorp.com"
-                  className="w-full border border-[#1E2538] bg-[#090A0F] px-4 py-3.5 text-sm text-white placeholder-[#64748B] focus:outline-none focus:border-[#0055FF]"
+                  className="w-full rounded-sm border border-[#1E2538] bg-[#090A0F] px-4 py-3.5 text-sm text-white placeholder-[#64748B] transition-colors duration-200 hover:border-[#2A3552] focus:border-[#0055FF] focus:outline-none focus:ring-1 focus:ring-[#0055FF]/40"
                 />
               </div>
 
@@ -627,7 +627,7 @@ function Home() {
                   value={clientPhone}
                   onChange={(e) => setClientPhone(e.target.value)}
                   placeholder="+1 (555) 019-2831"
-                  className="w-full border border-[#1E2538] bg-[#090A0F] px-4 py-3.5 text-sm text-white placeholder-[#64748B] focus:outline-none focus:border-[#0055FF]"
+                  className="w-full rounded-sm border border-[#1E2538] bg-[#090A0F] px-4 py-3.5 text-sm text-white placeholder-[#64748B] transition-colors duration-200 hover:border-[#2A3552] focus:border-[#0055FF] focus:outline-none focus:ring-1 focus:ring-[#0055FF]/40"
                 />
               </div>
             </div>
@@ -642,7 +642,7 @@ function Home() {
                 value={clientSubject}
                 onChange={(e) => setClientSubject(e.target.value)}
                 placeholder="e.g. Enterprise SaaS Development, AI Pipeline, Cloud Security Hardening"
-                className="w-full border border-[#1E2538] bg-[#090A0F] px-4 py-3.5 text-sm text-white placeholder-[#64748B] focus:outline-none focus:border-[#0055FF]"
+                className="w-full rounded-sm border border-[#1E2538] bg-[#090A0F] px-4 py-3.5 text-sm text-white placeholder-[#64748B] transition-colors duration-200 hover:border-[#2A3552] focus:border-[#0055FF] focus:outline-none focus:ring-1 focus:ring-[#0055FF]/40"
               />
             </div>
 
@@ -656,7 +656,7 @@ function Home() {
                 value={clientMessage}
                 onChange={(e) => setClientMessage(e.target.value)}
                 placeholder="Describe your system requirements, architecture goals, tech stack preferences, timeline, and budget..."
-                className="w-full border border-[#1E2538] bg-[#090A0F] p-4 text-sm text-white placeholder-[#64748B] focus:outline-none focus:border-[#0055FF]"
+                className="w-full rounded-sm border border-[#1E2538] bg-[#090A0F] p-4 text-sm text-white placeholder-[#64748B] transition-colors duration-200 hover:border-[#2A3552] focus:border-[#0055FF] focus:outline-none focus:ring-1 focus:ring-[#0055FF]/40"
               />
             </div>
 
@@ -671,7 +671,7 @@ function Home() {
                   value={attachmentUrlInput}
                   onChange={(e) => setAttachmentUrlInput(e.target.value)}
                   placeholder="Paste image URL, Figma link, Google Drive doc, or specification URL (https://...)"
-                  className="flex-1 border border-[#1E2538] bg-[#090A0F] px-4 py-3 text-sm text-white placeholder-[#64748B] focus:outline-none focus:border-[#0055FF]"
+                  className="flex-1 rounded-sm border border-[#1E2538] bg-[#090A0F] px-4 py-3 text-sm text-white placeholder-[#64748B] transition-colors duration-200 hover:border-[#2A3552] focus:border-[#0055FF] focus:outline-none focus:ring-1 focus:ring-[#0055FF]/40"
                 />
                 <button
                   type="button"
