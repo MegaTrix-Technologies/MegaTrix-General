@@ -143,37 +143,37 @@ function Projects() {
       <Navbar />
 
       {/* BACK BUTTON */}
-      <div className="relative z-10 mx-auto max-w-[1600px] px-8 md:px-12 pt-8">
+      <div className="relative z-10 mx-auto max-w-[1600px] px-6 pt-8 md:px-12">
         <Link
           to="/"
-          className="group inline-flex items-center gap-2.5 border border-[#1E2538] bg-black px-4 py-2 font-mono text-xs font-bold tracking-widest text-[#B8C4DE] hover:text-white hover:border-[#0055FF] hover:shadow-[0_0_15px_rgba(0,85,255,0.2)] transition-all rounded-sm"
+          className="group inline-flex items-center gap-2.5 rounded-sm border border-[#1E2538] bg-black/60 px-4 py-2 label-mono font-bold text-[#B8C4DE] transition-all duration-200 hover:-translate-x-0.5 hover:border-[#0055FF] hover:text-white"
         >
-          <ArrowLeft size={14} className="transition-transform group-hover:-translate-x-0.5 text-[#0055FF]" />
+          <ArrowLeft size={14} className="text-[#0055FF] transition-transform duration-200 group-hover:-translate-x-0.5" />
           RETURN TO BASE
         </Link>
       </div>
 
       {/* HERO */}
-      <section className="relative z-10 mx-auto max-w-[1600px] px-8 md:px-12 py-10 md:py-16">
-        <div className="mb-12 max-w-2xl">
-          <div className="mb-3 inline-flex items-center gap-2 border border-[#1E2538] bg-[#12151E] px-3 py-1.5 text-[10px] tracking-widest text-[#B8C4DE]">
+      <section className="relative z-10 mx-auto max-w-[1600px] px-6 py-12 md:px-12 md:py-20">
+        <div className="max-w-2xl">
+          <div className="mb-5 inline-flex items-center gap-2 rounded-sm border border-[#1E2538] bg-[#12151E] px-3 py-1.5 label-mono text-[#B8C4DE]">
             <Terminal size={12} className="text-[#0055FF]" />
             PORTFOLIO ARCHIVE
           </div>
-          <h1 className="text-3xl font-bold tracking-tight md:text-5xl">
+          <h1 className="text-4xl font-bold leading-[1.05] md:text-6xl">
             FEATURED
             <span className="text-[#0055FF] glow-text"> DEPLOYMENTS</span>
           </h1>
-          <p className="mt-4 text-sm leading-relaxed text-[#B8C4DE] md:text-base">
+          <p className="mt-5 max-w-xl text-[15px] leading-7 text-[#B8C4DE] md:text-base">
             A curated catalog of full-stack applications, cloud infrastructure, and
             AI-driven systems engineered by Megatrix.
           </p>
         </div>
 
         {/* PROJECTS */}
-        <div className="pt-8">
-          <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
-            <div className="text-[10px] tracking-widest text-[#0055FF]">
+        <div className="pt-14 md:pt-20">
+          <div className="mb-6 flex flex-wrap items-center gap-4 border-b border-[#1E2538] pb-4">
+            <div className="label-mono text-[#0055FF]">
               TOTAL SYSTEMS RECORDED: [ {String(projects.length).padStart(3, "0")} ]
             </div>
           </div>
@@ -181,74 +181,79 @@ function Projects() {
           {fetching ? (
             null
           ) : projects.length === 0 ? (
-            <div className="border border-dashed border-[#1E2538] bg-[#12151E]/50 p-16 text-center">
+            <div className="rounded-sm border border-dashed border-[#1E2538] bg-[#12151E]/50 p-16 text-center">
               <Terminal size={32} className="mx-auto mb-4 text-[#0055FF]" />
-              <p className="text-xs tracking-widest text-[#B8C4DE]">
+              <p className="label-mono leading-6 text-[#B8C4DE]">
                 NO PROJECTS UPLOADED TO DATABASE YET.
                 <br />
                 LOG IN TO THE ADMIN PANEL TO ADD DEPLOYMENTS.
               </p>
             </div>
           ) : (
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
               {projects.map((project) => (
                 <Link
                   key={project.id}
                   to="/project-details"
                   search={{ id: project.id }}
-                  className="group flex flex-col border border-[#1E2538] bg-black transition-all hover:border-[#0055FF] hover:shadow-[0_0_30px_rgba(0,85,255,0.25)] cursor-pointer"
+                  className="group panel panel-interactive flex cursor-pointer flex-col overflow-hidden"
                 >
                   {project.image_url ? (
                     <div className="relative aspect-video overflow-hidden border-b border-[#1E2538]">
                       <img
                         src={project.image_url}
-                        alt={project.title}
-                        className="h-full w-full object-cover transition-transform group-hover:scale-105"
+                        alt={`${project.title} interface preview`}
+                        loading="lazy"
+                        className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
                       />
+                      <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-black/70 via-black/10 to-transparent" />
                       {project.deployed_on && (
-                        <span className="absolute right-3 top-3 border border-[#0055FF] bg-[#090A0F]/80 px-2 py-1 text-[9px] tracking-widest text-[#0055FF]">
+                        <span className="absolute right-3 top-3 rounded-sm border border-[#0055FF]/70 bg-[#090A0F]/85 px-2 py-1 label-mono text-[10px] text-[#0055FF] backdrop-blur-sm">
                           {project.deployed_on}
                         </span>
                       )}
                     </div>
                   ) : (
-                    <div className="flex aspect-video items-center justify-center border-b border-[#1E2538] bg-[#090A0F] text-[10px] tracking-widest text-[#1E2538]">
+                    <div className="flex aspect-video items-center justify-center border-b border-[#1E2538] bg-[#0B0D14] label-mono text-[#2A3552]">
                       NO IMAGE PROVIDED
                     </div>
                   )}
 
-                  <div className="flex flex-1 flex-col justify-between gap-4 p-5">
-                    <div>
-                      <h3 className="text-base font-bold tracking-wide text-white group-hover:text-[#0055FF] transition-colors">
+                  <div className="flex flex-1 flex-col gap-5 p-6">
+                    <div className="flex-1">
+                      <h3 className="text-lg font-bold leading-snug text-white transition-colors duration-200 group-hover:text-[#4D8BFF]">
                         {project.title}
                       </h3>
 
                       {/* DESCRIPTION */}
-                      <p className="mt-2.5 text-xs text-[#B8C4DE] line-clamp-3 leading-relaxed whitespace-pre-wrap">
+                      <p className="mt-3 line-clamp-3 text-[13px] leading-6 text-[#B8C4DE]">
                         {project.description}
                       </p>
 
-                      {/* TECHNOLOGIES TAGS */}
-                      <div className="mt-4 flex flex-wrap gap-1.5">
-                        {project.tools?.map((tool, i) => (
-                          <span
-                            key={i}
-                            className="border border-[#2A3552] bg-[#090A0F] px-2.5 py-1 font-mono text-[10px] font-bold tracking-widest text-[#B8C4DE]"
-                          >
-                            {tool}
-                          </span>
-                        ))}
-                      </div>
+                      {/* TECHNOLOGIES */}
+                      {project.tools?.length ? (
+                        <div className="mt-5 flex flex-wrap gap-1.5">
+                          {project.tools.slice(0, 5).map((tool) => (
+                            <span key={tool} className="chip">
+                              {tool}
+                            </span>
+                          ))}
+                          {project.tools.length > 5 && (
+                            <span className="chip border-[#0055FF]/50 text-[#4D8BFF]">
+                              +{project.tools.length - 5}
+                            </span>
+                          )}
+                        </div>
+                      ) : null}
                     </div>
 
-                    {/* VIEW PROJECT DETAILS LINK */}
-                    <div className="border-t border-[#1E2538] pt-4">
-                      <div
-                        className="flex items-center justify-between border border-[#0055FF] bg-[#0055FF]/10 px-4 py-2.5 font-mono text-xs font-bold tracking-widest text-white group-hover:bg-[#0055FF] group-hover:shadow-[0_0_20px_rgba(0,85,255,0.4)] transition-all"
-                      >
-                        <span>VIEW PROJECT DETAILS</span>
-                        <ArrowRight size={14} />
-                      </div>
+                    {/* CALL TO ACTION */}
+                    <div className="flex items-center justify-between border-t border-[#1E2538] pt-4 label-mono font-bold text-[#B8C4DE] transition-colors duration-200 group-hover:text-white">
+                      <span>VIEW PROJECT DETAILS</span>
+                      <ArrowRight
+                        size={15}
+                        className="text-[#0055FF] transition-transform duration-200 group-hover:translate-x-1"
+                      />
                     </div>
                   </div>
                 </Link>

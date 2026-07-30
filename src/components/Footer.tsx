@@ -92,29 +92,31 @@ export default function Footer() {
               NAVIGATION ARCHIVE
             </h3>
             <ul className="space-y-2.5 font-sans text-xs md:text-sm font-semibold text-[#CBD5E1]">
+              {[
+                { to: "/", label: "Home" },
+                { to: "/projects", label: "Projects Catalog" },
+                { to: "/architecture", label: "System Architecture" },
+                { to: "/contact", label: "Contact Us" },
+              ].map(({ to, label }) => (
+                <li key={to}>
+                  <Link
+                    to={to}
+                    className="group inline-flex items-center gap-2 transition-colors hover:text-white"
+                  >
+                    <span className="text-[#0055FF] transition-transform duration-200 group-hover:translate-x-1">
+                      &rarr;
+                    </span>
+                    <span className="link-underline">{label}</span>
+                  </Link>
+                </li>
+              ))}
               <li>
-                <Link to="/" className="hover:text-[#0055FF] transition-colors flex items-center gap-1.5">
-                  &rarr; Home
-                </Link>
-              </li>
-              <li>
-                <Link to="/projects" className="hover:text-[#0055FF] transition-colors flex items-center gap-1.5">
-                  &rarr; Projects Catalog
-                </Link>
-              </li>
-              <li>
-                <Link to="/architecture" className="hover:text-[#0055FF] transition-colors flex items-center gap-1.5">
-                  &rarr; System Architecture
-                </Link>
-              </li>
-              <li>
-                <Link to="/contact" className="hover:text-[#0055FF] transition-colors flex items-center gap-1.5">
-                  &rarr; Contact Us
-                </Link>
-              </li>
-              <li>
-                <Link to="/admin" className="hover:text-[#0055FF] transition-colors flex items-center gap-1.5 text-[#7C89A8]">
-                  &rarr; Command Center (Admin)
+                <Link
+                  to="/admin"
+                  className="group inline-flex items-center gap-2 text-[#7C89A8] transition-colors hover:text-[#B8C4DE]"
+                >
+                  <span className="transition-transform duration-200 group-hover:translate-x-1">&rarr;</span>
+                  <span className="link-underline">Command Center (Admin)</span>
                 </Link>
               </li>
             </ul>
@@ -158,20 +160,20 @@ export default function Footer() {
             </h3>
             <ul className="space-y-3 text-xs md:text-sm text-[#CBD5E1]">
               <li className="flex items-start gap-2.5">
-                <Mail size={16} className="text-[#0055FF] flex-shrink-0 mt-0.5" />
-                <a href={`mailto:${contact.email}`} className="hover:text-white break-all">
+                <Mail size={16} className="mt-0.5 shrink-0 text-[#0055FF]" />
+                <a href={`mailto:${contact.email}`} className="link-underline break-all hover:text-white">
                   {contact.email}
                 </a>
               </li>
               <li className="flex items-center gap-2.5">
-                <Phone size={16} className="text-[#0055FF] flex-shrink-0" />
-                <a href={`tel:${contact.phone.replace(/[^0-9+]/g, '')}`} className="hover:text-white">
+                <Phone size={16} className="shrink-0 text-[#0055FF]" />
+                <a href={`tel:${contact.phone.replace(/[^0-9+]/g, "")}`} className="link-underline hover:text-white">
                   {contact.phone}
                 </a>
               </li>
               <li className="flex items-start gap-2.5">
-                <MapPin size={16} className="text-[#0055FF] flex-shrink-0 mt-0.5" />
-                <span>{contact.address}</span>
+                <MapPin size={16} className="mt-0.5 shrink-0 text-[#0055FF]" />
+                <span className="leading-6">{contact.address}</span>
               </li>
             </ul>
           </div>
