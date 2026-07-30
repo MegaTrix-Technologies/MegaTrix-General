@@ -193,19 +193,19 @@ function Home() {
       <Navbar />
 
       {/* HERO SECTION */}
-      <section id="top" className="relative z-10 mx-auto max-w-[1600px] px-8 md:px-12 py-20 md:py-28">
-        <div className="grid items-center gap-12 md:grid-cols-[minmax(0,1fr)_auto]">
+      <section id="top" className="relative z-10 mx-auto max-w-[1600px] px-6 py-20 md:px-12 md:py-32">
+        <div className="grid items-center gap-14 md:grid-cols-[minmax(0,1fr)_auto]">
           <div className="min-w-0">
-            <div className="mb-6 inline-flex items-center gap-2 border border-[#1E2538] bg-[#12151E] px-4 py-2 font-mono text-xs md:text-sm font-bold tracking-widest text-[#0055FF]">
-              <Terminal size={15} className="text-[#0055FF]" />
-              ENTERPRISE SOFTWARE ENGINEERING & ARCHITECTURE
+            <div className="mb-7 inline-flex items-center gap-2 rounded-sm border border-[#1E2538] bg-[#12151E] px-4 py-2 label-mono font-bold text-[#0055FF]">
+              <Terminal size={14} className="text-[#0055FF]" />
+              ENTERPRISE SOFTWARE ENGINEERING &amp; ARCHITECTURE
             </div>
-            <h1 className="max-w-4xl text-4xl font-extrabold leading-tight tracking-tight md:text-6xl text-white">
+            <h1 className="max-w-4xl text-[2.5rem] font-extrabold leading-[1.05] text-white md:text-[4.25rem]">
               BUILDING NEXT-GEN
               <br />
               <span className="text-[#0055FF] glow-text">DIGITAL SYSTEMS</span> & PLATFORMS
             </h1>
-            <p className="mt-6 max-w-2xl text-base leading-relaxed text-[#CBD5E1] md:text-lg">
+            <p className="mt-7 max-w-xl text-base leading-8 text-[#CBD5E1] md:text-[17px]">
               Megatrix delivers high-performance full-stack applications, secure cloud
               infrastructure, and custom artificial intelligence pipelines with
               uncompromising execution.
@@ -213,18 +213,24 @@ function Home() {
             <div className="mt-10 flex flex-wrap gap-4">
               <Link
                 to="/projects"
-                className="group inline-flex items-center gap-2 bg-[#0055FF] px-7 py-4 font-sans text-xs md:text-sm font-bold tracking-widest text-white shadow-[0_0_25px_rgba(0,85,255,0.4)] transition-all hover:bg-[#0044cc]"
+                className="group inline-flex items-center gap-2 rounded-sm bg-[#0055FF] px-7 py-4 font-sans text-[13px] font-bold tracking-[0.14em] text-white shadow-[0_10px_30px_-12px_rgba(0,85,255,1)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#1A66FF] hover:shadow-[0_16px_38px_-12px_rgba(0,85,255,1)]"
               >
                 EXPLORE WORK
-                <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
+                <ArrowRight size={16} className="transition-transform duration-200 group-hover:translate-x-1" />
+              </Link>
+              <Link
+                to="/contact"
+                className="group inline-flex items-center gap-2 rounded-sm border border-[#2A3552] px-7 py-4 font-sans text-[13px] font-bold tracking-[0.14em] text-[#B8C4DE] transition-all duration-200 hover:-translate-y-0.5 hover:border-[#0055FF] hover:text-white"
+              >
+                START A PROJECT
               </Link>
             </div>
           </div>
 
           {/* ANIMATED PIXEL LOGO DISPLAY */}
           <div className="hidden md:block">
-            <div className="relative border border-[#1E2538] bg-[#0B0D14]/70 p-6 shadow-[0_0_60px_-20px_rgba(0,85,255,0.5)]">
-              <div className="mb-3 flex items-center justify-between font-mono text-xs tracking-widest text-[#B8C4DE]">
+            <div className="panel relative p-7 shadow-[0_0_80px_-28px_rgba(0,85,255,0.7)]">
+              <div className="mb-4 flex items-center justify-between gap-8 label-mono text-[#B8C4DE]">
                 <span className="text-[#0055FF]">RENDER_MT.exe</span>
                 <span className="flex items-center gap-1.5">
                   <span className="h-2 w-2 animate-pulse rounded-full bg-[#0055FF]" />
@@ -232,7 +238,7 @@ function Home() {
                 </span>
               </div>
               <AnimatedMTLogo className="h-52 w-auto" />
-              <div className="mt-3 text-center font-mono text-xs tracking-[0.35em] text-[#B8C4DE]">
+              <div className="mt-4 border-t border-[#1E2538] pt-3 text-center label-mono tracking-[0.35em] text-[#B8C4DE]">
                 M E G A T R I X
               </div>
             </div>
@@ -241,7 +247,7 @@ function Home() {
       </section>
 
       {/* 1. STATS / CORE METRICS BAR SECTION (CLEAN SEAMLESS BACKGROUND) */}
-      <section className="relative z-10 mx-auto max-w-[1600px] px-8 md:px-12 py-12">
+      <section className="relative z-10 mx-auto max-w-[1600px] px-6 py-12 md:px-12">
         <div className="grid gap-6 md:grid-cols-3">
           {[
             {
@@ -262,15 +268,15 @@ function Home() {
           ].map(({ metric, label, detail }) => (
             <div
               key={label}
-              className="group relative border border-[#1E2538] bg-[#12151E]/60 p-7 shadow-[0_0_30px_rgba(0,85,255,0.08)] transition-all hover:border-[#0055FF] hover:shadow-[0_0_30px_rgba(0,85,255,0.25)]"
+              className="group panel panel-interactive p-7"
             >
-              <div className="font-mono text-base md:text-lg font-bold tracking-wider text-[#0055FF] group-hover:text-white transition-colors">
+              <div className="font-mono text-base font-bold tracking-wider text-[#0055FF] transition-colors duration-200 group-hover:text-white md:text-lg">
                 {metric}
               </div>
-              <div className="mt-2 text-sm font-bold tracking-widest text-white">
+              <div className="mt-3 text-sm font-bold tracking-[0.12em] text-white">
                 {label}
               </div>
-              <div className="mt-1.5 text-xs md:text-sm leading-relaxed text-[#94A3B8]">
+              <div className="mt-2 text-[13px] leading-6 text-[#B8C4DE]">
                 {detail}
               </div>
             </div>
