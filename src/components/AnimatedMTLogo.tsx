@@ -2,6 +2,7 @@
 // holds briefly when complete, then restarts.
 import { useEffect, useState } from "react";
 
+// Original MT pixel map (14 cols × 8 rows)
 const GRID: string[] = [
   "##....#######.",
   "###..########.",
@@ -23,7 +24,6 @@ for (let r = 0; r < GRID.length; r++) {
 
 interface Props {
   className?: string;
-  block?: number;
   color?: string;
   ghostColor?: string;
   /** ms between pixel reveals */
@@ -36,9 +36,8 @@ interface Props {
 
 export default function AnimatedMTLogo({
   className,
-  block = 14,
   color = "#FFFFFF",
-  ghostColor = "rgba(0, 85, 255, 0.10)",
+  ghostColor = "rgba(255, 255, 255, 0.12)",
   step = 45,
   hold = 1400,
   gap = 250,
@@ -53,7 +52,6 @@ export default function AnimatedMTLogo({
     } else {
       timer = setTimeout(
         () => {
-          // brief pause on empty, then restart
           setCount(-1);
           setTimeout(() => setCount(0), gap);
         },
@@ -63,30 +61,23 @@ export default function AnimatedMTLogo({
     return () => clearTimeout(timer);
   }, [count, total, step, hold, gap]);
 
-  const gapPx = 2;
-  const size = block + gapPx;
-  const cols = GRID[0].length;
-  const rows = GRID.length;
-  const width = cols * size - gapPx;
-  const height = rows * size - gapPx;
-
   return (
     <svg
       role="img"
       aria-label="MEGATRIX"
-      viewBox={`0 0 ${width} ${height}`}
+      viewBox="0 0 140 80"
       xmlns="http://www.w3.org/2000/svg"
       shapeRendering="crispEdges"
       className={className}
     >
-      {/* Ghost grid: shows every pixel position faintly so the target shape is hinted */}
+      {/* Ghost grid: shows every pixel position faintly */}
       {CELLS.map((cell, i) => (
         <rect
           key={`g-${i}`}
-          x={cell.col * size}
-          y={cell.row * size}
-          width={block}
-          height={block}
+          x={cell.col * 10 + 1}
+          y={cell.row * 10 + 1}
+          width={8}
+          height={8}
           fill={ghostColor}
         />
       ))}
@@ -96,14 +87,14 @@ export default function AnimatedMTLogo({
         return (
           <rect
             key={`p-${i}`}
-            x={cell.col * size}
-            y={cell.row * size}
-            width={block}
-            height={block}
+            x={cell.col * 10 + 1}
+            y={cell.row * 10 + 1}
+            width={8}
+            height={8}
             fill={color}
             style={
               isNewest
-                ? { filter: "drop-shadow(0 0 6px rgba(0,85,255,0.9))" }
+                ? { filter: "drop-shadow(0 0 6px rgba(255,255,255,0.9))" }
                 : undefined
             }
           />

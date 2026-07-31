@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  MEGATRIX — Solid Vector SVG Favicon
+  ═════════════════════════════════════
+  • Solid, continuous vector shape (no internal pixel gaps) for maximum 16px favicon clarity
+  • Transparent background
+  • Adaptive CSS media query:
+    - Dark mode browser theme  ➔ #FFFFFF (White)
+    - Light mode browser theme ➔ #090A0F (Black)
+-->
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 140 80"
+  shape-rendering="crispEdges"
+  role="img"
+  aria-label="MEGATRIX Favicon"
+>
+  <title>MEGATRIX</title>
+  <style>
+    .mark {
+      fill: #090A0F;
+    }
+    @media (prefers-color-scheme: dark) {
+      .mark {
+        fill: #FFFFFF;
+      }
+    }
+  </style>
+
+  <!-- M Left Stem -->
+  <rect class="mark" x="0" y="0" width="20" height="80" />
+
+  <!-- M Diagonal V & Peak -->
+  <rect class="mark" x="20" y="10" width="10" height="20" />
+  <rect class="mark" x="30" y="20" width="20" height="20" />
+  <rect class="mark" x="50" y="10" width="10" height="20" />
+
+  <!-- M Right Stem -->
+  <rect class="mark" x="60" y="20" width="20" height="60" />
+
+  <!-- T Top Bar -->
+  <rect class="mark" x="60" y="0" width="70" height="20" />
+
+  <!-- T Stem -->
+  <rect class="mark" x="90" y="20" width="20" height="60" />
+
+  <!-- Dot -->
+  <rect class="mark" x="120" y="60" width="20" height="20" />
+</svg>

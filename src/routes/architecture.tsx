@@ -11,22 +11,6 @@ export const Route = createFileRoute("/architecture")({
 });
 
 function ArchitecturePage() {
-  const [loading, setLoading] = useState(() => {
-    if (typeof window !== "undefined") {
-      return !sessionStorage.getItem("mt_preloader_seen");
-    }
-    return false;
-  });
-
-  const handlePreloaderComplete = () => {
-    if (typeof window !== "undefined") {
-      sessionStorage.setItem("mt_preloader_seen", "true");
-    }
-    setLoading(false);
-  };
-
-  if (loading) return <Preloader onComplete={handlePreloaderComplete} />;
-
   return (
     <div className="relative min-h-screen bg-[#090A0F] text-white">
       <div className="pointer-events-none fixed inset-0 iso-blocks opacity-60" />

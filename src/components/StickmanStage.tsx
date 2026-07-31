@@ -36,6 +36,7 @@ export default function StickmanStage() {
   const walkPhaseRef = useRef(0);
   const pathRef = useRef<Point[]>([]);
   const pathIndexRef = useRef<number>(0);
+  const [pathIndex, setPathIndex] = useState(0);
   const [limbAngles, setLimbAngles] = useState({
     legLeft: 0,
     legRight: 0,
@@ -149,6 +150,7 @@ export default function StickmanStage() {
     setPath([]);
     pathRef.current = [];
     pathIndexRef.current = 0;
+    setPathIndex(0);
   };
 
   // Reset Stickman to start cell
@@ -158,6 +160,7 @@ export default function StickmanStage() {
     setPath([]);
     pathRef.current = [];
     pathIndexRef.current = 0;
+    setPathIndex(0);
   };
 
   // Resize listener to get exact arena pixel dimensions
@@ -267,6 +270,7 @@ export default function StickmanStage() {
       setPath(pathPoints);
       pathRef.current = pathPoints;
       pathIndexRef.current = 0;
+      setPathIndex(0);
     },
     [walls, getCellCenter],
   );
@@ -335,6 +339,7 @@ export default function StickmanStage() {
           } else {
             // Reached waypoint node! Advance pathIndexRef and cell coordinate
             pathIndexRef.current = currentIndex + 1;
+            setPathIndex(currentIndex + 1);
             setStickmanCell({ r: nextWaypoint.r, c: nextWaypoint.c });
             return { x: nextWaypoint.x, y: nextWaypoint.y, r: nextWaypoint.r, c: nextWaypoint.c };
           }
@@ -358,11 +363,10 @@ export default function StickmanStage() {
   // Dynamically attach polyline start point directly to stickmanPos
   const polylinePoints = useMemo(() => {
     if (!path || path.length <= 1) return "";
-    const activeIndex = pathIndexRef.current;
-    const remaining = path.slice(Math.max(1, activeIndex));
+    const remaining = path.slice(Math.max(1, pathIndex));
     const points = [{ x: stickmanPos.x, y: stickmanPos.y }, ...remaining];
     return points.map((p) => `${p.x},${p.y}`).join(" ");
-  }, [path, stickmanPos]);
+  }, [path, stickmanPos, pathIndex]);
 
   return (
     <section className="relative z-10 py-20 mx-auto max-w-[1600px] px-8 md:px-12">
@@ -476,7 +480,7 @@ export default function StickmanStage() {
 
         {/* STICKMAN CHARACTER SVG NAVIGATING MAZE */}
         <div
-          className="pointer-events-none absolute transition-all duration-75 z-20"
+          className="pointer-events-none absolute z-20"
           style={{
             left: stickmanPos.x,
             top: stickmanPos.y,

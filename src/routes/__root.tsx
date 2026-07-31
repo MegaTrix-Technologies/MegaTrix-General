@@ -7,10 +7,11 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import Preloader from "@/components/Preloader";
 
 function NotFoundComponent() {
   return (
@@ -83,17 +84,17 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:title", content: "MegaTrix" },
       { property: "og:description", content: "Building next-gen digital systems & platforms." },
       { property: "og:type", content: "website" },
-      { property: "og:image", content: "/favicon.png" },
+      { property: "og:image", content: "/favicon.svg" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:image", content: "/favicon.png" },
+      { name: "twitter:image", content: "/favicon.svg" },
     ],
     links: [
       {
         rel: "stylesheet",
         href: appCss,
       },
-      { rel: "icon", type: "image/png", href: "/favicon.png" },
-      { rel: "apple-touch-icon", href: "/favicon.png" },
+      { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
+      { rel: "apple-touch-icon", href: "/favicon.svg" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Silkscreen:wght@400;700&family=Share+Tech+Mono&display=swap" },
@@ -121,11 +122,28 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const [showPreloader, setShowPreloader] = useState(() => {
+    if (typeof window !== "undefined") {
+      return !sessionStorage.getItem("mt_preloader_seen");
+    }
+    return true;
+  });
+
+  const handlePreloaderComplete = () => {
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem("mt_preloader_seen", "true");
+    }
+    setShowPreloader(false);
+  };
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
+      {showPreloader && (
+        <Preloader onComplete={handlePreloaderComplete} duration={1200} />
+      )}
+      <div className={showPreloader ? "invisible h-0 overflow-hidden" : "visible"}>
+        <Outlet />
+      </div>
     </QueryClientProvider>
   );
 }

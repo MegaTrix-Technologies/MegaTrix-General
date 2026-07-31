@@ -84,16 +84,9 @@ const SEED_PROJECTS = [
 function Projects() {
   const [animationDone, setAnimationDone] = useState(false);
   const [fetching, setFetching] = useState(true);
-  const [showLoader, setShowLoader] = useState(false);
   const [projects, setProjects] = useState<Project[]>([]);
 
   useEffect(() => {
-    const loaderTimer = setTimeout(() => {
-      if (fetching) {
-        setShowLoader(true);
-      }
-    }, 400);
-
     (async () => {
       setFetching(true);
       let res = await supabase
@@ -115,19 +108,16 @@ function Projects() {
         setProjects(data as Project[]);
       }
       setFetching(false);
-      clearTimeout(loaderTimer);
     })();
-
-    return () => clearTimeout(loaderTimer);
   }, []);
 
-  if (showLoader && (!animationDone || fetching)) {
+  if (fetching || !animationDone) {
     return (
       <Preloader
         onComplete={() => setAnimationDone(true)}
         title="PROJECTS_LOAD.exe"
         statusText="LOADING PROJECTS..."
-        duration={1500}
+        duration={1000}
       />
     );
   }

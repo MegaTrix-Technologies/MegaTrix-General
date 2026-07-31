@@ -36,12 +36,6 @@ const DEFAULT_CONTACT: ContactInfo = {
 };
 
 function ContactPage() {
-  const [loading, setLoading] = useState(() => {
-    if (typeof window !== "undefined") {
-      return !sessionStorage.getItem("mt_preloader_seen");
-    }
-    return false;
-  });
   const [contact, setContact] = useState<ContactInfo>(DEFAULT_CONTACT);
   const [copiedField, setCopiedField] = useState<string | null>(null);
 
@@ -171,8 +165,6 @@ function ContactPage() {
     }
     setSubmittingInquiry(false);
   };
-
-  if (loading) return <Preloader onComplete={handlePreloaderComplete} />;
 
   return (
     <div className="relative min-h-screen bg-[#090A0F] text-white">

@@ -41,7 +41,6 @@ interface Project {
 function ProjectDetailPage() {
   const { id: projectId } = Route.useSearch();
   const [animationDone, setAnimationDone] = useState(false);
-  const [showLoader, setShowLoader] = useState(false);
 
   const [project, setProject] = useState<Project | null>(null);
   const [fetching, setFetching] = useState(true);
@@ -49,17 +48,10 @@ function ProjectDetailPage() {
   const [lightboxOpen, setLightboxOpen] = useState(false);
 
   useEffect(() => {
-    const loaderTimer = setTimeout(() => {
-      if (fetching) {
-        setShowLoader(true);
-      }
-    }, 400);
-
     (async () => {
       setFetching(true);
       if (!projectId) {
         setFetching(false);
-        clearTimeout(loaderTimer);
         return;
       }
 
@@ -83,19 +75,16 @@ function ProjectDetailPage() {
         }
       }
       setFetching(false);
-      clearTimeout(loaderTimer);
     })();
-
-    return () => clearTimeout(loaderTimer);
   }, [projectId]);
 
-  if (showLoader && (!animationDone || fetching)) {
+  if (fetching || !animationDone) {
     return (
       <Preloader
         onComplete={() => setAnimationDone(true)}
         title="PROJECTS_LOAD.exe"
         statusText="LOADING PROJECT DETAILS..."
-        duration={1200}
+        duration={1000}
       />
     );
   }
