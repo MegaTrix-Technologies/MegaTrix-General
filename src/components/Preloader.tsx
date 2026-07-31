@@ -33,15 +33,15 @@ export default function Preloader({
   }, [onComplete, duration]);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#090A0F] font-mono">
-      <div className="pointer-events-none absolute inset-0 retro-grid opacity-30" />
-      <div className="pointer-events-none absolute inset-0 scanlines opacity-40" />
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--mt-bg)] font-mono transition-colors duration-200">
+      <div className="pointer-events-none absolute inset-0 retro-grid opacity-30 [html[data-theme='light']_&]:opacity-[0.08]" />
+      <div className="pointer-events-none absolute inset-0 scanlines opacity-40 [html[data-theme='light']_&]:hidden" />
 
-      <div className="relative z-10 w-full max-w-md mx-4 border border-[#1E2538] bg-[#0B0D14]/90 p-8 shadow-[0_0_80px_-15px_rgba(0,85,255,0.4)]">
-        <div className="mb-4 flex items-center justify-between border-b border-[#1E2538] pb-3 text-[10px] tracking-widest text-[#B8C4DE]">
-          <span className="text-[#0055FF]">{title}</span>
+      <div className="relative z-10 w-full max-w-md mx-4 border border-[var(--mt-border)] bg-[var(--mt-bg-card)] p-8 shadow-[0_0_60px_rgba(0,85,255,0.15)] rounded-sm transition-all duration-200">
+        <div className="mb-4 flex items-center justify-between border-b border-[var(--mt-border)] pb-3 text-[10px] tracking-widest text-[var(--mt-text-secondary)]">
+          <span className="text-[var(--mt-blue)]">{title}</span>
           <span className="flex items-center gap-1.5">
-            <span className="h-2 w-2 animate-pulse rounded-full bg-[#0055FF]" />
+            <span className="h-2 w-2 animate-pulse rounded-full bg-[var(--mt-blue)]" />
             INITIALIZING
           </span>
         </div>
@@ -52,18 +52,18 @@ export default function Preloader({
         </div>
 
         {/* Progress bar and status */}
-        <div className="mt-4 space-y-2.5 border-t border-[#1E2538] pt-4">
-          <div className="flex items-center justify-between text-[9px] tracking-widest text-[#7C89A8]">
+        <div className="mt-4 space-y-2.5 border-t border-[var(--mt-border)] pt-4">
+          <div className="flex items-center justify-between text-[9px] tracking-widest text-[var(--mt-text-muted)]">
             <span>{statusText}</span>
-            <span className="font-bold text-[#0055FF]">{progress}%</span>
+            <span className="font-bold text-[var(--mt-blue)]">{progress}%</span>
           </div>
-          <div className="h-1.5 w-full overflow-hidden border border-[#1E2538] bg-[#12151E]">
+          <div className="h-1.5 w-full overflow-hidden border border-[var(--mt-border)] bg-[var(--mt-bg-panel)]">
             <div
-              className="h-full bg-[#0055FF] transition-all duration-75 ease-out shadow-[0_0_12px_rgba(0,85,255,0.9)]"
+              className="h-full bg-[var(--mt-blue)] transition-all duration-75 ease-out shadow-[0_0_10px_var(--mt-blue)]"
               style={{ width: `${progress}%` }}
             />
           </div>
-          <div className="pt-2 text-center text-[9px] tracking-[0.35em] text-[#B8C4DE]">
+          <div className="pt-2 text-center text-[9px] tracking-[0.35em] text-[var(--mt-text-secondary)]">
             M E G A T R I X
           </div>
         </div>

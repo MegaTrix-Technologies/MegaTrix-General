@@ -175,7 +175,7 @@ function Home() {
   };
 
   return (
-    <div className="relative min-h-screen bg-[#090A0F] text-white font-sans">
+    <div className="relative min-h-screen bg-[var(--mt-bg)] text-[var(--mt-text)] font-sans">
       <div className="pointer-events-none fixed inset-0 iso-blocks opacity-60" />
       <div className="pointer-events-none fixed inset-0 retro-grid opacity-20" />
       <div className="pointer-events-none fixed inset-0 scanlines opacity-25" />
@@ -188,16 +188,16 @@ function Home() {
       <section id="top" className="relative z-10 mx-auto max-w-[1600px] px-6 py-20 md:px-12 md:py-32">
         <div className="grid items-center gap-14 md:grid-cols-[minmax(0,1fr)_auto]">
           <div className="min-w-0">
-            <div className="mb-7 inline-flex items-center gap-2 rounded-sm border border-[#1E2538] bg-[#12151E] px-4 py-2 label-mono font-bold text-[#0055FF]">
-              <Terminal size={14} className="text-[#0055FF]" />
+            <div className="mb-7 inline-flex items-center gap-2 rounded-sm border border-[var(--mt-border)] bg-[var(--mt-bg-card)] px-3.5 py-1.5 font-mono text-xs md:text-sm font-bold tracking-wider text-[var(--mt-blue)]">
+              <Terminal size={15} className="text-[var(--mt-blue)]" />
               ENTERPRISE SOFTWARE ENGINEERING &amp; ARCHITECTURE
             </div>
-            <h1 className="max-w-4xl text-[2.5rem] font-extrabold leading-[1.05] text-white md:text-[4.25rem]">
+            <h1 className="max-w-4xl text-[2.5rem] font-extrabold leading-[1.05] text-[var(--mt-text-heading)] md:text-[4.25rem]">
               BUILDING NEXT-GEN
               <br />
-              <span className="text-[#0055FF] glow-text">DIGITAL SYSTEMS</span> & PLATFORMS
+              <span className="text-[var(--mt-blue)] glow-text">DIGITAL SYSTEMS</span> & PLATFORMS
             </h1>
-            <p className="mt-7 max-w-xl text-base leading-8 text-[#CBD5E1] md:text-[17px]">
+            <p className="mt-7 max-w-xl text-base leading-8 text-[var(--mt-text-body)] md:text-[17px]">
               Megatrix delivers high-performance full-stack applications, secure cloud
               infrastructure, and custom artificial intelligence pipelines with
               uncompromising execution.
@@ -205,14 +205,14 @@ function Home() {
             <div className="mt-10 flex flex-wrap gap-4">
               <Link
                 to="/projects"
-                className="group inline-flex items-center gap-2 rounded-sm bg-[#0055FF] px-7 py-4 font-sans text-[13px] font-bold tracking-[0.14em] text-white shadow-[0_10px_30px_-12px_rgba(0,85,255,1)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#1A66FF] hover:shadow-[0_16px_38px_-12px_rgba(0,85,255,1)]"
+                className="group inline-flex items-center gap-2 rounded-sm bg-[var(--mt-blue)] px-7 py-4 font-sans text-[13px] font-bold tracking-[0.14em] text-white shadow-[0_10px_30px_-12px_rgba(0,85,255,1)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[var(--mt-blue-hover)] hover:shadow-[0_16px_38px_-12px_rgba(0,85,255,1)]"
               >
                 EXPLORE WORK
                 <ArrowRight size={16} className="transition-transform duration-200 group-hover:translate-x-1" />
               </Link>
               <Link
                 to="/contact"
-                className="group inline-flex items-center gap-2 rounded-sm border border-[#2A3552] px-7 py-4 font-sans text-[13px] font-bold tracking-[0.14em] text-[#B8C4DE] transition-all duration-200 hover:-translate-y-0.5 hover:border-[#0055FF] hover:text-white"
+                className="group inline-flex items-center gap-2 rounded-sm border border-[var(--mt-border-accent)] px-7 py-4 font-sans text-[13px] font-bold tracking-[0.14em] text-[var(--mt-text-secondary)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[var(--mt-blue)] hover:text-[var(--mt-text-heading)]"
               >
                 START A PROJECT
               </Link>
@@ -222,15 +222,15 @@ function Home() {
           {/* ANIMATED PIXEL LOGO DISPLAY */}
           <div className="hidden md:block">
             <div className="panel relative p-7 shadow-[0_0_80px_-28px_rgba(0,85,255,0.7)]">
-              <div className="mb-4 flex items-center justify-between gap-8 label-mono text-[#B8C4DE]">
-                <span className="text-[#0055FF]">RENDER_MT.exe</span>
+              <div className="mb-4 flex items-center justify-between gap-8 label-mono text-[var(--mt-text-secondary)]">
+                <span className="text-[var(--mt-blue)]">RENDER_MT.exe</span>
                 <span className="flex items-center gap-1.5">
-                  <span className="h-2 w-2 animate-pulse rounded-full bg-[#0055FF]" />
+                  <span className="h-2 w-2 animate-pulse rounded-full bg-[var(--mt-blue)]" />
                   BUILDING
                 </span>
               </div>
               <AnimatedMTLogo className="h-52 w-auto" />
-              <div className="mt-4 border-t border-[#1E2538] pt-3 text-center label-mono tracking-[0.35em] text-[#B8C4DE]">
+              <div className="mt-4 border-t border-[var(--mt-border)] pt-3 text-center label-mono tracking-[0.35em] text-[var(--mt-text-secondary)]">
                 M E G A T R I X
               </div>
             </div>
@@ -262,13 +262,13 @@ function Home() {
               key={label}
               className="group panel panel-interactive p-7"
             >
-              <div className="font-mono text-base font-bold tracking-wider text-[#0055FF] transition-colors duration-200 group-hover:text-white md:text-lg">
+              <div className="font-mono text-base font-bold tracking-wider text-[var(--mt-blue)] transition-colors duration-200 group-hover:text-[var(--mt-text-heading)] md:text-lg">
                 {metric}
               </div>
-              <div className="mt-3 text-sm font-bold tracking-[0.12em] text-white">
+              <div className="mt-3 text-sm font-bold tracking-[0.12em] text-[var(--mt-text-heading)]">
                 {label}
               </div>
-              <div className="mt-2 text-[13px] leading-6 text-[#B8C4DE]">
+              <div className="mt-2 text-[13px] leading-6 text-[var(--mt-text-secondary)]">
                 {detail}
               </div>
             </div>
@@ -279,14 +279,14 @@ function Home() {
       {/* 2. DEVELOPMENT WORKFLOW / PROTOCOL SECTION (CLEAN SEAMLESS BACKGROUND) */}
       <section id="protocol" className="relative z-10 mx-auto max-w-[1600px] px-8 md:px-12 py-20">
         <div className="mb-12 max-w-3xl">
-          <div className="mb-3 inline-flex items-center gap-2 border border-[#1E2538] bg-[#12151E] px-3.5 py-1.5 font-mono text-xs md:text-sm font-bold tracking-wider text-[#0055FF]">
+          <div className="mb-3 inline-flex items-center gap-2 border border-[var(--mt-border)] bg-[var(--mt-bg-card)] px-3.5 py-1.5 font-mono text-xs md:text-sm font-bold tracking-wider text-[var(--mt-blue)]">
             <Terminal size={15} />
             OPERATIONAL PROTOCOL
           </div>
-          <h2 className="text-3xl md:text-5xl font-extrabold text-white tracking-tight">
-            FROM CONCEPT TO <span className="text-[#0055FF] glow-text">DEPLOYMENT</span>
+          <h2 className="text-3xl md:text-5xl font-extrabold text-[var(--mt-text-heading)] tracking-tight">
+            FROM CONCEPT TO <span className="text-[var(--mt-blue)] glow-text">DEPLOYMENT</span>
           </h2>
-          <p className="mt-4 text-base md:text-lg leading-relaxed text-[#CBD5E1]">
+          <p className="mt-4 text-base md:text-lg leading-relaxed text-[var(--mt-text-body)]">
             A systematic, hardened engineering process designed for high-performance software delivery.
           </p>
         </div>
@@ -322,27 +322,27 @@ function Home() {
               {/* NODE CONTAINER CARD (SOLID PITCH BLACK BG) */}
               <div className="group panel panel-interactive relative flex flex-1 flex-col justify-between p-7">
                 <div>
-                  <div className="flex items-center justify-between border-b border-[#1E2538] pb-3.5 mb-4">
-                    <span className="font-mono text-xs md:text-sm font-extrabold tracking-widest text-[#0055FF] flex items-center gap-2">
-                      <span className="h-2.5 w-2.5 rounded-full bg-[#0055FF] animate-pulse drop-shadow-[0_0_8px_rgba(0,85,255,0.9)]" />
+                  <div className="flex items-center justify-between border-b border-[var(--mt-border)] pb-3.5 mb-4">
+                    <span className="font-mono text-xs md:text-sm font-extrabold tracking-widest text-[var(--mt-blue)] flex items-center gap-2">
+                      <span className="h-2.5 w-2.5 rounded-full bg-[var(--mt-blue)] animate-pulse drop-shadow-[0_0_8px_rgba(0,85,255,0.9)]" />
                       NODE {step}
                     </span>
-                    <span className="font-mono text-[10px] text-[#7C89A8] tracking-widest">
+                    <span className="font-mono text-[10px] text-[var(--mt-text-muted)] tracking-widest">
                       [ PHASE_{step} ]
                     </span>
                   </div>
 
-                  <h3 className="text-lg md:text-xl font-extrabold text-white group-hover:text-[#0055FF] transition-colors">
+                  <h3 className="text-lg md:text-xl font-extrabold text-[var(--mt-text-heading)] group-hover:text-[var(--mt-blue)] transition-colors">
                     {step}. {title}
                   </h3>
-                  <p className="mt-3.5 text-sm leading-relaxed text-[#CBD5E1]">
+                  <p className="mt-3.5 text-sm leading-relaxed text-[var(--mt-text-body)]">
                     {description}
                   </p>
                 </div>
 
-                <div className="mt-6 pt-3.5 border-t border-[#1E2538] flex items-center justify-between font-mono text-xs tracking-widest text-[#7C89A8]">
+                <div className="mt-6 pt-3.5 border-t border-[var(--mt-border)] flex items-center justify-between font-mono text-xs tracking-widest text-[var(--mt-text-muted)]">
                   <span>STATUS: LINKED</span>
-                  <span className="text-[#0055FF] font-bold">READY</span>
+                  <span className="text-[var(--mt-blue)] font-bold">READY</span>
                 </div>
               </div>
 
@@ -351,14 +351,14 @@ function Home() {
                 <>
                   {/* Desktop Horizontal Arrow (centered in horizontal gap) */}
                   <div className="hidden lg:flex pointer-events-none absolute -right-6 top-1/2 -translate-y-1/2 z-30 items-center justify-center">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-[#0055FF] bg-black text-[#0055FF] shadow-[0_0_20px_rgba(0,85,255,0.9)]">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-[var(--mt-blue)] bg-[var(--mt-bg-card)] text-[var(--mt-blue)] shadow-[0_0_15px_rgba(0,85,255,0.4)]">
                       <ChevronRight size={18} strokeWidth={3} />
                     </div>
                   </div>
 
                   {/* Mobile Downward Arrow (centered in vertical gap) */}
                   <div className="lg:hidden flex pointer-events-none justify-center py-3 z-30">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-[#0055FF] bg-black text-[#0055FF] shadow-[0_0_20px_rgba(0,85,255,0.9)]">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-[var(--mt-blue)] bg-[var(--mt-bg-card)] text-[var(--mt-blue)] shadow-[0_0_15px_rgba(0,85,255,0.4)]">
                       <ChevronDown size={18} strokeWidth={3} />
                     </div>
                   </div>
@@ -372,14 +372,14 @@ function Home() {
       {/* 3. CLIENT TESTIMONIALS / STATUS LOGS SECTION (CLEAN SEAMLESS BACKGROUND) */}
       <section className="relative z-10 mx-auto max-w-[1600px] px-8 md:px-12 py-20">
         <div className="mb-12 max-w-3xl">
-          <div className="mb-3 inline-flex items-center gap-2 border border-[#1E2538] bg-[#12151E] px-3.5 py-1.5 font-mono text-xs md:text-sm font-bold tracking-wider text-[#0055FF]">
+          <div className="mb-3 inline-flex items-center gap-2 border border-[var(--mt-border)] bg-[var(--mt-bg-card)] px-3.5 py-1.5 font-mono text-xs md:text-sm font-bold tracking-wider text-[var(--mt-blue)]">
             <Terminal size={15} />
             VERIFIED CLIENT TRANSMISSIONS
           </div>
-          <h2 className="text-3xl md:text-5xl font-extrabold text-white tracking-tight">
-            INCOMING TRANSMISSIONS <span className="text-[#0055FF] glow-text">- CLIENT LOGS</span>
+          <h2 className="text-3xl md:text-5xl font-extrabold text-[var(--mt-text-heading)] tracking-tight">
+            INCOMING TRANSMISSIONS <span className="text-[var(--mt-blue)] glow-text">- CLIENT LOGS</span>
           </h2>
-          <p className="mt-4 text-base md:text-lg leading-relaxed text-[#CBD5E1]">
+          <p className="mt-4 text-base md:text-lg leading-relaxed text-[var(--mt-text-body)]">
             Decrypted feedback logs from enterprise leaders, founders, and CTO partners.
           </p>
         </div>
@@ -413,22 +413,22 @@ function Home() {
               className="group panel panel-interactive flex flex-col justify-between p-7"
             >
               <div>
-                <div className="flex items-center justify-between border-b border-[#1E2538] pb-3 mb-4">
-                  <span className="font-mono text-xs font-bold tracking-widest text-[#0055FF] flex items-center gap-2">
+                <div className="flex items-center justify-between border-b border-[var(--mt-border)] pb-3 mb-4">
+                  <span className="font-mono text-xs font-bold tracking-widest text-[var(--mt-blue)] flex items-center gap-2">
                     <span className="h-2 w-2 rounded-full bg-green-400 animate-pulse" />
                     [ {status} ]
                   </span>
-                  <span className="font-mono text-xs text-[#7C89A8]">LOG_ID: #{1080 + idx * 42}</span>
+                  <span className="font-mono text-xs text-[var(--mt-text-muted)]">LOG_ID: #{1080 + idx * 42}</span>
                 </div>
 
-                <p className="text-sm md:text-base leading-relaxed text-[#E2E8F0] italic font-normal">
+                <p className="text-sm md:text-base leading-relaxed text-[var(--mt-text-soft)] italic font-normal">
                   {quote}
                 </p>
               </div>
 
-              <div className="mt-6 pt-4 border-t border-[#1E2538]">
-                <div className="text-sm font-bold text-white">{client}</div>
-                <div className="text-xs font-mono text-[#94A3B8]">{role}</div>
+              <div className="mt-6 pt-4 border-t border-[var(--mt-border)]">
+                <div className="text-sm font-bold text-[var(--mt-text-heading)]">{client}</div>
+                <div className="text-xs font-mono text-[var(--mt-text-subtle)]">{role}</div>
               </div>
             </div>
           ))}
@@ -441,14 +441,14 @@ function Home() {
       {/* CONTACT & CLIENT TRANSMISSION FORM SECTION */}
       <section id="contact" className="relative z-10 mx-auto max-w-[1600px] px-8 md:px-12 py-20">
         <div className="mb-12 max-w-3xl">
-          <div className="mb-3 inline-flex items-center gap-2 border border-[#1E2538] bg-[#12151E] px-3.5 py-1.5 font-mono text-xs md:text-sm font-bold tracking-wider text-[#0055FF]">
+          <div className="mb-3 inline-flex items-center gap-2 border border-[var(--mt-border)] bg-[var(--mt-bg-card)] px-3.5 py-1.5 font-mono text-xs md:text-sm font-bold tracking-wider text-[var(--mt-blue)]">
             <Terminal size={15} />
             SECURE COMMUNICATION CHANNEL
           </div>
-          <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight text-white">
-            GET IN <span className="text-[#0055FF] glow-text">TOUCH</span>
+          <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight text-[var(--mt-text-heading)]">
+            GET IN <span className="text-[var(--mt-blue)] glow-text">TOUCH</span>
           </h2>
-          <p className="mt-4 text-base md:text-lg leading-relaxed text-[#CBD5E1]">
+          <p className="mt-4 text-base md:text-lg leading-relaxed text-[var(--mt-text-body)]">
             Have a high-scale project or require custom engineering solutions? Fill out the project inquiry transmission form below or reach out directly.
           </p>
         </div>
@@ -458,12 +458,12 @@ function Home() {
           {/* EMAIL CARD */}
           <div className="group panel panel-interactive p-7">
             <div className="flex items-center justify-between">
-              <div className="flex h-12 w-12 items-center justify-center border border-[#1E2538] bg-[#090A0F] text-[#0055FF]">
+              <div className="flex h-12 w-12 items-center justify-center border border-[var(--mt-border)] bg-[var(--mt-bg)] text-[var(--mt-blue)]">
                 <Mail size={22} />
               </div>
               <button
                 onClick={() => handleCopy(contact.email, "email")}
-                className="flex items-center gap-1.5 border border-[#1E2538] bg-[#090A0F] px-3 py-1.5 font-mono text-xs tracking-widest text-[#B8C4DE] hover:border-[#0055FF] hover:text-white"
+                className="flex items-center gap-1.5 border border-[var(--mt-border)] bg-[var(--mt-bg)] px-3 py-1.5 font-mono text-xs tracking-widest text-[var(--mt-text-secondary)] hover:border-[var(--mt-blue)] hover:text-[var(--mt-text-heading)]"
                 title="Copy Email"
               >
                 {copiedField === "email" ? (
@@ -477,11 +477,11 @@ function Home() {
                 )}
               </button>
             </div>
-            <div className="mt-5 font-mono text-xs tracking-widest text-[#0055FF]">DIRECT EMAIL</div>
-            <h3 className="mt-1.5 text-base md:text-lg font-bold text-white break-all">{contact.email}</h3>
+            <div className="mt-5 font-mono text-xs tracking-widest text-[var(--mt-blue)]">DIRECT EMAIL</div>
+            <h3 className="mt-1.5 text-base md:text-lg font-bold text-[var(--mt-text-heading)] break-all">{contact.email}</h3>
             <a
               href={`mailto:${contact.email}`}
-              className="mt-4 inline-flex items-center gap-2 font-mono text-xs tracking-widest text-[#B8C4DE] hover:text-[#0055FF]"
+              className="mt-4 inline-flex items-center gap-2 font-mono text-xs tracking-widest text-[var(--mt-text-secondary)] hover:text-[var(--mt-blue)]"
             >
               SEND TRANSMISSION &rarr;
             </a>
@@ -490,12 +490,12 @@ function Home() {
           {/* PHONE / CONTACT NUMBER CARD */}
           <div className="group panel panel-interactive p-7">
             <div className="flex items-center justify-between">
-              <div className="flex h-12 w-12 items-center justify-center border border-[#1E2538] bg-[#090A0F] text-[#0055FF]">
+              <div className="flex h-12 w-12 items-center justify-center border border-[var(--mt-border)] bg-[var(--mt-bg)] text-[var(--mt-blue)]">
                 <Phone size={22} />
               </div>
               <button
                 onClick={() => handleCopy(contact.phone, "phone")}
-                className="flex items-center gap-1.5 border border-[#1E2538] bg-[#090A0F] px-3 py-1.5 font-mono text-xs tracking-widest text-[#B8C4DE] hover:border-[#0055FF] hover:text-white"
+                className="flex items-center gap-1.5 border border-[var(--mt-border)] bg-[var(--mt-bg)] px-3 py-1.5 font-mono text-xs tracking-widest text-[var(--mt-text-secondary)] hover:border-[var(--mt-blue)] hover:text-[var(--mt-text-heading)]"
                 title="Copy Phone"
               >
                 {copiedField === "phone" ? (
@@ -509,11 +509,11 @@ function Home() {
                 )}
               </button>
             </div>
-            <div className="mt-5 font-mono text-xs tracking-widest text-[#0055FF]">DIRECT LINE</div>
-            <h3 className="mt-1.5 text-base md:text-lg font-bold text-white">{contact.phone}</h3>
+            <div className="mt-5 font-mono text-xs tracking-widest text-[var(--mt-blue)]">DIRECT LINE</div>
+            <h3 className="mt-1.5 text-base md:text-lg font-bold text-[var(--mt-text-heading)]">{contact.phone}</h3>
             <a
               href={`tel:${contact.phone.replace(/[^0-9+]/g, "")}`}
-              className="mt-4 inline-flex items-center gap-2 font-mono text-xs tracking-widest text-[#B8C4DE] hover:text-[#0055FF]"
+              className="mt-4 inline-flex items-center gap-2 font-mono text-xs tracking-widest text-[var(--mt-text-secondary)] hover:text-[var(--mt-blue)]"
             >
               INITIATE CALL &rarr;
             </a>
@@ -522,12 +522,12 @@ function Home() {
           {/* ADDRESS CARD */}
           <div className="group panel panel-interactive p-7">
             <div className="flex items-center justify-between">
-              <div className="flex h-12 w-12 items-center justify-center border border-[#1E2538] bg-[#090A0F] text-[#0055FF]">
+              <div className="flex h-12 w-12 items-center justify-center border border-[var(--mt-border)] bg-[var(--mt-bg)] text-[var(--mt-blue)]">
                 <MapPin size={22} />
               </div>
               <button
                 onClick={() => handleCopy(contact.address, "address")}
-                className="flex items-center gap-1.5 border border-[#1E2538] bg-[#090A0F] px-3 py-1.5 font-mono text-xs tracking-widest text-[#B8C4DE] hover:border-[#0055FF] hover:text-white"
+                className="flex items-center gap-1.5 border border-[var(--mt-border)] bg-[var(--mt-bg)] px-3 py-1.5 font-mono text-xs tracking-widest text-[var(--mt-text-secondary)] hover:border-[var(--mt-blue)] hover:text-[var(--mt-text-heading)]"
                 title="Copy Address"
               >
                 {copiedField === "address" ? (
@@ -541,16 +541,16 @@ function Home() {
                 )}
               </button>
             </div>
-            <div className="mt-5 font-mono text-xs tracking-widest text-[#0055FF]">HEADQUARTERS</div>
-            <h3 className="mt-1.5 text-sm md:text-base font-bold leading-normal text-white">{contact.address}</h3>
-            <span className="mt-4 inline-block font-mono text-xs tracking-widest text-[#7C89A8]">
+            <div className="mt-5 font-mono text-xs tracking-widest text-[var(--mt-blue)]">HEADQUARTERS</div>
+            <h3 className="mt-1.5 text-sm md:text-base font-bold leading-normal text-[var(--mt-text-heading)]">{contact.address}</h3>
+            <span className="mt-4 inline-block font-mono text-xs tracking-widest text-[var(--mt-text-muted)]">
               GLOBAL OPERATIONS
             </span>
           </div>
         </div>
 
         {/* INTERACTIVE CLIENT INQUIRY FORM BOX (SOLID PITCH BLACK BG) */}
-        <div className="border-2 border-[#1E2538] bg-black p-8 shadow-[0_0_40px_rgba(0,85,255,0.15)] rounded-sm">
+        <div className="border-2 border-[#1E2538] bg-[#090A0F] p-8 shadow-[0_0_40px_rgba(0,85,255,0.15)] rounded-sm">
           <div className="mb-6 flex flex-wrap items-center justify-between gap-2 border-b border-[#1E2538] pb-4">
             <div className="flex items-center gap-3">
               <div className="flex h-9 w-9 items-center justify-center border border-[#0055FF] bg-[#0055FF]/20 text-[#0055FF]">
@@ -560,7 +560,7 @@ function Home() {
                 <h3 className="text-base font-bold tracking-widest text-white">
                   INITIATE PROJECT TRANSMISSION
                 </h3>
-                <p className="text-xs font-mono tracking-widest text-[#94A3B8]">
+                <p className="text-xs font-mono tracking-widest text-[#7C89A8]">
                   SUBMIT INQUIRY DETAILS, SPECIFICATIONS & ATTACHMENTS DIRECTLY TO OUR COMMAND CENTER
                 </p>
               </div>
@@ -583,7 +583,7 @@ function Home() {
           <form onSubmit={handleInquirySubmit} className="space-y-6">
             <div className="grid gap-6 md:grid-cols-3">
               <div>
-                <label className="block font-mono text-xs font-bold tracking-widest text-[#CBD5E1] mb-2">
+                <label className="block font-mono text-xs font-bold tracking-widest text-[#B8C4DE] mb-2">
                   YOUR NAME / ORGANIZATION *
                 </label>
                 <input
@@ -592,12 +592,12 @@ function Home() {
                   value={clientName}
                   onChange={(e) => setClientName(e.target.value)}
                   placeholder="e.g. John Doe / TechCorp"
-                  className="w-full rounded-sm border border-[#1E2538] bg-[#090A0F] px-4 py-3.5 text-sm text-white placeholder-[#64748B] transition-colors duration-200 hover:border-[#2A3552] focus:border-[#0055FF] focus:outline-none focus:ring-1 focus:ring-[#0055FF]/40"
+                  className="w-full rounded-sm border border-[#1E2538] bg-[#090A0F] px-4 py-3.5 text-sm text-white placeholder-[#455270] transition-colors duration-200 hover:border-[#2A3552] focus:border-[#0055FF] focus:outline-none focus:ring-1 focus:ring-[#0055FF]/40"
                 />
               </div>
 
               <div>
-                <label className="block font-mono text-xs font-bold tracking-widest text-[#CBD5E1] mb-2">
+                <label className="block font-mono text-xs font-bold tracking-widest text-[#B8C4DE] mb-2">
                   EMAIL ADDRESS *
                 </label>
                 <input
@@ -606,12 +606,12 @@ function Home() {
                   value={clientEmail}
                   onChange={(e) => setClientEmail(e.target.value)}
                   placeholder="client@techcorp.com"
-                  className="w-full rounded-sm border border-[#1E2538] bg-[#090A0F] px-4 py-3.5 text-sm text-white placeholder-[#64748B] transition-colors duration-200 hover:border-[#2A3552] focus:border-[#0055FF] focus:outline-none focus:ring-1 focus:ring-[#0055FF]/40"
+                  className="w-full rounded-sm border border-[#1E2538] bg-[#090A0F] px-4 py-3.5 text-sm text-white placeholder-[#455270] transition-colors duration-200 hover:border-[#2A3552] focus:border-[#0055FF] focus:outline-none focus:ring-1 focus:ring-[#0055FF]/40"
                 />
               </div>
 
               <div>
-                <label className="block font-mono text-xs font-bold tracking-widest text-[#CBD5E1] mb-2">
+                <label className="block font-mono text-xs font-bold tracking-widest text-[#B8C4DE] mb-2">
                   PHONE / DIRECT CONTACT NUMBER
                 </label>
                 <input
@@ -619,13 +619,13 @@ function Home() {
                   value={clientPhone}
                   onChange={(e) => setClientPhone(e.target.value)}
                   placeholder="+1 (555) 019-2831"
-                  className="w-full rounded-sm border border-[#1E2538] bg-[#090A0F] px-4 py-3.5 text-sm text-white placeholder-[#64748B] transition-colors duration-200 hover:border-[#2A3552] focus:border-[#0055FF] focus:outline-none focus:ring-1 focus:ring-[#0055FF]/40"
+                  className="w-full rounded-sm border border-[#1E2538] bg-[#090A0F] px-4 py-3.5 text-sm text-white placeholder-[#455270] transition-colors duration-200 hover:border-[#2A3552] focus:border-[#0055FF] focus:outline-none focus:ring-1 focus:ring-[#0055FF]/40"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block font-mono text-xs font-bold tracking-widest text-[#CBD5E1] mb-2">
+              <label className="block font-mono text-xs font-bold tracking-widest text-[#B8C4DE] mb-2">
                 PROJECT SUBJECT / DOMAIN *
               </label>
               <input
@@ -634,12 +634,12 @@ function Home() {
                 value={clientSubject}
                 onChange={(e) => setClientSubject(e.target.value)}
                 placeholder="e.g. Enterprise SaaS Development, AI Pipeline, Cloud Security Hardening"
-                className="w-full rounded-sm border border-[#1E2538] bg-[#090A0F] px-4 py-3.5 text-sm text-white placeholder-[#64748B] transition-colors duration-200 hover:border-[#2A3552] focus:border-[#0055FF] focus:outline-none focus:ring-1 focus:ring-[#0055FF]/40"
+                className="w-full rounded-sm border border-[#1E2538] bg-[#090A0F] px-4 py-3.5 text-sm text-white placeholder-[#455270] transition-colors duration-200 hover:border-[#2A3552] focus:border-[#0055FF] focus:outline-none focus:ring-1 focus:ring-[#0055FF]/40"
               />
             </div>
 
             <div>
-              <label className="block font-mono text-xs font-bold tracking-widest text-[#CBD5E1] mb-2">
+              <label className="block font-mono text-xs font-bold tracking-widest text-[#B8C4DE] mb-2">
                 PROJECT REQUIREMENTS & DETAILS *
               </label>
               <textarea
@@ -648,13 +648,13 @@ function Home() {
                 value={clientMessage}
                 onChange={(e) => setClientMessage(e.target.value)}
                 placeholder="Describe your system requirements, architecture goals, tech stack preferences, timeline, and budget..."
-                className="w-full rounded-sm border border-[#1E2538] bg-[#090A0F] p-4 text-sm text-white placeholder-[#64748B] transition-colors duration-200 hover:border-[#2A3552] focus:border-[#0055FF] focus:outline-none focus:ring-1 focus:ring-[#0055FF]/40"
+                className="w-full rounded-sm border border-[#1E2538] bg-[#090A0F] p-4 text-sm text-white placeholder-[#455270] transition-colors duration-200 hover:border-[#2A3552] focus:border-[#0055FF] focus:outline-none focus:ring-1 focus:ring-[#0055FF]/40"
               />
             </div>
 
             {/* ATTACHMENTS & SPECIFICATION DOCUMENTS */}
             <div>
-              <label className="block font-mono text-xs font-bold tracking-widest text-[#CBD5E1] mb-2">
+              <label className="block font-mono text-xs font-bold tracking-widest text-[#B8C4DE] mb-2">
                 ATTACH IMAGES, DOCUMENTS OR SPECIFICATION LINKS (OPTIONAL)
               </label>
               <div className="flex gap-2">
@@ -663,7 +663,7 @@ function Home() {
                   value={attachmentUrlInput}
                   onChange={(e) => setAttachmentUrlInput(e.target.value)}
                   placeholder="Paste image URL, Figma link, Google Drive doc, or specification URL (https://...)"
-                  className="flex-1 rounded-sm border border-[#1E2538] bg-[#090A0F] px-4 py-3 text-sm text-white placeholder-[#64748B] transition-colors duration-200 hover:border-[#2A3552] focus:border-[#0055FF] focus:outline-none focus:ring-1 focus:ring-[#0055FF]/40"
+                  className="flex-1 rounded-sm border border-[#1E2538] bg-[#090A0F] px-4 py-3 text-sm text-white placeholder-[#455270] transition-colors duration-200 hover:border-[#2A3552] focus:border-[#0055FF] focus:outline-none focus:ring-1 focus:ring-[#0055FF]/40"
                 />
                 <button
                   type="button"
@@ -680,7 +680,7 @@ function Home() {
                   {attachments.map((url, idx) => (
                     <div
                       key={idx}
-                      className="flex items-center gap-2 border border-[#1E2538] bg-[#090A0F] px-3.5 py-2 font-mono text-xs tracking-widest text-[#B8C4DE]"
+                      className="flex items-center gap-2 border border-[#1E2538] bg-[#12151E] px-3.5 py-2 font-mono text-xs tracking-widest text-[#B8C4DE]"
                     >
                       <FileText size={14} className="text-[#0055FF]" />
                       <span className="max-w-xs truncate">{url}</span>
@@ -701,7 +701,7 @@ function Home() {
               <button
                 type="submit"
                 disabled={submittingInquiry}
-                className="flex items-center justify-center gap-2 bg-[#0055FF] px-8 py-4 font-sans text-xs md:text-sm font-bold tracking-widest text-white shadow-[0_0_30px_rgba(0,85,255,0.4)] hover:bg-[#0044cc] disabled:opacity-50 transition-all w-full sm:w-auto"
+                className="flex items-center justify-center gap-2 bg-[#0055FF] px-8 py-4 font-sans text-xs md:text-sm font-bold tracking-widest text-white shadow-[0_0_30px_rgba(0,85,255,0.4)] hover:bg-[#1A66FF] disabled:opacity-50 transition-all w-full sm:w-auto"
               >
                 <Send size={15} />
                 {submittingInquiry ? "TRANSMITTING DATA..." : "TRANSMIT PROJECT INQUIRY"}

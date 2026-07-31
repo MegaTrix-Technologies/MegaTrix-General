@@ -167,7 +167,7 @@ function ContactPage() {
   };
 
   return (
-    <div className="relative min-h-screen bg-[#090A0F] text-white">
+    <div className="relative min-h-screen bg-[var(--mt-bg)] text-[var(--mt-text-heading)]">
       <div className="pointer-events-none fixed inset-0 iso-blocks opacity-60" />
       <div className="pointer-events-none fixed inset-0 retro-grid opacity-20" />
       <div className="pointer-events-none fixed inset-0 scanlines opacity-25" />
@@ -180,9 +180,9 @@ function ContactPage() {
       <div className="relative z-10 mx-auto max-w-[1600px] px-8 md:px-12 pt-8">
         <Link
           to="/"
-          className="group inline-flex items-center gap-2.5 border border-[#1E2538] bg-black px-4 py-2 font-mono text-xs font-bold tracking-widest text-[#B8C4DE] hover:text-white hover:border-[#0055FF] hover:shadow-[0_0_15px_rgba(0,85,255,0.2)] transition-all rounded-sm"
+          className="group inline-flex items-center gap-2.5 border border-[var(--mt-border)] bg-[var(--mt-bg-card)] px-4 py-2 font-mono text-xs font-bold tracking-widest text-[var(--mt-text-secondary)] hover:text-[var(--mt-text-heading)] hover:border-[var(--mt-blue)] hover:shadow-[0_0_15px_rgba(0,85,255,0.2)] transition-all rounded-sm"
         >
-          <ArrowLeft size={14} className="transition-transform group-hover:-translate-x-0.5 text-[#0055FF]" />
+          <ArrowLeft size={14} className="transition-transform group-hover:-translate-x-0.5 text-[var(--mt-blue)]" />
           RETURN TO BASE
         </Link>
       </div>
@@ -190,14 +190,14 @@ function ContactPage() {
       {/* CONTACT SECTION */}
       <section className="relative z-10 mx-auto max-w-[1600px] px-8 md:px-12 py-10 md:py-16">
         <div className="mb-14 max-w-2xl">
-          <div className="mb-2 inline-flex items-center gap-2 border border-[#1E2538] bg-[#12151E] px-3 py-1 text-[10px] tracking-widest text-[#0055FF]">
-            <Terminal size={12} />
+          <div className="mb-3 inline-flex items-center gap-2 rounded-sm border border-[var(--mt-border)] bg-[var(--mt-bg-card)] px-3.5 py-1.5 font-mono text-xs md:text-sm font-bold tracking-wider text-[var(--mt-blue)]">
+            <Terminal size={15} />
             SECURE COMMUNICATION CHANNEL
           </div>
           <h1 className="text-3xl font-bold tracking-tight md:text-5xl">
-            GET IN <span className="text-[#0055FF] glow-text">TOUCH</span>
+            GET IN <span className="text-[var(--mt-blue)] glow-text">TOUCH</span>
           </h1>
-          <p className="mt-4 text-sm leading-relaxed text-[#B8C4DE]">
+          <p className="mt-4 text-sm leading-relaxed text-[var(--mt-text-secondary)]">
             Have a high-scale project or require custom engineering solutions? Fill out the project inquiry transmission form below or reach out directly via our verified communication nodes.
           </p>
         </div>
@@ -205,14 +205,14 @@ function ContactPage() {
         {/* CONTACT INFO CARDS */}
         <div className="mb-12 grid gap-6 md:grid-cols-3">
           {/* EMAIL CARD */}
-          <div className="group border border-[#1E2538] bg-[#12151E] p-6 transition-all hover:border-[#0055FF] hover:shadow-[0_0_30px_rgba(0,85,255,0.2)]">
+          <div className="group border border-[var(--mt-border)] bg-[var(--mt-bg-card)] p-6 transition-all hover:border-[var(--mt-blue)] hover:shadow-[0_0_30px_rgba(0,85,255,0.2)]">
             <div className="flex items-center justify-between">
-              <div className="flex h-10 w-10 items-center justify-center border border-[#1E2538] bg-[#090A0F] text-[#0055FF]">
+              <div className="flex h-10 w-10 items-center justify-center border border-[var(--mt-border)] bg-[var(--mt-bg)] text-[var(--mt-blue)]">
                 <Mail size={20} />
               </div>
               <button
                 onClick={() => handleCopy(contact.email, "email")}
-                className="flex items-center gap-1.5 border border-[#1E2538] bg-[#090A0F] px-2.5 py-1 text-[9px] tracking-widest text-[#B8C4DE] hover:border-[#0055FF] hover:text-white"
+                className="flex items-center gap-1.5 border border-[var(--mt-border)] bg-[var(--mt-bg)] px-2.5 py-1 text-[9px] tracking-widest text-[var(--mt-text-secondary)] hover:border-[var(--mt-blue)] hover:text-[var(--mt-text-heading)]"
                 title="Copy Email"
               >
                 {copiedField === "email" ? (
@@ -226,25 +226,25 @@ function ContactPage() {
                 )}
               </button>
             </div>
-            <div className="mt-5 text-[10px] tracking-widest text-[#0055FF]">DIRECT EMAIL</div>
-            <h3 className="mt-1 text-sm font-bold text-white break-all">{contact.email}</h3>
+            <div className="mt-5 text-[10px] tracking-widest text-[var(--mt-blue)]">DIRECT EMAIL</div>
+            <h3 className="mt-1 text-sm font-bold text-[var(--mt-text-heading)] break-all">{contact.email}</h3>
             <a
               href={`mailto:${contact.email}`}
-              className="mt-4 inline-flex items-center gap-1.5 text-[10px] tracking-widest text-[#B8C4DE] hover:text-[#0055FF]"
+              className="mt-4 inline-flex items-center gap-1.5 text-[10px] tracking-widest text-[var(--mt-text-secondary)] hover:text-[var(--mt-blue)]"
             >
               SEND TRANSMISSION &rarr;
             </a>
           </div>
 
           {/* PHONE CARD */}
-          <div className="group border border-[#1E2538] bg-[#12151E] p-6 transition-all hover:border-[#0055FF] hover:shadow-[0_0_30px_rgba(0,85,255,0.2)]">
+          <div className="group border border-[var(--mt-border)] bg-[var(--mt-bg-card)] p-6 transition-all hover:border-[var(--mt-blue)] hover:shadow-[0_0_30px_rgba(0,85,255,0.2)]">
             <div className="flex items-center justify-between">
-              <div className="flex h-10 w-10 items-center justify-center border border-[#1E2538] bg-[#090A0F] text-[#0055FF]">
+              <div className="flex h-10 w-10 items-center justify-center border border-[var(--mt-border)] bg-[var(--mt-bg)] text-[var(--mt-blue)]">
                 <Phone size={20} />
               </div>
               <button
                 onClick={() => handleCopy(contact.phone, "phone")}
-                className="flex items-center gap-1.5 border border-[#1E2538] bg-[#090A0F] px-2.5 py-1 text-[9px] tracking-widest text-[#B8C4DE] hover:border-[#0055FF] hover:text-white"
+                className="flex items-center gap-1.5 border border-[var(--mt-border)] bg-[var(--mt-bg)] px-2.5 py-1 text-[9px] tracking-widest text-[var(--mt-text-secondary)] hover:border-[var(--mt-blue)] hover:text-[var(--mt-text-heading)]"
                 title="Copy Phone"
               >
                 {copiedField === "phone" ? (
@@ -258,25 +258,25 @@ function ContactPage() {
                 )}
               </button>
             </div>
-            <div className="mt-5 text-[10px] tracking-widest text-[#0055FF]">DIRECT LINE</div>
-            <h3 className="mt-1 text-sm font-bold text-white">{contact.phone}</h3>
+            <div className="mt-5 text-[10px] tracking-widest text-[var(--mt-blue)]">DIRECT LINE</div>
+            <h3 className="mt-1 text-sm font-bold text-[var(--mt-text-heading)]">{contact.phone}</h3>
             <a
               href={`tel:${contact.phone.replace(/[^0-9+]/g, "")}`}
-              className="mt-4 inline-flex items-center gap-1.5 text-[10px] tracking-widest text-[#B8C4DE] hover:text-[#0055FF]"
+              className="mt-4 inline-flex items-center gap-1.5 text-[10px] tracking-widest text-[var(--mt-text-secondary)] hover:text-[var(--mt-blue)]"
             >
               INITIATE CALL &rarr;
             </a>
           </div>
 
           {/* ADDRESS CARD */}
-          <div className="group border border-[#1E2538] bg-[#12151E] p-6 transition-all hover:border-[#0055FF] hover:shadow-[0_0_30px_rgba(0,85,255,0.2)]">
+          <div className="group border border-[var(--mt-border)] bg-[var(--mt-bg-card)] p-6 transition-all hover:border-[var(--mt-blue)] hover:shadow-[0_0_30px_rgba(0,85,255,0.2)]">
             <div className="flex items-center justify-between">
-              <div className="flex h-10 w-10 items-center justify-center border border-[#1E2538] bg-[#090A0F] text-[#0055FF]">
+              <div className="flex h-10 w-10 items-center justify-center border border-[var(--mt-border)] bg-[var(--mt-bg)] text-[var(--mt-blue)]">
                 <MapPin size={20} />
               </div>
               <button
                 onClick={() => handleCopy(contact.address, "address")}
-                className="flex items-center gap-1.5 border border-[#1E2538] bg-[#090A0F] px-2.5 py-1 text-[9px] tracking-widest text-[#B8C4DE] hover:border-[#0055FF] hover:text-white"
+                className="flex items-center gap-1.5 border border-[var(--mt-border)] bg-[var(--mt-bg)] px-2.5 py-1 text-[9px] tracking-widest text-[var(--mt-text-secondary)] hover:border-[var(--mt-blue)] hover:text-[var(--mt-text-heading)]"
                 title="Copy Address"
               >
                 {copiedField === "address" ? (
@@ -290,16 +290,16 @@ function ContactPage() {
                 )}
               </button>
             </div>
-            <div className="mt-5 text-[10px] tracking-widest text-[#0055FF]">HEADQUARTERS</div>
-            <h3 className="mt-1 text-xs font-bold leading-normal text-white">{contact.address}</h3>
-            <span className="mt-4 inline-block text-[10px] tracking-widest text-[#7C89A8]">
+            <div className="mt-5 text-[10px] tracking-widest text-[var(--mt-blue)]">HEADQUARTERS</div>
+            <h3 className="mt-1 text-xs font-bold leading-normal text-[var(--mt-text-heading)]">{contact.address}</h3>
+            <span className="mt-4 inline-block text-[10px] tracking-widest text-[var(--mt-text-muted)]">
               GLOBAL OPERATIONS
             </span>
           </div>
         </div>
 
         {/* INTERACTIVE CLIENT INQUIRY FORM BOX */}
-        <div className="border-2 border-[#1E2538] bg-black p-8 shadow-[0_0_40px_rgba(0,85,255,0.15)] rounded-sm">
+        <div className="border-2 border-[#1E2538] bg-[#090A0F] p-8 shadow-[0_0_40px_rgba(0,85,255,0.15)] rounded-sm">
           <div className="mb-6 flex flex-wrap items-center justify-between gap-2 border-b border-[#1E2538] pb-4">
             <div className="flex items-center gap-3">
               <div className="flex h-8 w-8 items-center justify-center border border-[#0055FF] bg-[#0055FF]/20 text-[#0055FF]">
@@ -332,7 +332,7 @@ function ContactPage() {
           <form onSubmit={handleInquirySubmit} className="space-y-6">
             <div className="grid gap-6 md:grid-cols-3">
               <div>
-                <label className="block text-[10px] font-bold tracking-widest text-[#7C89A8] mb-2">
+                <label className="block text-[10px] font-bold tracking-widest text-[#B8C4DE] mb-2">
                   YOUR NAME / ORGANIZATION *
                 </label>
                 <input
@@ -346,7 +346,7 @@ function ContactPage() {
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold tracking-widest text-[#7C89A8] mb-2">
+                <label className="block text-[10px] font-bold tracking-widest text-[#B8C4DE] mb-2">
                   EMAIL ADDRESS *
                 </label>
                 <input
@@ -360,7 +360,7 @@ function ContactPage() {
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold tracking-widest text-[#7C89A8] mb-2">
+                <label className="block text-[10px] font-bold tracking-widest text-[#B8C4DE] mb-2">
                   PHONE / DIRECT CONTACT NUMBER
                 </label>
                 <input
@@ -374,7 +374,7 @@ function ContactPage() {
             </div>
 
             <div>
-              <label className="block text-[10px] font-bold tracking-widest text-[#7C89A8] mb-2">
+              <label className="block text-[10px] font-bold tracking-widest text-[#B8C4DE] mb-2">
                 PROJECT SUBJECT / DOMAIN *
               </label>
               <input
@@ -388,7 +388,7 @@ function ContactPage() {
             </div>
 
             <div>
-              <label className="block text-[10px] font-bold tracking-widest text-[#7C89A8] mb-2">
+              <label className="block text-[10px] font-bold tracking-widest text-[#B8C4DE] mb-2">
                 PROJECT REQUIREMENTS & DETAILS *
               </label>
               <textarea
@@ -403,7 +403,7 @@ function ContactPage() {
 
             {/* ATTACHMENTS & SPECIFICATION DOCUMENTS */}
             <div>
-              <label className="block text-[10px] font-bold tracking-widest text-[#7C89A8] mb-2">
+              <label className="block text-[10px] font-bold tracking-widest text-[#B8C4DE] mb-2">
                 ATTACH IMAGES, DOCUMENTS OR SPECIFICATION LINKS (OPTIONAL)
               </label>
               <div className="flex gap-2">
@@ -429,7 +429,7 @@ function ContactPage() {
                   {attachments.map((url, idx) => (
                     <div
                       key={idx}
-                      className="flex items-center gap-2 border border-[#1E2538] bg-[#090A0F] px-3 py-1.5 text-[10px] tracking-widest text-[#B8C4DE]"
+                      className="flex items-center gap-2 border border-[#1E2538] bg-[#12151E] px-3 py-1.5 text-[10px] tracking-widest text-[#B8C4DE]"
                     >
                       <FileText size={12} className="text-[#0055FF]" />
                       <span className="max-w-xs truncate">{url}</span>
@@ -450,7 +450,7 @@ function ContactPage() {
               <button
                 type="submit"
                 disabled={submittingInquiry}
-                className="flex items-center justify-center gap-2 bg-[#0055FF] px-8 py-4 text-xs font-bold tracking-widest text-white shadow-[0_0_30px_rgba(0,85,255,0.4)] hover:bg-[#0044cc] disabled:opacity-50 transition-all w-full sm:w-auto"
+                className="flex items-center justify-center gap-2 bg-[#0055FF] px-8 py-4 text-xs font-bold tracking-widest text-white shadow-[0_0_30px_rgba(0,85,255,0.4)] hover:bg-[#1A66FF] disabled:opacity-50 transition-all w-full sm:w-auto"
               >
                 <Send size={14} />
                 {submittingInquiry ? "TRANSMITTING DATA..." : "TRANSMIT PROJECT INQUIRY"}

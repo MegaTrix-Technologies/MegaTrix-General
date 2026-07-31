@@ -36,8 +36,8 @@ interface Props {
 
 export default function AnimatedMTLogo({
   className,
-  color = "#FFFFFF",
-  ghostColor = "rgba(255, 255, 255, 0.12)",
+  color = "var(--mt-logo-color, #FFFFFF)",
+  ghostColor = "var(--mt-logo-ghost, rgba(255, 255, 255, 0.12))",
   step = 45,
   hold = 1400,
   gap = 250,
@@ -94,7 +94,7 @@ export default function AnimatedMTLogo({
             fill={color}
             style={
               isNewest
-                ? { filter: "drop-shadow(0 0 6px rgba(255,255,255,0.9))" }
+                ? { filter: "drop-shadow(0 0 6px var(--mt-logo-glow, rgba(255,255,255,0.9)))" }
                 : undefined
             }
           />

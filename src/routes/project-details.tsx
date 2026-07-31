@@ -197,7 +197,7 @@ function ProjectDetailPage() {
   }
 
   return (
-    <div className="relative min-h-screen bg-[#090A0F] text-white font-sans">
+    <div className="relative min-h-screen bg-[var(--mt-bg)] text-[var(--mt-text)] font-sans">
       <div className="pointer-events-none fixed inset-0 iso-blocks opacity-60" />
       <div className="pointer-events-none fixed inset-0 retro-grid opacity-20" />
       <div className="pointer-events-none fixed inset-0 scanlines opacity-25" />
@@ -211,10 +211,10 @@ function ProjectDetailPage() {
       ) : !project ? (
         <div className="relative z-10 mx-auto max-w-[1600px] px-8 md:px-12 py-32 text-center">
           <h2 className="text-2xl font-bold text-red-400">PROJECT RECORD NOT FOUND</h2>
-          <p className="mt-2 text-sm text-[#B8C4DE]">The requested project identifier could not be retrieved.</p>
+          <p className="mt-2 text-sm text-[var(--mt-text-secondary)]">The requested project identifier could not be retrieved.</p>
           <Link
             to="/projects"
-            className="mt-6 inline-flex items-center gap-2 border border-[#0055FF] bg-[#0055FF] px-6 py-3 font-sans text-xs font-bold tracking-widest text-white hover:bg-[#0044cc]"
+            className="mt-6 inline-flex items-center gap-2 border border-[var(--mt-blue)] bg-[var(--mt-blue)] px-6 py-3 font-sans text-xs font-bold tracking-widest text-[var(--mt-text-heading)] hover:bg-[#0044cc]"
           >
             <ArrowLeft size={14} /> RETURN TO PROJECTS CATALOG
           </Link>
@@ -225,9 +225,9 @@ function ProjectDetailPage() {
           <div className="relative z-10 mx-auto max-w-[1600px] px-8 md:px-12 pt-8">
             <Link
               to="/projects"
-              className="group inline-flex items-center gap-2.5 border border-[#1E2538] bg-black px-4 py-2 font-mono text-xs font-bold tracking-widest text-[#B8C4DE] hover:text-white hover:border-[#0055FF] hover:shadow-[0_0_15px_rgba(0,85,255,0.2)] transition-all rounded-sm"
+              className="group inline-flex items-center gap-2.5 border border-[var(--mt-border)] bg-[var(--mt-bg-card)] px-4 py-2 font-mono text-xs font-bold tracking-widest text-[var(--mt-text-secondary)] hover:text-[var(--mt-text-heading)] hover:border-[var(--mt-blue)] hover:shadow-[0_0_15px_rgba(0,85,255,0.2)] transition-all rounded-sm"
             >
-              <ArrowLeft size={14} className="transition-transform group-hover:-translate-x-0.5 text-[#0055FF]" />
+              <ArrowLeft size={14} className="transition-transform group-hover:-translate-x-0.5 text-[var(--mt-blue)]" />
               BACK TO PROJECTS
             </Link>
           </div>
@@ -236,19 +236,19 @@ function ProjectDetailPage() {
 
           {/* CENTERED PROJECT TITLE & HEADER */}
           <div className="text-center max-w-4xl mx-auto space-y-4">
-            <div className="inline-flex items-center gap-2 border border-[#1E2538] bg-[#12151E] px-4 py-1.5 font-mono text-xs font-bold tracking-wider text-[#0055FF]">
-              <Terminal size={14} />
+            <div className="inline-flex items-center gap-2 rounded-sm border border-[var(--mt-border)] bg-[var(--mt-bg-card)] px-3.5 py-1.5 font-mono text-xs md:text-sm font-bold tracking-wider text-[var(--mt-blue)]">
+              <Terminal size={15} />
               ENTERPRISE SYSTEM SPECIFICATION
             </div>
 
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-tight">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-[var(--mt-text-heading)] leading-tight">
               {project.title}
             </h1>
 
             {project.deployed_on && (
-              <div className="flex items-center justify-center gap-2 font-mono text-xs text-[#7C89A8] pt-1">
+              <div className="flex items-center justify-center gap-2 font-mono text-xs text-[var(--mt-text-muted)] pt-1">
                 <span className="h-2 w-2 rounded-full bg-green-400 animate-pulse" />
-                DEPLOYED ON: <span className="text-white font-bold">{project.deployed_on}</span>
+                DEPLOYED ON: <span className="text-[var(--mt-text-heading)] font-bold">{project.deployed_on}</span>
               </div>
             )}
           </div>
@@ -261,7 +261,7 @@ function ProjectDetailPage() {
                 <button
                   type="button"
                   onClick={() => setActiveImageIndex((prev) => (prev === 0 ? allImages.length - 1 : prev - 1))}
-                  className="hidden sm:flex absolute -left-12 md:-left-14 top-1/2 -translate-y-1/2 z-30 h-16 w-11 items-center justify-center border border-[#0055FF] bg-[#12151E] text-white transition-all hover:bg-[#0055FF] shadow-[0_0_20px_rgba(0,85,255,0.4)] cursor-pointer rounded-l-sm"
+                  className="hidden sm:flex absolute -left-12 md:-left-14 top-1/2 -translate-y-1/2 z-30 h-16 w-11 items-center justify-center border border-[var(--mt-blue)] bg-[var(--mt-bg-card)] text-[var(--mt-text-heading)] transition-all hover:bg-[var(--mt-blue)] hover:text-white shadow-[0_0_20px_rgba(0,85,255,0.4)] cursor-pointer rounded-l-sm"
                   title="Previous Image (Left Arrow Key)"
                   aria-label="Previous Image"
                 >
@@ -270,9 +270,9 @@ function ProjectDetailPage() {
               )}
 
               {/* CLEAN PRIMARY IMAGE RECTANGLE (ACCOMMODATES MOBILE APP & DESKTOP SCREENSHOTS PERFECTLY) */}
-              <div className="flex-1 group relative border border-[#1E2538] bg-[#12151E] p-3 shadow-[0_0_60px_rgba(0,85,255,0.2)] overflow-hidden flex items-center justify-center min-h-[400px] max-h-[620px]">
+              <div className="flex-1 group relative border border-[var(--mt-border)] bg-[var(--mt-bg-card)] p-3 shadow-[0_0_60px_rgba(0,85,255,0.2)] overflow-hidden flex items-center justify-center min-h-[400px] max-h-[620px]">
                 {allImages.length > 0 ? (
-                  <div className="relative h-full w-full flex items-center justify-center bg-[#090A0F] overflow-hidden p-2">
+                  <div className="relative h-full w-full flex items-center justify-center bg-[var(--mt-bg)] overflow-hidden p-2">
                     <img
                       src={allImages[activeImageIndex] || allImages[0]}
                       alt={project.title}
@@ -281,14 +281,14 @@ function ProjectDetailPage() {
 
                     <button
                       onClick={() => setLightboxOpen(true)}
-                      className="absolute right-4 top-4 z-20 flex items-center gap-2 border border-[#1E2538] bg-[#090A0F]/90 px-4 py-2 font-sans text-xs font-bold tracking-widest text-white hover:border-[#0055FF] hover:text-[#0055FF] transition-all shadow-lg"
+                      className="absolute right-4 top-4 z-20 flex items-center gap-2 border border-[var(--mt-border)] bg-[var(--mt-bg)]/90 px-4 py-2 font-sans text-xs font-bold tracking-widest text-[var(--mt-text-heading)] hover:border-[var(--mt-blue)] hover:text-[var(--mt-blue)] transition-all shadow-lg"
                     >
                       <Maximize2 size={14} /> EXPAND VIEW
                     </button>
                   </div>
                 ) : (
-                  <div className="flex min-h-[350px] w-full flex-col items-center justify-center bg-[#090A0F] text-[#455270]">
-                    <ImageIcon size={56} className="mb-2 text-[#0055FF]/40" />
+                  <div className="flex min-h-[350px] w-full flex-col items-center justify-center bg-[var(--mt-bg)] text-[var(--mt-text-muted)]">
+                    <ImageIcon size={56} className="mb-2 text-[var(--mt-blue)]/40" />
                     <span className="font-mono text-xs tracking-widest">NO IMAGE PREVIEW AVAILABLE</span>
                   </div>
                 )}
@@ -299,7 +299,7 @@ function ProjectDetailPage() {
                 <button
                   type="button"
                   onClick={() => setActiveImageIndex((prev) => (prev === allImages.length - 1 ? 0 : prev + 1))}
-                  className="hidden sm:flex absolute -right-12 md:-right-14 top-1/2 -translate-y-1/2 z-30 h-16 w-11 items-center justify-center border border-[#0055FF] bg-[#12151E] text-white transition-all hover:bg-[#0055FF] shadow-[0_0_20px_rgba(0,85,255,0.4)] cursor-pointer rounded-r-sm"
+                  className="hidden sm:flex absolute -right-12 md:-right-14 top-1/2 -translate-y-1/2 z-30 h-16 w-11 items-center justify-center border border-[var(--mt-blue)] bg-[var(--mt-bg-card)] text-[var(--mt-text-heading)] transition-all hover:bg-[var(--mt-blue)] hover:text-white shadow-[0_0_20px_rgba(0,85,255,0.4)] cursor-pointer rounded-r-sm"
                   title="Next Image (Right Arrow Key)"
                   aria-label="Next Image"
                 >
@@ -314,14 +314,14 @@ function ProjectDetailPage() {
                 <button
                   type="button"
                   onClick={() => setActiveImageIndex((prev) => (prev === 0 ? allImages.length - 1 : prev - 1))}
-                  className="flex-1 flex items-center justify-center gap-2 border border-[#0055FF] bg-[#12151E] py-2.5 text-xs font-bold text-white hover:bg-[#0055FF]"
+                  className="flex-1 flex items-center justify-center gap-2 border border-[var(--mt-blue)] bg-[var(--mt-bg-card)] py-2.5 text-xs font-bold text-[var(--mt-text-heading)] hover:bg-[var(--mt-blue)] hover:text-white"
                 >
                   <ChevronLeft size={18} /> PREV IMAGE
                 </button>
                 <button
                   type="button"
                   onClick={() => setActiveImageIndex((prev) => (prev === allImages.length - 1 ? 0 : prev + 1))}
-                  className="flex-1 flex items-center justify-center gap-2 border border-[#0055FF] bg-[#12151E] py-2.5 text-xs font-bold text-white hover:bg-[#0055FF]"
+                  className="flex-1 flex items-center justify-center gap-2 border border-[var(--mt-blue)] bg-[var(--mt-bg-card)] py-2.5 text-xs font-bold text-[var(--mt-text-heading)] hover:bg-[var(--mt-blue)] hover:text-white"
                 >
                   NEXT IMAGE <ChevronRight size={18} />
                 </button>
@@ -331,7 +331,7 @@ function ProjectDetailPage() {
             {/* THUMBNAILS GALLERY STRIP (CENTERED) */}
             {allImages.length > 1 && (
               <div className="space-y-3">
-                <div className="flex items-center justify-between max-w-5xl mx-auto font-mono text-xs font-semibold tracking-wider text-[#7C89A8]">
+                <div className="flex items-center justify-between max-w-5xl mx-auto font-mono text-xs font-semibold tracking-wider text-[var(--mt-text-muted)]">
                   <span>SYSTEM GALLERY ({allImages.length} ATTACHMENTS)</span>
                   <span>IMAGE {activeImageIndex + 1} OF {allImages.length}</span>
                 </div>
@@ -340,10 +340,10 @@ function ProjectDetailPage() {
                     <button
                       key={idx}
                       onClick={() => setActiveImageIndex(idx)}
-                      className={`relative h-28 max-w-[150px] shrink-0 overflow-hidden border p-1 bg-[#050608] flex items-center justify-center transition-all cursor-pointer rounded-xs ${
+                      className={`relative h-28 max-w-[150px] shrink-0 overflow-hidden border p-1 bg-[var(--mt-bg-deep)] flex items-center justify-center transition-all cursor-pointer rounded-xs ${
                         activeImageIndex === idx
-                          ? "border-[#0055FF] bg-[#0055FF]/10 shadow-[0_0_20px_rgba(0,85,255,0.6)] scale-105"
-                          : "border-[#1E2538] opacity-60 hover:opacity-100"
+                          ? "border-[var(--mt-blue)] bg-[var(--mt-blue)]/10 shadow-[0_0_20px_rgba(0,85,255,0.6)] scale-105"
+                          : "border-[var(--mt-border)] opacity-60 hover:opacity-100"
                       }`}
                     >
                       <img src={imgUrl} alt={`Thumbnail ${idx + 1}`} className="max-h-full max-w-full h-auto w-auto object-contain" />
@@ -358,17 +358,17 @@ function ProjectDetailPage() {
           <div className="max-w-4xl mx-auto space-y-12 pt-4">
             {/* DESCRIPTION (NO CONTAINER BOX BORDER) */}
             <div className="space-y-4">
-              <div className="font-mono text-xs font-bold tracking-widest text-[#0055FF]">
+              <div className="font-mono text-xs font-bold tracking-widest text-[var(--mt-blue)]">
                 ARCHITECTURE & SYSTEM DESCRIPTION
               </div>
-              <p className="text-base md:text-lg leading-relaxed text-[#E2E8F0] font-normal whitespace-pre-wrap">
+              <p className="text-base md:text-lg leading-relaxed text-[var(--mt-text-soft)] font-normal whitespace-pre-wrap">
                 {project.description}
               </p>
             </div>
 
             {/* INTEGRATED TECHNOLOGIES STACK */}
-            <div className="space-y-4 pt-4 border-t border-[#1E2538]">
-              <div className="flex items-center gap-2 font-mono text-xs font-bold tracking-widest text-[#0055FF]">
+            <div className="space-y-4 pt-4 border-t border-[var(--mt-border)]">
+              <div className="flex items-center gap-2 font-mono text-xs font-bold tracking-widest text-[var(--mt-blue)]">
                 <Cpu size={16} />
                 INTEGRATED TECHNOLOGY STACK ({project.tools?.length || 0})
               </div>
@@ -376,7 +376,7 @@ function ProjectDetailPage() {
                 {project.tools?.map((tool, i) => (
                   <span
                     key={i}
-                    className="border border-[#2A3552] bg-[#12151E] px-4 py-2 font-mono text-xs md:text-sm font-bold tracking-wider text-cyan-400 shadow-md"
+                    className="border border-[var(--mt-border-accent)] bg-[var(--mt-bg-card)] px-4 py-2 font-mono text-xs md:text-sm font-bold tracking-wider text-[var(--mt-blue)] [html[data-theme='light']_&]:text-[#0044DD] dark:text-cyan-400 shadow-md"
                   >
                     {tool}
                   </span>
@@ -387,13 +387,13 @@ function ProjectDetailPage() {
 
 
             {/* CENTERED ACTION BUTTONS */}
-            <div className="flex flex-wrap items-center justify-center gap-6 pt-6 border-t border-[#1E2538]">
+            <div className="flex flex-wrap items-center justify-center gap-6 pt-6 border-t border-[var(--mt-border)]">
               {project.project_link && (
                 <a
                   href={project.project_link}
                   target="_blank"
                   rel="noreferrer"
-                  className="flex items-center justify-center gap-3 bg-[#0055FF] px-8 py-4 font-sans text-sm font-bold tracking-widest text-white shadow-[0_0_30px_rgba(0,85,255,0.4)] hover:bg-[#0044cc] hover:shadow-[0_0_40px_rgba(0,85,255,0.7)] transition-all min-w-[220px]"
+                  className="flex items-center justify-center gap-3 bg-[var(--mt-blue)] px-8 py-4 font-sans text-sm font-bold tracking-widest text-white shadow-[0_0_30px_rgba(0,85,255,0.4)] hover:bg-[#0044cc] hover:text-white hover:shadow-[0_0_40px_rgba(0,85,255,0.7)] transition-all min-w-[220px]"
                 >
                   <ExternalLink size={18} /> LIVE DEPLOYMENT
                 </a>
@@ -404,7 +404,7 @@ function ProjectDetailPage() {
                   href={project.github_link}
                   target="_blank"
                   rel="noreferrer"
-                  className="flex items-center justify-center gap-3 border border-[#1E2538] bg-[#12151E] px-8 py-4 font-sans text-sm font-bold tracking-widest text-white hover:border-[#0055FF] hover:text-[#0055FF] transition-all min-w-[220px]"
+                  className="flex items-center justify-center gap-3 border border-[var(--mt-border)] bg-[var(--mt-bg-card)] px-8 py-4 font-sans text-sm font-bold tracking-widest text-[var(--mt-text-heading)] hover:border-[var(--mt-blue)] hover:text-[var(--mt-blue)] transition-all min-w-[220px]"
                 >
                   <Github size={18} /> SOURCE REPO
                 </a>
@@ -417,21 +417,21 @@ function ProjectDetailPage() {
 
       {/* EXTENDED LIGHTBOX MODAL WITH CHROME / PDF-STYLE LEFT THUMBNAIL SIDEBAR & BORDER-ATTACHED ARROWS */}
       {lightboxOpen && allImages.length > 0 && (
-        <div className="fixed inset-0 z-50 flex flex-col bg-[#08090D]/95 backdrop-blur-xl p-4 md:p-6 text-white font-sans overflow-hidden">
+        <div className="fixed inset-0 z-50 flex flex-col bg-[var(--mt-bg-modal)] backdrop-blur-xl p-4 md:p-6 text-[var(--mt-text-heading)] font-sans overflow-hidden">
           {/* MODAL TOP BAR */}
-          <div className="flex items-center justify-between border-b border-[#1E2538] pb-3 mb-3 shrink-0">
+          <div className="flex items-center justify-between border-b border-[var(--mt-border)] pb-3 mb-3 shrink-0">
             <div>
-              <h3 className="text-sm font-bold tracking-wider text-white uppercase">
+              <h3 className="text-sm font-bold tracking-wider text-[var(--mt-text-heading)] uppercase">
                 {project.title}
               </h3>
-              <p className="text-[11px] font-mono text-[#0055FF] pt-0.5">
+              <p className="text-[11px] font-mono text-[var(--mt-blue)] pt-0.5">
                 PAGE {activeImageIndex + 1} OF {allImages.length}
               </p>
             </div>
 
             <button
               onClick={() => setLightboxOpen(false)}
-              className="flex items-center gap-2 border border-[#1E2538] bg-[#12151E] px-3.5 py-1.5 text-xs font-bold tracking-widest text-[#B8C4DE] hover:border-red-500 hover:text-red-400 transition-colors rounded-sm cursor-pointer"
+              className="flex items-center gap-2 border border-[var(--mt-border)] bg-[var(--mt-bg-card)] px-3.5 py-1.5 text-xs font-bold tracking-widest text-[var(--mt-text-secondary)] hover:border-red-500 hover:text-red-400 transition-colors rounded-sm cursor-pointer"
             >
               <X size={16} />
               CLOSE (ESC)
@@ -442,8 +442,8 @@ function ProjectDetailPage() {
           <div className="flex-1 flex overflow-hidden gap-4 relative">
             {/* CHROME / PDF-STYLE LEFT SIDEBAR THUMBNAILS LIST */}
             {allImages.length > 1 && (
-              <div className="w-44 sm:w-52 md:w-60 shrink-0 border border-[#1E2538] bg-[#0D0F17] p-3 flex flex-col overflow-y-auto space-y-3 rounded-sm shadow-xl custom-scrollbar">
-                <div className="text-[10px] font-mono font-bold tracking-widest text-[#0055FF] border-b border-[#1E2538] pb-2 flex items-center justify-between">
+              <div className="w-44 sm:w-52 md:w-60 shrink-0 border border-[var(--mt-border)] bg-[var(--mt-bg-panel)] p-3 flex flex-col overflow-y-auto space-y-3 rounded-sm shadow-xl custom-scrollbar">
+                <div className="text-[10px] font-mono font-bold tracking-widest text-[var(--mt-blue)] border-b border-[var(--mt-border)] pb-2 flex items-center justify-between">
                   <span>PAGES / PHOTOS</span>
                   <span>[{allImages.length}]</span>
                 </div>
@@ -454,16 +454,16 @@ function ProjectDetailPage() {
                       onClick={() => setActiveImageIndex(idx)}
                       className={`group relative w-full flex flex-col items-center p-2 border transition-all rounded-xs cursor-pointer ${
                         activeImageIndex === idx
-                          ? "border-[#0055FF] bg-[#0055FF]/15 shadow-[0_0_15px_rgba(0,85,255,0.4)]"
-                          : "border-[#1E2538] bg-[#090A0F] hover:border-[#0055FF]/60 opacity-70 hover:opacity-100"
+                          ? "border-[var(--mt-blue)] bg-[var(--mt-blue)]/15 shadow-[0_0_15px_rgba(0,85,255,0.4)]"
+                          : "border-[var(--mt-border)] bg-[var(--mt-bg)] hover:border-[var(--mt-blue)]/60 opacity-70 hover:opacity-100"
                       }`}
                     >
-                      <div className="min-h-[110px] max-h-[140px] w-full overflow-hidden bg-[#050608] border border-[#1E2538] flex items-center justify-center p-1.5 rounded-xs">
+                      <div className="min-h-[110px] max-h-[140px] w-full overflow-hidden bg-[var(--mt-bg-deep)] border border-[var(--mt-border)] flex items-center justify-center p-1.5 rounded-xs">
                         <img src={imgUrl} alt={`Thumbnail ${idx + 1}`} className="max-h-full max-w-full h-auto w-auto object-contain" />
                       </div>
                       <span
                         className={`mt-1.5 font-mono text-[10px] font-bold ${
-                          activeImageIndex === idx ? "text-[#00FFFF]" : "text-[#7C89A8]"
+                          activeImageIndex === idx ? "text-[var(--mt-cyan)]" : "text-[var(--mt-text-muted)]"
                         }`}
                       >
                         PAGE {idx + 1}
@@ -475,7 +475,7 @@ function ProjectDetailPage() {
             )}
 
             {/* MAIN IMAGE DISPLAY AREA WITH INVISIBLE MOUSE SCROLLER ZOOM & PAN */}
-            <div className="flex-1 relative flex items-center justify-center bg-[#050608] border border-[#1E2538] p-4 sm:p-8 overflow-hidden rounded-sm">
+            <div className="flex-1 relative flex items-center justify-center bg-[var(--mt-bg-deep)] border border-[var(--mt-border)] p-4 sm:p-8 overflow-hidden rounded-sm">
               {/* IMAGE FRAME CONTAINER WITH MOUSE SCROLLER ZOOM AND PAN */}
               <div
                 onWheel={handleWheelZoom}
@@ -486,7 +486,7 @@ function ProjectDetailPage() {
                 className="relative max-h-[82vh] max-w-full flex items-center justify-center overflow-hidden cursor-grab active:cursor-grabbing select-none"
               >
                 <div
-                  className="relative border-2 border-[#1E2538] bg-[#090A0F] shadow-2xl p-1.5 transition-transform duration-75 ease-out"
+                  className="relative border-2 border-[var(--mt-border)] bg-[var(--mt-bg)] shadow-2xl p-1.5 transition-transform duration-75 ease-out"
                   style={{
                     transform: `translate(${zoomOffset.x}px, ${zoomOffset.y}px) scale(${zoomScale})`,
                     transformOrigin: "center center",

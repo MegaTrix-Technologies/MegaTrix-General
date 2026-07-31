@@ -12,7 +12,7 @@ export const Route = createFileRoute("/architecture")({
 
 function ArchitecturePage() {
   return (
-    <div className="relative min-h-screen bg-[#090A0F] text-white">
+    <div className="relative min-h-screen" style={{ backgroundColor: "var(--mt-bg)", color: "var(--mt-text)" }}>
       <div className="pointer-events-none fixed inset-0 iso-blocks opacity-60" />
       <div className="pointer-events-none fixed inset-0 retro-grid opacity-20" />
       <div className="pointer-events-none fixed inset-0 scanlines opacity-25" />
@@ -25,23 +25,36 @@ function ArchitecturePage() {
       <div className="relative z-10 mx-auto max-w-[1600px] px-8 md:px-12 pt-8">
         <Link
           to="/"
-          className="group inline-flex items-center gap-2.5 border border-[#1E2538] bg-black px-4 py-2 font-mono text-xs font-bold tracking-widest text-[#B8C4DE] hover:text-white hover:border-[#0055FF] hover:shadow-[0_0_15px_rgba(0,85,255,0.2)] transition-all rounded-sm"
+          className="group inline-flex items-center gap-2.5 px-4 py-2 font-mono text-xs font-bold tracking-widest transition-all rounded-sm border"
+          style={{
+            borderColor: "var(--mt-border)",
+            backgroundColor: "var(--mt-bg-card)",
+            color: "var(--mt-text-secondary)",
+          }}
+          onMouseEnter={(e) => {
+            (e.currentTarget as HTMLElement).style.borderColor = "var(--mt-blue)";
+            (e.currentTarget as HTMLElement).style.color = "var(--mt-text-heading)";
+          }}
+          onMouseLeave={(e) => {
+            (e.currentTarget as HTMLElement).style.borderColor = "var(--mt-border)";
+            (e.currentTarget as HTMLElement).style.color = "var(--mt-text-secondary)";
+          }}
         >
-          <ArrowLeft size={14} className="transition-transform group-hover:-translate-x-0.5 text-[#0055FF]" />
+          <ArrowLeft size={14} className="transition-transform group-hover:-translate-x-0.5" style={{ color: "var(--mt-blue)" }} />
           RETURN TO BASE
         </Link>
       </div>
 
       {/* HERO / HEADER */}
       <section className="relative z-10 mx-auto max-w-[1600px] px-8 md:px-12 py-10 md:py-16">
-        <div className="mb-6 inline-flex items-center gap-2 border border-[#1E2538] bg-[#12151E] px-3.5 py-1.5 font-mono text-xs md:text-sm font-bold tracking-widest text-[#0055FF]">
-          <Terminal size={14} />
-          SYSTEM ARCHITECTURE & CORE COMPETENCIES
+        <div className="mb-6 inline-flex items-center gap-2 rounded-sm border border-[var(--mt-border)] bg-[var(--mt-bg-card)] px-3.5 py-1.5 font-mono text-xs md:text-sm font-bold tracking-wider text-[var(--mt-blue)]">
+          <Terminal size={15} />
+          SYSTEM ARCHITECTURE &amp; CORE COMPETENCIES
         </div>
-        <h1 className="max-w-4xl text-4xl font-extrabold tracking-tight md:text-6xl text-white">
-          ENGINEERED FOR <span className="text-[#0055FF] glow-text">UNCOMPROMISING SCALE</span>
+        <h1 className="max-w-4xl text-4xl font-extrabold tracking-tight md:text-6xl" style={{ color: "var(--mt-text-heading)" }}>
+          ENGINEERED FOR <span className="glow-text" style={{ color: "var(--mt-blue)" }}>UNCOMPROMISING SCALE</span>
         </h1>
-        <p className="mt-6 max-w-3xl text-base md:text-lg leading-relaxed text-[#CBD5E1]">
+        <p className="mt-6 max-w-3xl text-base md:text-lg leading-relaxed" style={{ color: "var(--mt-text-body)" }}>
           Our engineering principles blend retro-futuristic precision with modern, production-grade cloud microservices, vector intelligence, and resilient event-driven architectures.
         </p>
       </section>
@@ -95,23 +108,39 @@ function ArchitecturePage() {
           ].map(({ Icon, title, tag, body, details }) => (
             <div
               key={title}
-              className="group border-2 border-[#1E2538] bg-black p-8 transition-all hover:border-[#0055FF] hover:shadow-[0_0_35px_rgba(0,85,255,0.3)] rounded-sm flex flex-col justify-between"
+              className="group border-2 p-8 transition-all rounded-sm flex flex-col justify-between"
+              style={{ borderColor: "var(--mt-border)", backgroundColor: "var(--mt-bg-card)" }}
+              onMouseEnter={(e) => {
+                const el = e.currentTarget as HTMLElement;
+                el.style.borderColor = "var(--mt-blue)";
+                el.style.boxShadow = "0 0 35px rgba(0,68,221,0.25)";
+              }}
+              onMouseLeave={(e) => {
+                const el = e.currentTarget as HTMLElement;
+                el.style.borderColor = "var(--mt-border)";
+                el.style.boxShadow = "none";
+              }}
             >
               <div>
-                <div className="flex items-center justify-between border-b border-[#1E2538] pb-3 mb-4">
-                  <Icon size={32} className="text-[#0055FF]" />
-                  <span className="font-mono text-xs font-bold tracking-widest text-[#0055FF]">{tag}</span>
+                <div className="flex items-center justify-between border-b pb-3 mb-4" style={{ borderColor: "var(--mt-border)" }}>
+                  <Icon size={32} style={{ color: "var(--mt-blue)" }} />
+                  <span className="font-mono text-xs font-bold tracking-widest" style={{ color: "var(--mt-blue)" }}>{tag}</span>
                 </div>
-                <h3 className="text-xl md:text-2xl font-extrabold text-white group-hover:text-[#0055FF] transition-colors">{title}</h3>
-                <p className="mt-3.5 text-sm md:text-base leading-relaxed text-[#CBD5E1]">{body}</p>
+                <h3
+                  className="text-xl md:text-2xl font-extrabold transition-colors"
+                  style={{ color: "var(--mt-text-heading)" }}
+                >
+                  {title}
+                </h3>
+                <p className="mt-3.5 text-sm md:text-base leading-relaxed" style={{ color: "var(--mt-text-body)" }}>{body}</p>
               </div>
 
-              <div className="mt-8 border-t border-[#1E2538] pt-4">
-                <div className="mb-3 font-mono text-xs font-bold tracking-widest text-[#0055FF]">SPECIFICATIONS</div>
-                <ul className="space-y-2 text-xs md:text-sm font-medium text-[#E2E8F0]">
+              <div className="mt-8 border-t pt-4" style={{ borderColor: "var(--mt-border)" }}>
+                <div className="mb-3 font-mono text-xs font-bold tracking-widest" style={{ color: "var(--mt-blue)" }}>SPECIFICATIONS</div>
+                <ul className="space-y-2 text-xs md:text-sm font-medium" style={{ color: "var(--mt-text-soft)" }}>
                   {details.map((item, idx) => (
                     <li key={idx} className="flex items-center gap-2.5">
-                      <span className="h-1.5 w-1.5 rounded-full bg-[#0055FF]" />
+                      <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: "var(--mt-blue)" }} />
                       {item}
                     </li>
                   ))}
@@ -122,22 +151,24 @@ function ArchitecturePage() {
         </div>
 
         {/* CALL TO ACTION */}
-        <div className="mt-16 border-2 border-[#1E2538] bg-black p-10 text-center rounded-sm">
-          <h3 className="text-2xl font-extrabold text-white">READY TO BUILD YOUR NEXT SYSTEM?</h3>
-          <p className="mt-2.5 text-sm md:text-base text-[#CBD5E1]">
+        <div className="mt-16 border-2 p-10 text-center rounded-sm" style={{ borderColor: "var(--mt-border)", backgroundColor: "var(--mt-bg-card)" }}>
+          <h3 className="text-2xl font-extrabold" style={{ color: "var(--mt-text-heading)" }}>READY TO BUILD YOUR NEXT SYSTEM?</h3>
+          <p className="mt-2.5 text-sm md:text-base" style={{ color: "var(--mt-text-body)" }}>
             Initiate a project transmission or explore our catalog of completed architecture solutions.
           </p>
           <div className="mt-6 flex flex-wrap justify-center gap-4">
             <Link
               to="/contact"
-              className="inline-flex items-center gap-2 bg-[#0055FF] px-7 py-3.5 font-sans text-xs md:text-sm font-bold tracking-widest text-white shadow-[0_0_20px_rgba(0,85,255,0.4)] hover:bg-[#0044cc] transition-all"
+              className="inline-flex items-center gap-2 px-7 py-3.5 font-sans text-xs md:text-sm font-bold tracking-widest text-white transition-all"
+              style={{ backgroundColor: "var(--mt-blue)", boxShadow: "0 0 20px rgba(0,68,221,0.4)" }}
             >
               <Code2 size={16} />
               CONTACT US
             </Link>
             <Link
               to="/projects"
-              className="inline-flex items-center gap-2 border border-[#1E2538] bg-[#12151E] px-7 py-3.5 font-sans text-xs md:text-sm font-bold tracking-widest text-white hover:border-[#0055FF] hover:text-[#0055FF] transition-all"
+              className="inline-flex items-center gap-2 border px-7 py-3.5 font-sans text-xs md:text-sm font-bold tracking-widest transition-all"
+              style={{ borderColor: "var(--mt-border)", backgroundColor: "var(--mt-bg-card)", color: "var(--mt-text-secondary)" }}
             >
               EXPLORE PROJECTS
               <ArrowRight size={16} />

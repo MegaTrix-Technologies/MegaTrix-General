@@ -63,7 +63,7 @@ export default function Footer() {
   };
 
   return (
-    <footer className="relative z-20 border-t-2 border-[#1E2538] bg-black text-white font-sans">
+    <footer className="mt-footer relative z-20 border-t-2 border-[#1E2538] bg-black text-white font-sans" style={{ backgroundColor: "#090A0F", color: "#F8FAFC", borderTopColor: "#1E2538" }}>
       {/* RETRO GRID OVERLAY */}
       <div className="pointer-events-none absolute inset-0 retro-grid opacity-15" />
       <div className="pointer-events-none absolute inset-0 scanlines opacity-20" />

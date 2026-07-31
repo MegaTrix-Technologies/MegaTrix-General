@@ -164,7 +164,7 @@ function Projects() {
   }
 
   return (
-    <div className="relative min-h-screen bg-[#090A0F] text-white">
+    <div className="relative min-h-screen" style={{ backgroundColor: "var(--mt-bg)", color: "var(--mt-text)" }}>
       <div className="pointer-events-none fixed inset-0 iso-blocks opacity-60" />
       <div className="pointer-events-none fixed inset-0 retro-grid opacity-20" />
       <div className="pointer-events-none fixed inset-0 scanlines opacity-25" />
@@ -177,9 +177,10 @@ function Projects() {
       <div className="relative z-10 mx-auto max-w-[1600px] px-6 pt-8 md:px-12">
         <Link
           to="/"
-          className="group inline-flex items-center gap-2.5 rounded-sm border border-[#1E2538] bg-black/60 px-4 py-2 label-mono font-bold text-[#B8C4DE] transition-all duration-200 hover:-translate-x-0.5 hover:border-[#0055FF] hover:text-white"
+          className="group inline-flex items-center gap-2.5 rounded-sm border px-4 py-2 label-mono font-bold transition-all duration-200 hover:-translate-x-0.5"
+          style={{ borderColor: "var(--mt-border)", backgroundColor: "var(--mt-bg-card)", color: "var(--mt-text-secondary)" }}
         >
-          <ArrowLeft size={14} className="text-[#0055FF] transition-transform duration-200 group-hover:-translate-x-0.5" />
+          <ArrowLeft size={14} className="transition-transform duration-200 group-hover:-translate-x-0.5" style={{ color: "var(--mt-blue)" }} />
           RETURN TO BASE
         </Link>
       </div>
@@ -187,15 +188,15 @@ function Projects() {
       {/* HERO */}
       <section className="relative z-10 mx-auto max-w-[1600px] px-6 py-12 md:px-12 md:py-20">
         <div className="max-w-2xl">
-          <div className="mb-5 inline-flex items-center gap-2 rounded-sm border border-[#1E2538] bg-[#12151E] px-3 py-1.5 label-mono text-[#B8C4DE]">
-            <Terminal size={12} className="text-[#0055FF]" />
+          <div className="mb-5 inline-flex items-center gap-2 rounded-sm border border-[var(--mt-border)] bg-[var(--mt-bg-card)] px-3.5 py-1.5 font-mono text-xs md:text-sm font-bold tracking-wider text-[var(--mt-blue)]">
+            <Terminal size={15} className="text-[var(--mt-blue)]" />
             PORTFOLIO ARCHIVE
           </div>
-          <h1 className="text-4xl font-bold leading-[1.05] md:text-6xl">
+          <h1 className="text-4xl font-bold leading-[1.05] md:text-6xl" style={{ color: "var(--mt-text-heading)" }}>
             FEATURED
-            <span className="text-[#0055FF] glow-text"> DEPLOYMENTS</span>
+            <span className="glow-text" style={{ color: "var(--mt-blue)" }}> DEPLOYMENTS</span>
           </h1>
-          <p className="mt-5 max-w-xl text-[15px] leading-7 text-[#B8C4DE] md:text-base">
+          <p className="mt-5 max-w-xl text-[15px] leading-7 md:text-base" style={{ color: "var(--mt-text-secondary)" }}>
             A curated catalog of full-stack applications, cloud infrastructure, and
             AI-driven systems engineered by Megatrix.
           </p>
@@ -203,8 +204,8 @@ function Projects() {
 
         {/* PROJECTS */}
         <div className="pt-14 md:pt-20">
-          <div className="mb-6 flex flex-wrap items-center gap-4 border-b border-[#1E2538] pb-4">
-            <div className="label-mono text-[#0055FF]">
+          <div className="mb-6 flex flex-wrap items-center gap-4 border-b pb-4" style={{ borderColor: "var(--mt-border)" }}>
+            <div className="label-mono" style={{ color: "var(--mt-blue)" }}>
               TOTAL SYSTEMS RECORDED: [ {String(projects.length).padStart(3, "0")} ]
             </div>
           </div>
@@ -212,9 +213,12 @@ function Projects() {
           {fetching ? (
             null
           ) : projects.length === 0 ? (
-            <div className="rounded-sm border border-dashed border-[#1E2538] bg-[#12151E]/50 p-16 text-center">
-              <Terminal size={32} className="mx-auto mb-4 text-[#0055FF]" />
-              <p className="label-mono leading-6 text-[#B8C4DE]">
+            <div
+              className="rounded-sm border border-dashed p-16 text-center"
+              style={{ borderColor: "var(--mt-border)", backgroundColor: "var(--mt-bg-card)" }}
+            >
+              <Terminal size={32} className="mx-auto mb-4" style={{ color: "var(--mt-blue)" }} />
+              <p className="label-mono leading-6" style={{ color: "var(--mt-text-secondary)" }}>
                 NO PROJECTS UPLOADED TO DATABASE YET.
                 <br />
                 LOG IN TO THE ADMIN PANEL TO ADD DEPLOYMENTS.
@@ -230,7 +234,10 @@ function Projects() {
                   className="group panel panel-interactive flex cursor-pointer flex-col overflow-hidden"
                 >
                   {project.image_url ? (
-                    <div className="relative h-64 w-full overflow-hidden border-b border-[#1E2538] bg-[#090A0F] flex items-center justify-center p-2">
+                    <div
+                      className="relative h-64 w-full overflow-hidden border-b flex items-center justify-center p-2"
+                      style={{ borderColor: "var(--mt-border)", backgroundColor: "var(--mt-bg)" }}
+                    >
                       <img
                         src={project.image_url}
                         alt={`${project.title} interface preview`}
@@ -239,25 +246,34 @@ function Projects() {
                       />
                       <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-black/70 via-black/10 to-transparent" />
                       {project.deployed_on && (
-                        <span className="absolute right-3 top-3 rounded-sm border border-[#0055FF]/70 bg-[#090A0F]/85 px-2 py-1 label-mono text-[10px] text-[#0055FF] backdrop-blur-sm z-10">
+                        <span
+                          className="absolute right-3 top-3 rounded-sm border px-2 py-1 label-mono text-[10px] backdrop-blur-sm z-10"
+                          style={{ borderColor: "var(--mt-blue)", backgroundColor: "var(--mt-bg)", color: "var(--mt-blue)" }}
+                        >
                           {project.deployed_on}
                         </span>
                       )}
                     </div>
                   ) : (
-                    <div className="flex aspect-video items-center justify-center border-b border-[#1E2538] bg-[#0B0D14] label-mono text-[#2A3552]">
+                    <div
+                      className="flex aspect-video items-center justify-center border-b label-mono"
+                      style={{ borderColor: "var(--mt-border)", backgroundColor: "var(--mt-bg-panel)", color: "var(--mt-border-accent)" }}
+                    >
                       NO IMAGE PROVIDED
                     </div>
                   )}
 
                   <div className="flex flex-1 flex-col gap-5 p-6">
                     <div className="flex-1">
-                      <h3 className="text-lg font-bold leading-snug text-white transition-colors duration-200 group-hover:text-[#4D8BFF]">
+                      <h3
+                        className="text-lg font-bold leading-snug transition-colors duration-200"
+                        style={{ color: "var(--mt-text-heading)" }}
+                      >
                         {project.title}
                       </h3>
 
                       {/* DESCRIPTION */}
-                      <p className="mt-3 line-clamp-3 text-[13px] leading-6 text-[#B8C4DE]">
+                      <p className="mt-3 line-clamp-3 text-[13px] leading-6" style={{ color: "var(--mt-text-secondary)" }}>
                         {project.description}
                       </p>
 
@@ -270,7 +286,7 @@ function Projects() {
                             </span>
                           ))}
                           {project.tools.length > 5 && (
-                            <span className="chip border-[#0055FF]/50 text-[#4D8BFF]">
+                            <span className="chip" style={{ borderColor: "var(--mt-blue)", color: "var(--mt-blue)" }}>
                               +{project.tools.length - 5}
                             </span>
                           )}
@@ -279,11 +295,15 @@ function Projects() {
                     </div>
 
                     {/* CALL TO ACTION */}
-                    <div className="flex items-center justify-between border-t border-[#1E2538] pt-4 label-mono font-bold text-[#B8C4DE] transition-colors duration-200 group-hover:text-white">
+                    <div
+                      className="flex items-center justify-between border-t pt-4 label-mono font-bold transition-colors duration-200"
+                      style={{ borderColor: "var(--mt-border)", color: "var(--mt-text-secondary)" }}
+                    >
                       <span>VIEW PROJECT DETAILS</span>
                       <ArrowRight
                         size={15}
-                        className="text-[#0055FF] transition-transform duration-200 group-hover:translate-x-1"
+                        className="transition-transform duration-200 group-hover:translate-x-1"
+                        style={{ color: "var(--mt-blue)" }}
                       />
                     </div>
                   </div>

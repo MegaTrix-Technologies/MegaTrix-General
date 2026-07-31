@@ -111,10 +111,29 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   errorComponent: ErrorComponent,
 });
 
+// Anti-flash script: reads theme preference BEFORE React hydrates to avoid white flash
+const THEME_SCRIPT = `
+(function() {
+  try {
+    var saved = localStorage.getItem('mt_theme');
+    if (saved === 'light') {
+      document.documentElement.setAttribute('data-theme', 'light');
+    } else if (!saved) {
+      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+        document.documentElement.setAttribute('data-theme', 'light');
+        localStorage.setItem('mt_theme', 'light');
+      }
+    }
+  } catch(e) {}
+})();
+`;
+
 function RootShell({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <head>
+        {/* Anti-flash: apply theme before CSS/JS loads */}
+        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
         <HeadContent />
       </head>
       <body>

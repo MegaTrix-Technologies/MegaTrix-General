@@ -373,14 +373,14 @@ export default function StickmanStage() {
       {/* SECTION HEADER & CONTROL BAR */}
       <div className="mb-8 flex flex-wrap items-end justify-between gap-6">
         <div>
-          <div className="mb-3 inline-flex items-center gap-2 border border-[#1E2538] bg-[#12151E] px-3.5 py-1.5 font-mono text-xs md:text-sm font-bold tracking-wider text-[#0055FF]">
+          <div className="mb-3 inline-flex items-center gap-2 rounded-sm border border-[var(--mt-border)] bg-[var(--mt-bg-card)] px-3.5 py-1.5 font-mono text-xs md:text-sm font-bold tracking-wider text-[var(--mt-blue)]">
             <Cpu size={15} />
             DIJKSTRA CYBERNETIC MAZE RUNNER
           </div>
-          <h2 className="text-3xl font-extrabold text-white md:text-5xl">
-            SHORTEST PATH <span className="text-[#0055FF] glow-text">ALGORITHM ARENA</span>
+          <h2 className="text-3xl font-extrabold text-[var(--mt-text-heading)] md:text-5xl">
+            SHORTEST PATH <span className="text-[var(--mt-blue)] glow-text">ALGORITHM ARENA</span>
           </h2>
-          <p className="mt-3 text-base md:text-lg text-[#CBD5E1] max-w-3xl">
+          <p className="mt-3 text-base md:text-lg text-[var(--mt-text-body)] max-w-3xl">
             Hover or click inside the high-density cyber maze below — Dijkstra's Shortest Path Algorithm navigates winding corridors and obstacle walls in real-time.
           </p>
         </div>
@@ -389,14 +389,14 @@ export default function StickmanStage() {
         <div className="flex flex-wrap items-center gap-3">
           <button
             onClick={handleRegenerateMaze}
-            className="flex items-center gap-2 border border-[#0055FF] bg-[#0055FF]/15 px-4 py-2.5 font-mono text-xs font-bold tracking-widest text-white hover:bg-[#0055FF] hover:shadow-[0_0_20px_rgba(0,85,255,0.4)] transition-all"
+            className="flex items-center gap-2 border border-[var(--mt-blue)] bg-[var(--mt-blue)] px-4 py-2.5 font-mono text-xs font-bold tracking-widest text-white shadow-md hover:bg-[var(--mt-blue-hover)] transition-all"
           >
             <RefreshCw size={14} />
             REGENERATE MAZE
           </button>
           <button
             onClick={handleResetPosition}
-            className="flex items-center gap-2 border border-[#1E2538] bg-[#12151E] px-4 py-2.5 font-mono text-xs font-bold tracking-widest text-[#CBD5E1] hover:border-[#0055FF] hover:text-white transition-all"
+            className="flex items-center gap-2 border border-[var(--mt-border)] bg-[var(--mt-bg-card)] px-4 py-2.5 font-mono text-xs font-bold tracking-widest text-[var(--mt-text-secondary)] hover:border-[var(--mt-blue)] hover:text-[var(--mt-text-heading)] transition-all"
           >
             <RotateCcw size={14} />
             RESET START
