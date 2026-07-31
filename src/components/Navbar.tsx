@@ -10,6 +10,7 @@ const NAV_LINKS = [
   { to: "/architecture", label: "ARCHITECTURE" },
 ] as const;
 
+// Main navigation bar component providing site routing and theme toggle controls
 export default function Navbar() {
   const { pathname } = useLocation();
   const { theme, toggleTheme } = useTheme();
