@@ -11,6 +11,10 @@ import {
   X,
   ChevronLeft,
   ChevronRight,
+  Layers,
+  ZoomIn,
+  ZoomOut,
+  RotateCcw,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
@@ -47,6 +51,46 @@ function ProjectDetailPage() {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
 
+  // MOUSE WHEEL ZOOM & PAN STATE FOR EXTENDED VIEW
+  const [zoomScale, setZoomScale] = useState(1);
+  const [zoomOffset, setZoomOffset] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+
+  // Reset zoom when active image index changes or modal closes
+  useEffect(() => {
+    setZoomScale(1);
+    setZoomOffset({ x: 0, y: 0 });
+  }, [activeImageIndex, lightboxOpen]);
+
+  const handleWheelZoom = (e: React.WheelEvent) => {
+    e.preventDefault();
+    const delta = e.deltaY < 0 ? 0.25 : -0.25;
+    setZoomScale((prev) => {
+      const next = Math.min(Math.max(prev + delta, 1), 4);
+      if (next === 1) setZoomOffset({ x: 0, y: 0 });
+      return next;
+    });
+  };
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (zoomScale > 1) {
+      setIsDragging(true);
+      setDragStart({ x: e.clientX - zoomOffset.x, y: e.clientY - zoomOffset.y });
+    }
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (isDragging && zoomScale > 1) {
+      setZoomOffset({
+        x: e.clientX - dragStart.x,
+        y: e.clientY - dragStart.y,
+      });
+    }
+  };
+
+  const handleMouseUp = () => setIsDragging(false);
+
   useEffect(() => {
     (async () => {
       setFetching(true);
@@ -55,15 +99,21 @@ function ProjectDetailPage() {
         return;
       }
 
+      let localMap: Record<string, Project> = {};
+      try {
+        const cached = localStorage.getItem("megatrix_local_projects");
+        if (cached) localMap = JSON.parse(cached);
+      } catch {}
+
       const { data } = await supabase
         .from("projects")
         .select("*")
         .eq("id", projectId)
         .maybeSingle();
 
-      if (data) {
-        setProject(data as Project);
-      } else {
+      let target: Project | null = data ? (data as Project) : null;
+
+      if (!target) {
         const { data: allData } = await supabase.from("projects").select("*");
         if (allData) {
           const match = allData.find(
@@ -71,12 +121,69 @@ function ProjectDetailPage() {
               p.id === projectId ||
               p.title.toLowerCase().replace(/[^a-z0-9]+/g, "-") === projectId,
           );
-          if (match) setProject(match as Project);
+          if (match) target = match as Project;
         }
       }
+
+      const local = localMap[projectId] || Object.values(localMap).find(
+        (p) => p.id === projectId || p.title.toLowerCase().replace(/[^a-z0-9]+/g, "-") === projectId
+      );
+
+      if (target || local) {
+        const merged: Project = {
+          ...(target || local!),
+          ...(local || {}),
+          gallery_images: (local?.gallery_images && local.gallery_images.length > 0)
+            ? local.gallery_images
+            : (target?.gallery_images || []),
+        };
+        setProject(merged);
+      }
+
       setFetching(false);
     })();
   }, [projectId]);
+
+  const allImages: string[] = [];
+  if (project?.image_url) allImages.push(project.image_url);
+  if (project?.gallery_images && Array.isArray(project.gallery_images)) {
+    project.gallery_images.forEach((img) => {
+      if (img && !allImages.includes(img)) allImages.push(img);
+    });
+  }
+
+  useEffect(() => {
+    if (lightboxOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [lightboxOpen]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && lightboxOpen) {
+        setLightboxOpen(false);
+        return;
+      }
+
+      if (allImages.length <= 1) return;
+
+      if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        setActiveImageIndex((prev) => (prev === 0 ? allImages.length - 1 : prev - 1));
+      } else if (e.key === "ArrowRight") {
+        e.preventDefault();
+        setActiveImageIndex((prev) => (prev === allImages.length - 1 ? 0 : prev + 1));
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [allImages.length, lightboxOpen]);
 
   if (fetching || !animationDone) {
     return (
@@ -87,14 +194,6 @@ function ProjectDetailPage() {
         duration={1000}
       />
     );
-  }
-
-  const allImages: string[] = [];
-  if (project?.image_url) allImages.push(project.image_url);
-  if (project?.gallery_images && Array.isArray(project.gallery_images)) {
-    project.gallery_images.forEach((img) => {
-      if (img && !allImages.includes(img)) allImages.push(img);
-    });
   }
 
   return (
@@ -154,59 +253,80 @@ function ProjectDetailPage() {
             )}
           </div>
 
-          {/* CENTERED PRIMARY IMAGE DISPLAY */}
+          {/* CENTERED PRIMARY IMAGE DISPLAY WITH BORDER-ATTACHED ARROWS */}
           <div className="max-w-5xl mx-auto space-y-6">
-            <div className="group relative border border-[#1E2538] bg-[#12151E] p-3 shadow-[0_0_60px_rgba(0,85,255,0.2)] overflow-hidden">
-              {allImages.length > 0 ? (
-                <div className="relative aspect-video w-full overflow-hidden bg-[#090A0F]">
-                  <img
-                    src={allImages[activeImageIndex] || allImages[0]}
-                    alt={project.title}
-                    className="h-full w-full object-cover transition-all duration-300 group-hover:scale-105"
-                  />
+            <div className="relative flex items-center justify-center">
+              {/* LEFT ARROW (ATTACHED TO LEFT BORDER OF IMAGE FRAME) */}
+              {allImages.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() => setActiveImageIndex((prev) => (prev === 0 ? allImages.length - 1 : prev - 1))}
+                  className="hidden sm:flex absolute -left-12 md:-left-14 top-1/2 -translate-y-1/2 z-30 h-16 w-11 items-center justify-center border border-[#0055FF] bg-[#12151E] text-white transition-all hover:bg-[#0055FF] shadow-[0_0_20px_rgba(0,85,255,0.4)] cursor-pointer rounded-l-sm"
+                  title="Previous Image (Left Arrow Key)"
+                  aria-label="Previous Image"
+                >
+                  <ChevronLeft size={28} />
+                </button>
+              )}
 
-                  {/* SIDE NAVIGATION ARROWS ON BIG IMAGE */}
-                  {allImages.length > 1 && (
-                    <>
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setActiveImageIndex((prev) => (prev === 0 ? allImages.length - 1 : prev - 1));
-                        }}
-                        className="absolute left-4 top-1/2 -translate-y-1/2 z-20 flex h-12 w-12 items-center justify-center border border-[#1E2538] bg-[#090A0F]/80 text-white backdrop-blur-md transition-all hover:border-[#0055FF] hover:bg-[#0055FF] hover:scale-110 shadow-2xl"
-                        title="Previous Image"
-                      >
-                        <ChevronLeft size={24} />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setActiveImageIndex((prev) => (prev === allImages.length - 1 ? 0 : prev + 1));
-                        }}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 z-20 flex h-12 w-12 items-center justify-center border border-[#1E2538] bg-[#090A0F]/80 text-white backdrop-blur-md transition-all hover:border-[#0055FF] hover:bg-[#0055FF] hover:scale-110 shadow-2xl"
-                        title="Next Image"
-                      >
-                        <ChevronRight size={24} />
-                      </button>
-                    </>
-                  )}
+              {/* CLEAN PRIMARY IMAGE RECTANGLE (ACCOMMODATES MOBILE APP & DESKTOP SCREENSHOTS PERFECTLY) */}
+              <div className="flex-1 group relative border border-[#1E2538] bg-[#12151E] p-3 shadow-[0_0_60px_rgba(0,85,255,0.2)] overflow-hidden flex items-center justify-center min-h-[400px] max-h-[620px]">
+                {allImages.length > 0 ? (
+                  <div className="relative h-full w-full flex items-center justify-center bg-[#090A0F] overflow-hidden p-2">
+                    <img
+                      src={allImages[activeImageIndex] || allImages[0]}
+                      alt={project.title}
+                      className="max-h-[580px] w-auto max-w-full object-contain transition-all duration-300 group-hover:scale-[1.02]"
+                    />
 
-                  <button
-                    onClick={() => setLightboxOpen(true)}
-                    className="absolute right-4 top-4 z-20 flex items-center gap-2 border border-[#1E2538] bg-[#090A0F]/90 px-4 py-2 font-sans text-xs font-bold tracking-widest text-white hover:border-[#0055FF] hover:text-[#0055FF] transition-all shadow-lg"
-                  >
-                    <Maximize2 size={14} /> EXPAND VIEW
-                  </button>
-                </div>
-              ) : (
-                <div className="flex aspect-video w-full flex-col items-center justify-center bg-[#090A0F] text-[#455270]">
-                  <ImageIcon size={56} className="mb-2 text-[#0055FF]/40" />
-                  <span className="font-mono text-xs tracking-widest">NO IMAGE PREVIEW AVAILABLE</span>
-                </div>
+                    <button
+                      onClick={() => setLightboxOpen(true)}
+                      className="absolute right-4 top-4 z-20 flex items-center gap-2 border border-[#1E2538] bg-[#090A0F]/90 px-4 py-2 font-sans text-xs font-bold tracking-widest text-white hover:border-[#0055FF] hover:text-[#0055FF] transition-all shadow-lg"
+                    >
+                      <Maximize2 size={14} /> EXPAND VIEW
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex min-h-[350px] w-full flex-col items-center justify-center bg-[#090A0F] text-[#455270]">
+                    <ImageIcon size={56} className="mb-2 text-[#0055FF]/40" />
+                    <span className="font-mono text-xs tracking-widest">NO IMAGE PREVIEW AVAILABLE</span>
+                  </div>
+                )}
+              </div>
+
+              {/* RIGHT ARROW (ATTACHED TO RIGHT BORDER OF IMAGE FRAME) */}
+              {allImages.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() => setActiveImageIndex((prev) => (prev === allImages.length - 1 ? 0 : prev + 1))}
+                  className="hidden sm:flex absolute -right-12 md:-right-14 top-1/2 -translate-y-1/2 z-30 h-16 w-11 items-center justify-center border border-[#0055FF] bg-[#12151E] text-white transition-all hover:bg-[#0055FF] shadow-[0_0_20px_rgba(0,85,255,0.4)] cursor-pointer rounded-r-sm"
+                  title="Next Image (Right Arrow Key)"
+                  aria-label="Next Image"
+                >
+                  <ChevronRight size={28} />
+                </button>
               )}
             </div>
+
+            {/* MOBILE OUTSIDE ARROWS */}
+            {allImages.length > 1 && (
+              <div className="flex sm:hidden items-center justify-between gap-3 pt-1">
+                <button
+                  type="button"
+                  onClick={() => setActiveImageIndex((prev) => (prev === 0 ? allImages.length - 1 : prev - 1))}
+                  className="flex-1 flex items-center justify-center gap-2 border border-[#0055FF] bg-[#12151E] py-2.5 text-xs font-bold text-white hover:bg-[#0055FF]"
+                >
+                  <ChevronLeft size={18} /> PREV IMAGE
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveImageIndex((prev) => (prev === allImages.length - 1 ? 0 : prev + 1))}
+                  className="flex-1 flex items-center justify-center gap-2 border border-[#0055FF] bg-[#12151E] py-2.5 text-xs font-bold text-white hover:bg-[#0055FF]"
+                >
+                  NEXT IMAGE <ChevronRight size={18} />
+                </button>
+              </div>
+            )}
 
             {/* THUMBNAILS GALLERY STRIP (CENTERED) */}
             {allImages.length > 1 && (
@@ -215,18 +335,18 @@ function ProjectDetailPage() {
                   <span>SYSTEM GALLERY ({allImages.length} ATTACHMENTS)</span>
                   <span>IMAGE {activeImageIndex + 1} OF {allImages.length}</span>
                 </div>
-                <div className="flex flex-wrap justify-center gap-3 max-h-48 overflow-y-auto p-1">
+                <div className="flex flex-wrap justify-center items-center gap-3 max-h-52 overflow-y-auto p-1.5">
                   {allImages.map((imgUrl, idx) => (
                     <button
                       key={idx}
                       onClick={() => setActiveImageIndex(idx)}
-                      className={`relative h-20 w-32 flex-shrink-0 overflow-hidden border p-0.5 transition-all ${
+                      className={`relative h-28 max-w-[150px] shrink-0 overflow-hidden border p-1 bg-[#050608] flex items-center justify-center transition-all cursor-pointer rounded-xs ${
                         activeImageIndex === idx
-                          ? "border-[#0055FF] shadow-[0_0_20px_rgba(0,85,255,0.6)] scale-105"
+                          ? "border-[#0055FF] bg-[#0055FF]/10 shadow-[0_0_20px_rgba(0,85,255,0.6)] scale-105"
                           : "border-[#1E2538] opacity-60 hover:opacity-100"
                       }`}
                     >
-                      <img src={imgUrl} alt={`Thumbnail ${idx + 1}`} className="h-full w-full object-cover" />
+                      <img src={imgUrl} alt={`Thumbnail ${idx + 1}`} className="max-h-full max-w-full h-auto w-auto object-contain" />
                     </button>
                   ))}
                 </div>
@@ -264,45 +384,7 @@ function ProjectDetailPage() {
               </div>
             </div>
 
-            {/* DEDICATED GALLERY IMAGES GRID */}
-            {allImages.length > 0 && (
-              <div className="space-y-4 pt-4 border-t border-[#1E2538]">
-                <div className="flex items-center justify-between font-mono text-xs font-bold tracking-widest text-[#0055FF]">
-                  <span className="flex items-center gap-2">
-                    <ImageIcon size={16} />
-                    PROJECT GALLERY & ATTACHED SCREENSHOTS ({allImages.length})
-                  </span>
-                  <span className="text-[#7C89A8]">CLICK TO PREVIEW</span>
-                </div>
-                <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
-                  {allImages.map((imgUrl, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => {
-                        setActiveImageIndex(idx);
-                        window.scrollTo({ top: 300, behavior: "smooth" });
-                      }}
-                      className={`group relative aspect-video overflow-hidden border bg-[#12151E] p-1 text-left transition-all ${
-                        activeImageIndex === idx
-                          ? "border-[#0055FF] shadow-[0_0_25px_rgba(0,85,255,0.4)]"
-                          : "border-[#1E2538] hover:border-[#0055FF]/60 opacity-85 hover:opacity-100"
-                      }`}
-                    >
-                      <img
-                        src={imgUrl}
-                        alt={`${project.title} Gallery Image ${idx + 1}`}
-                        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-2.5">
-                        <span className="font-mono text-[10px] font-bold tracking-wider text-white flex items-center gap-1.5">
-                          <Maximize2 size={12} className="text-[#0055FF]" /> VIEW ATTACHMENT #{idx + 1}
-                        </span>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
+
 
             {/* CENTERED ACTION BUTTONS */}
             <div className="flex flex-wrap items-center justify-center gap-6 pt-6 border-t border-[#1E2538]">
@@ -333,43 +415,91 @@ function ProjectDetailPage() {
       </>
     )}
 
-      {/* LIGHTBOX MODAL FOR EXPANDED IMAGE VIEW */}
+      {/* EXTENDED LIGHTBOX MODAL WITH CHROME / PDF-STYLE LEFT THUMBNAIL SIDEBAR & BORDER-ATTACHED ARROWS */}
       {lightboxOpen && allImages.length > 0 && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 backdrop-blur-md">
-          <button
-            onClick={() => setLightboxOpen(false)}
-            className="absolute right-6 top-6 border border-[#1E2538] bg-[#12151E] p-3 text-white hover:border-red-500 hover:text-red-400 transition-colors"
-          >
-            <X size={24} />
-          </button>
+        <div className="fixed inset-0 z-50 flex flex-col bg-[#08090D]/95 backdrop-blur-xl p-4 md:p-6 text-white font-sans overflow-hidden">
+          {/* MODAL TOP BAR */}
+          <div className="flex items-center justify-between border-b border-[#1E2538] pb-3 mb-3 shrink-0">
+            <div>
+              <h3 className="text-sm font-bold tracking-wider text-white uppercase">
+                {project.title}
+              </h3>
+              <p className="text-[11px] font-mono text-[#0055FF] pt-0.5">
+                PAGE {activeImageIndex + 1} OF {allImages.length}
+              </p>
+            </div>
 
-          <div className="relative max-h-[85vh] max-w-5xl overflow-hidden border border-[#1E2538] bg-[#090A0F] p-3 shadow-2xl">
-            <img
-              src={allImages[activeImageIndex]}
-              alt="Expanded Preview"
-              className="max-h-[80vh] w-auto max-w-full object-contain"
-            />
+            <button
+              onClick={() => setLightboxOpen(false)}
+              className="flex items-center gap-2 border border-[#1E2538] bg-[#12151E] px-3.5 py-1.5 text-xs font-bold tracking-widest text-[#B8C4DE] hover:border-red-500 hover:text-red-400 transition-colors rounded-sm cursor-pointer"
+            >
+              <X size={16} />
+              CLOSE (ESC)
+            </button>
+          </div>
 
+          {/* MAIN MODAL BODY: LEFT SIDEBAR + RIGHT IMAGE STAGE */}
+          <div className="flex-1 flex overflow-hidden gap-4 relative">
+            {/* CHROME / PDF-STYLE LEFT SIDEBAR THUMBNAILS LIST */}
             {allImages.length > 1 && (
-              <>
-                <button
-                  onClick={() =>
-                    setActiveImageIndex((prev) => (prev === 0 ? allImages.length - 1 : prev - 1))
-                  }
-                  className="absolute left-4 top-1/2 -translate-y-1/2 border border-[#1E2538] bg-[#090A0F]/90 p-3 text-white hover:border-[#0055FF]"
-                >
-                  <ChevronLeft size={24} />
-                </button>
-                <button
-                  onClick={() =>
-                    setActiveImageIndex((prev) => (prev === allImages.length - 1 ? 0 : prev + 1))
-                  }
-                  className="absolute right-4 top-1/2 -translate-y-1/2 border border-[#1E2538] bg-[#090A0F]/90 p-3 text-white hover:border-[#0055FF]"
-                >
-                  <ChevronRight size={24} />
-                </button>
-              </>
+              <div className="w-44 sm:w-52 md:w-60 shrink-0 border border-[#1E2538] bg-[#0D0F17] p-3 flex flex-col overflow-y-auto space-y-3 rounded-sm shadow-xl custom-scrollbar">
+                <div className="text-[10px] font-mono font-bold tracking-widest text-[#0055FF] border-b border-[#1E2538] pb-2 flex items-center justify-between">
+                  <span>PAGES / PHOTOS</span>
+                  <span>[{allImages.length}]</span>
+                </div>
+                <div className="space-y-3">
+                  {allImages.map((imgUrl, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setActiveImageIndex(idx)}
+                      className={`group relative w-full flex flex-col items-center p-2 border transition-all rounded-xs cursor-pointer ${
+                        activeImageIndex === idx
+                          ? "border-[#0055FF] bg-[#0055FF]/15 shadow-[0_0_15px_rgba(0,85,255,0.4)]"
+                          : "border-[#1E2538] bg-[#090A0F] hover:border-[#0055FF]/60 opacity-70 hover:opacity-100"
+                      }`}
+                    >
+                      <div className="min-h-[110px] max-h-[140px] w-full overflow-hidden bg-[#050608] border border-[#1E2538] flex items-center justify-center p-1.5 rounded-xs">
+                        <img src={imgUrl} alt={`Thumbnail ${idx + 1}`} className="max-h-full max-w-full h-auto w-auto object-contain" />
+                      </div>
+                      <span
+                        className={`mt-1.5 font-mono text-[10px] font-bold ${
+                          activeImageIndex === idx ? "text-[#00FFFF]" : "text-[#7C89A8]"
+                        }`}
+                      >
+                        PAGE {idx + 1}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
             )}
+
+            {/* MAIN IMAGE DISPLAY AREA WITH INVISIBLE MOUSE SCROLLER ZOOM & PAN */}
+            <div className="flex-1 relative flex items-center justify-center bg-[#050608] border border-[#1E2538] p-4 sm:p-8 overflow-hidden rounded-sm">
+              {/* IMAGE FRAME CONTAINER WITH MOUSE SCROLLER ZOOM AND PAN */}
+              <div
+                onWheel={handleWheelZoom}
+                onMouseDown={handleMouseDown}
+                onMouseMove={handleMouseMove}
+                onMouseUp={handleMouseUp}
+                onMouseLeave={handleMouseUp}
+                className="relative max-h-[82vh] max-w-full flex items-center justify-center overflow-hidden cursor-grab active:cursor-grabbing select-none"
+              >
+                <div
+                  className="relative border-2 border-[#1E2538] bg-[#090A0F] shadow-2xl p-1.5 transition-transform duration-75 ease-out"
+                  style={{
+                    transform: `translate(${zoomOffset.x}px, ${zoomOffset.y}px) scale(${zoomScale})`,
+                    transformOrigin: "center center",
+                  }}
+                >
+                  <img
+                    src={allImages[activeImageIndex]}
+                    alt="Expanded Preview"
+                    className="max-h-[76vh] w-auto max-w-full object-contain pointer-events-none"
+                  />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}

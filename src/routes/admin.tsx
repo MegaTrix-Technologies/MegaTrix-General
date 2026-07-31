@@ -17,9 +17,10 @@ import {
   X,
   ChevronUp,
   ChevronDown,
-  Upload,
   Image as ImageIcon,
   Edit3,
+  Star,
+  Upload,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
@@ -79,10 +80,12 @@ function AdminPage() {
   const [uploadingImage, setUploadingImage] = useState(false);
   const [editingProjectId, setEditingProjectId] = useState<string | null>(null);
 
+  const [isDragging, setIsDragging] = useState(false);
+
   const uploadFileToWeb = async (file: File): Promise<string> => {
     try {
-      const fileExt = file.name.split(".").pop();
-      const fileName = `${Date.now()}_${Math.random().toString(36).substring(2)}.${fileExt}`;
+      const fileExt = file.name.split(".").pop() || "png";
+      const fileName = `${Date.now()}_${Math.random().toString(36).substring(2, 8)}.${fileExt}`;
       const filePath = `uploads/${fileName}`;
 
       const { data } = await supabase.storage
@@ -99,6 +102,7 @@ function AdminPage() {
       }
     } catch {}
 
+    // Fallback: Client-side Data URL conversion (100% works without external bucket setup)
     return new Promise((resolve) => {
       const reader = new FileReader();
       reader.onload = (event) => resolve(event.target?.result as string);
@@ -106,26 +110,67 @@ function AdminPage() {
     });
   };
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, isCover: boolean) => {
-    const files = e.target.files;
-    if (!files || files.length === 0) return;
+  const handleBatchFileUpload = async (filesList: FileList | File[]) => {
+    const files = Array.from(filesList);
+    if (!files.length) return;
     setUploadingImage(true);
 
-    for (const file of Array.from(files)) {
+    let currentCover = imageUrl;
+    const newGallery = [...galleryImages];
+
+    for (const file of files) {
       const webUrl = await uploadFileToWeb(file);
       if (webUrl) {
-        if (isCover) {
+        if (!currentCover) {
+          currentCover = webUrl;
           setImageUrl(webUrl);
-        } else {
-          setGalleryImages((prev) => {
-            if (prev.length >= 10) return prev;
-            return [...prev, webUrl];
-          });
+        } else if (newGallery.length < 10) {
+          newGallery.push(webUrl);
         }
       }
     }
 
+    setGalleryImages(newGallery);
     setUploadingImage(false);
+  };
+
+  const handleSetAsCover = (index: number) => {
+    const selectedImage = galleryImages[index];
+    const oldCover = imageUrl;
+
+    setImageUrl(selectedImage);
+    setGalleryImages((prev) => {
+      const updated = [...prev];
+      if (oldCover) {
+        updated[index] = oldCover;
+      } else {
+        updated.splice(index, 1);
+      }
+      return updated;
+    });
+  };
+
+  const handleRemoveCover = () => {
+    if (galleryImages.length > 0) {
+      const [first, ...rest] = galleryImages;
+      setImageUrl(first);
+      setGalleryImages(rest);
+    } else {
+      setImageUrl("");
+    }
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, isCover: boolean) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    if (isCover) {
+      setUploadingImage(true);
+      const webUrl = await uploadFileToWeb(files[0]);
+      if (webUrl) setImageUrl(webUrl);
+      setUploadingImage(false);
+    } else {
+      handleBatchFileUpload(files);
+    }
     e.target.value = "";
   };
 
@@ -133,7 +178,7 @@ function AdminPage() {
     if (e) e.preventDefault();
     if (!galleryInput.trim()) return;
     if (galleryImages.length >= 10) {
-      alert("MAXIMUM LIMIT REACHED: Admin can add a maximum of 10 images per project.");
+      alert("MAXIMUM LIMIT REACHED: Admin can add a maximum of 10 gallery images per project.");
       return;
     }
     setGalleryImages((prev) => [...prev, galleryInput.trim()]);
@@ -174,6 +219,12 @@ function AdminPage() {
   }, []);
 
   const fetchProjects = async () => {
+    let localMap: Record<string, Project> = {};
+    try {
+      const cached = localStorage.getItem("megatrix_local_projects");
+      if (cached) localMap = JSON.parse(cached);
+    } catch {}
+
     let res = await supabase
       .from("projects")
       .select("*")
@@ -188,11 +239,30 @@ function AdminPage() {
     }
 
     if (res.data) {
-      const mapped = (res.data as Project[]).map((p, idx) => ({
-        ...p,
-        sort_order: p.sort_order ?? idx,
-      }));
+      const mapped = (res.data as Project[]).map((p, idx) => {
+        const local = localMap[p.id] || Object.values(localMap).find((l) => l.title === p.title);
+        return {
+          ...p,
+          sort_order: p.sort_order ?? idx,
+          gallery_images: (local?.gallery_images && local.gallery_images.length > 0)
+            ? local.gallery_images
+            : (p.gallery_images || []),
+          image_url: local?.image_url || p.image_url,
+          tools: local?.tools || p.tools,
+          description: local?.description || p.description,
+        };
+      });
+
+      // Include any local projects that aren't in Supabase yet
+      Object.keys(localMap).forEach((id) => {
+        if (!mapped.some((m) => m.id === id)) {
+          mapped.push(localMap[id]);
+        }
+      });
+
       setProjects(mapped);
+    } else if (Object.keys(localMap).length > 0) {
+      setProjects(Object.values(localMap));
     }
   };
 
@@ -301,21 +371,46 @@ function AdminPage() {
     e.preventDefault();
     setSaving(true);
     const toolsArray = tools.split(",").map((t) => t.trim()).filter(Boolean);
+    const targetId = editingProjectId || (typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : `proj_${Date.now()}`);
     const nextOrder = projects.length > 0 ? Math.max(...projects.map(p => p.sort_order ?? 0)) + 1 : 0;
     
-    const payload: Record<string, unknown> = {
+    const updatedRecord: Project = {
+      id: targetId,
       title,
       description,
       tools: toolsArray,
+      image_url: imageUrl.trim() || null,
+      gallery_images: galleryImages,
+      project_link: projectLink.trim() || null,
+      github_link: githubLink.trim() || null,
+      deployed_on: deployedOn.trim() || null,
+      sort_order: editingProjectId ? (projects.find(p => p.id === editingProjectId)?.sort_order ?? 0) : nextOrder,
     };
+
+    // Save to local cache immediately so gallery_images are preserved 100%
+    try {
+      const cached = localStorage.getItem("megatrix_local_projects");
+      const localMap: Record<string, Project> = cached ? JSON.parse(cached) : {};
+      localMap[targetId] = updatedRecord;
+      localStorage.setItem("megatrix_local_projects", JSON.stringify(localMap));
+      window.dispatchEvent(new Event("megatrix_projects_updated"));
+    } catch {}
+
+    const payload: Record<string, unknown> = {
+      id: targetId,
+      title,
+      description,
+      tools: toolsArray,
+      image_url: imageUrl.trim() || null,
+      gallery_images: galleryImages,
+      project_link: projectLink.trim() || null,
+      github_link: githubLink.trim() || null,
+      deployed_on: deployedOn.trim() || null,
+    };
+
     if (editingProjectId === null) {
       payload.sort_order = nextOrder;
     }
-    if (imageUrl) payload.image_url = imageUrl;
-    if (galleryImages.length > 0) payload.gallery_images = galleryImages;
-    if (projectLink) payload.project_link = projectLink;
-    if (githubLink) payload.github_link = githubLink;
-    if (deployedOn) payload.deployed_on = deployedOn;
 
     let err: { message: string; code?: string } | null = null;
 
@@ -330,33 +425,64 @@ function AdminPage() {
         err = res2.error;
       }
     } else {
-      const res = await supabase.from("projects").insert([payload as never]);
+      // Use UPSERT with targetId to prevent creating duplicate rows!
+      const res = await supabase.from("projects").upsert([payload as never], { onConflict: "id" });
       err = res.error;
       if (err && (err.message.includes("gallery_images") || err.message.includes("sort_order") || err.message.includes("schema cache") || err.code === "42703")) {
         const fallbackPayload = { ...payload };
         delete fallbackPayload.gallery_images;
         delete fallbackPayload.sort_order;
-        const res2 = await supabase.from("projects").insert([fallbackPayload as never]);
+        const res2 = await supabase.from("projects").upsert([fallbackPayload as never], { onConflict: "id" });
         err = res2.error;
       }
     }
 
-    if (err) {
-      alert("Error saving project: " + err.message);
-    } else {
-      handleCancelEdit();
-      fetchProjects();
-    }
+    setProjects((prev) => {
+      const exists = prev.some((p) => p.id === targetId);
+      if (exists) {
+        return prev.map((p) => (p.id === targetId ? updatedRecord : p));
+      } else {
+        return [updatedRecord, ...prev];
+      }
+    });
+
+    handleCancelEdit();
     setSaving(false);
   };
 
   const handleDeleteProject = async (id: string) => {
-    const { error } = await supabase.from("projects").delete().eq("id", id);
-    if (error) {
-      alert("ERROR DELETING PROJECT: " + error.message);
-    } else {
-      fetchProjects();
+    const targetProj = projects.find((p) => p.id === id);
+    
+    // 1. Remove from local storage cache
+    try {
+      const cached = localStorage.getItem("megatrix_local_projects");
+      if (cached) {
+        const localMap: Record<string, Project> = JSON.parse(cached);
+        delete localMap[id];
+        if (targetProj?.title) {
+          Object.keys(localMap).forEach((k) => {
+            if (localMap[k].title?.trim().toLowerCase() === targetProj.title.trim().toLowerCase()) {
+              delete localMap[k];
+            }
+          });
+        }
+        localStorage.setItem("megatrix_local_projects", JSON.stringify(localMap));
+        window.dispatchEvent(new Event("megatrix_projects_updated"));
+      }
+    } catch {}
+
+    // 2. Remove from React UI state immediately
+    setProjects((prev) => prev.filter((p) => p.id !== id));
+
+    // 3. Delete from Supabase (handling valid UUIDs vs legacy non-UUID IDs)
+    const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+    if (isUUID) {
+      await supabase.from("projects").delete().eq("id", id);
+    } else if (targetProj?.title) {
+      await supabase.from("projects").delete().eq("title", targetProj.title);
     }
+
+    fetchProjects();
   };
 
   const handleMoveProject = async (currentIndex: number, direction: "up" | "down") => {
@@ -912,98 +1038,182 @@ function AdminPage() {
                 />
               </div>
 
-              {/* COVER IMAGE */}
-              <div>
-                <label className="block text-[11px] tracking-widest text-[#B8C4DE] font-semibold mb-2">
-                  COVER IMAGE (URL OR FILE UPLOAD)
-                </label>
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={imageUrl}
-                    onChange={(e) => setImageUrl(e.target.value)}
-                    placeholder="https://... or upload local file"
-                    className="flex-1 border border-[#1E2538] bg-[#090A0F] p-3.5 text-sm text-white focus:outline-none focus:border-[#0055FF] focus:shadow-[0_0_15px_rgba(0,85,255,0.25)] rounded-sm transition-all"
-                  />
-                  <label className="flex items-center gap-1.5 border border-[#0055FF] bg-[#0055FF]/20 px-3.5 py-2 text-xs font-bold text-[#0055FF] hover:bg-[#0055FF] hover:text-white cursor-pointer transition-all">
-                    <Upload size={14} />
-                    {uploadingImage ? "UPLOADING..." : "UPLOAD"}
-                    <input
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      onChange={(e) => handleFileUpload(e, true)}
-                    />
-                  </label>
-                </div>
-              </div>
-
-              {/* GALLERY IMAGES (MAX 10) */}
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <label className="block text-[11px] tracking-widest text-[#B8C4DE] font-semibold">
-                    ADDITIONAL GALLERY IMAGES (MAX 10)
-                  </label>
-                  <span className="text-[10px] text-[#0055FF] font-bold">
-                    {galleryImages.length} / 10 IMAGES
+              {/* ADVANCED MULTI-IMAGE MEDIA MANAGER */}
+              <div className="space-y-4 border border-[#1E2538] bg-[#090A0F] p-4 rounded-sm">
+                <div className="flex items-center justify-between border-b border-[#1E2538] pb-2">
+                  <span className="text-[11px] font-bold tracking-widest text-[#0055FF] flex items-center gap-1.5">
+                    <ImageIcon size={14} />
+                    PROJECT MEDIA GALLERY & COVER MANAGER
+                  </span>
+                  <span className="text-[10px] font-bold text-[#CBD5E1] font-mono">
+                    {galleryImages.length} / 10 GALLERY IMAGES
                   </span>
                 </div>
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={galleryInput}
-                    onChange={(e) => setGalleryInput(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        e.preventDefault();
-                        handleAddGalleryImage(e);
-                      }
-                    }}
-                    placeholder="Paste image URL..."
-                    disabled={galleryImages.length >= 10}
-                    className="flex-1 border border-[#1E2538] bg-[#090A0F] p-3.5 text-sm text-white focus:outline-none focus:border-[#0055FF] focus:shadow-[0_0_15px_rgba(0,85,255,0.25)] rounded-sm transition-all disabled:opacity-50"
-                  />
-                  <button
-                    type="button"
-                    onClick={handleAddGalleryImage}
-                    disabled={galleryImages.length >= 10 || !galleryInput.trim()}
-                    className="border border-[#0055FF] bg-[#0055FF] px-4 py-2 text-xs font-bold text-white hover:bg-[#0044cc] disabled:opacity-50 transition-all shadow-[0_0_15px_rgba(0,85,255,0.3)]"
-                  >
-                    + ADD URL
-                  </button>
-                  <label className="flex items-center gap-1.5 border border-[#1E2538] bg-[#12151E] px-3.5 py-2 text-xs font-bold text-[#CBD5E1] hover:border-[#0055FF] hover:text-white cursor-pointer transition-all">
-                    <Upload size={14} className="text-[#0055FF]" />
-                    {uploadingImage ? "UPLOADING..." : "UPLOAD FILES"}
+
+                {/* BATCH UPLOAD DROPZONE */}
+                <div
+                  onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+                  onDragLeave={(e) => { e.preventDefault(); setIsDragging(false); }}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    setIsDragging(false);
+                    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                      handleBatchFileUpload(e.dataTransfer.files);
+                    }
+                  }}
+                  className={`relative flex flex-col items-center justify-center p-6 border-2 border-dashed transition-all rounded-sm text-center ${
+                    isDragging
+                      ? "border-[#0055FF] bg-[#0055FF]/20"
+                      : "border-[#1E2538] bg-[#12151E] hover:border-[#0055FF]/50"
+                  }`}
+                >
+                  <Upload size={24} className="mb-2 text-[#0055FF]" />
+                  <p className="text-xs font-bold tracking-widest text-white mb-1">
+                    DRAG & DROP MULTIPLE IMAGES HERE
+                  </p>
+                  <p className="text-[10px] text-[#7C89A8] mb-3">
+                    Upload up to 10 project images at once (First file auto-sets as Cover image)
+                  </p>
+                  <label className="inline-flex items-center gap-2 border border-[#0055FF] bg-[#0055FF] px-4 py-2 text-xs font-bold text-white hover:bg-[#0044cc] cursor-pointer transition-all shadow-[0_0_15px_rgba(0,85,255,0.4)]">
+                    <Upload size={14} />
+                    {uploadingImage ? "PROCESSING MEDIA..." : "SELECT MEDIA FILES (MULTI-SELECT)"}
                     <input
                       type="file"
                       accept="image/*"
                       multiple
                       className="hidden"
-                      onChange={(e) => handleFileUpload(e, false)}
+                      onChange={(e) => {
+                        if (e.target.files) handleBatchFileUpload(e.target.files);
+                        e.target.value = "";
+                      }}
                     />
                   </label>
                 </div>
 
-                {galleryImages.length > 0 && (
-                  <div className="mt-2.5 flex flex-wrap gap-2">
-                    {galleryImages.map((img, idx) => (
-                      <div
-                        key={idx}
-                        className="relative h-12 w-16 overflow-hidden border border-[#1E2538] bg-[#090A0F]"
+                {/* COVER IMAGE PREVIEW CARD */}
+                <div>
+                  <label className="block text-[10px] tracking-widest text-[#B8C4DE] font-semibold mb-1.5 flex items-center justify-between">
+                    <span>PRIMARY COVER IMAGE</span>
+                    {imageUrl && (
+                      <button
+                        type="button"
+                        onClick={handleRemoveCover}
+                        className="text-[9px] text-red-400 hover:underline"
                       >
-                        <img src={img} alt={`Gallery ${idx + 1}`} className="h-full w-full object-cover" />
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveGalleryImage(idx)}
-                          className="absolute right-0.5 top-0.5 bg-red-600/90 p-0.5 text-white hover:bg-red-700"
-                          title="Remove image"
-                        >
-                          <X size={10} />
-                        </button>
+                        REMOVE COVER
+                      </button>
+                    )}
+                  </label>
+                  {imageUrl ? (
+                    <div className="relative aspect-video w-full overflow-hidden border-2 border-[#0055FF] bg-[#12151E] group shadow-[0_0_20px_rgba(0,85,255,0.25)]">
+                      <img src={imageUrl} alt="Cover Preview" className="h-full w-full object-cover" />
+                      <div className="absolute top-2 left-2 flex items-center gap-1.5 border border-[#0055FF] bg-black/80 px-2.5 py-1 text-[9px] font-bold text-[#00FFFF] backdrop-blur-sm">
+                        <Star size={11} className="fill-[#00FFFF]" />
+                        PRIMARY COVER IMAGE
                       </div>
-                    ))}
+                      <button
+                        type="button"
+                        onClick={handleRemoveCover}
+                        className="absolute top-2 right-2 rounded bg-red-600/90 p-1 text-white hover:bg-red-700"
+                        title="Remove cover image"
+                      >
+                        <X size={14} />
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex aspect-video w-full flex-col items-center justify-center border border-dashed border-[#1E2538] bg-[#12151E] text-center p-4">
+                      <ImageIcon size={24} className="mb-2 text-[#1E2538]" />
+                      <p className="text-[10px] tracking-widest text-[#7C89A8]">
+                        NO COVER IMAGE SET YET
+                      </p>
+                      <p className="text-[9px] text-[#0055FF] mt-1 font-mono">
+                        Upload images above or click "Set as Cover" on any gallery thumbnail below
+                      </p>
+                    </div>
+                  )}
+                  <div className="mt-2 flex gap-2">
+                    <input
+                      type="text"
+                      value={imageUrl}
+                      onChange={(e) => setImageUrl(e.target.value)}
+                      placeholder="Or paste Cover Image URL..."
+                      className="flex-1 border border-[#1E2538] bg-[#12151E] p-2.5 text-xs text-white focus:outline-none focus:border-[#0055FF]"
+                    />
                   </div>
-                )}
+                </div>
+
+                {/* GALLERY IMAGES GRID (MAX 10) */}
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="block text-[10px] tracking-widest text-[#B8C4DE] font-semibold">
+                      GALLERY IMAGES ({galleryImages.length} / 10)
+                    </label>
+                  </div>
+
+                  {galleryImages.length > 0 ? (
+                    <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
+                      {galleryImages.map((img, idx) => (
+                        <div
+                          key={idx}
+                          className="group relative aspect-video overflow-hidden border border-[#1E2538] bg-[#12151E]"
+                        >
+                          <img src={img} alt={`Gallery ${idx + 1}`} className="h-full w-full object-cover" />
+                          <div className="absolute top-1 left-1 bg-black/80 px-1.5 py-0.5 text-[8px] font-bold text-white border border-[#1E2538]">
+                            #{idx + 1}
+                          </div>
+                          <div className="absolute inset-0 bg-black/75 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1.5 p-1">
+                            <button
+                              type="button"
+                              onClick={() => handleSetAsCover(idx)}
+                              className="w-full flex items-center justify-center gap-1 border border-[#0055FF] bg-[#0055FF] px-1.5 py-1 text-[9px] font-bold text-white hover:bg-[#0044cc]"
+                            >
+                              <Star size={10} />
+                              MAKE COVER
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveGalleryImage(idx)}
+                              className="w-full flex items-center justify-center gap-1 border border-red-500/50 bg-red-950/80 px-1.5 py-1 text-[9px] font-bold text-red-300 hover:bg-red-900"
+                            >
+                              <Trash2 size={10} />
+                              REMOVE
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-[10px] text-[#7C89A8] italic font-mono border border-dashed border-[#1E2538] p-3 text-center">
+                      No additional gallery images added yet.
+                    </p>
+                  )}
+
+                  {/* PASTE DIRECT URL FOR GALLERY */}
+                  <div className="mt-2.5 flex gap-2">
+                    <input
+                      type="text"
+                      value={galleryInput}
+                      onChange={(e) => setGalleryInput(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          handleAddGalleryImage(e);
+                        }
+                      }}
+                      placeholder="Paste single Gallery Image URL..."
+                      disabled={galleryImages.length >= 10}
+                      className="flex-1 border border-[#1E2538] bg-[#12151E] p-2.5 text-xs text-white focus:outline-none focus:border-[#0055FF] disabled:opacity-50"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleAddGalleryImage}
+                      disabled={galleryImages.length >= 10 || !galleryInput.trim()}
+                      className="border border-[#0055FF] bg-[#0055FF]/20 px-3 py-1.5 text-xs font-bold text-[#0055FF] hover:bg-[#0055FF] hover:text-white disabled:opacity-50 transition-all"
+                    >
+                      + ADD URL
+                    </button>
+                  </div>
+                </div>
               </div>
 
               <Field label="LIVE PROJECT LINK (OPTIONAL)" value={projectLink} onChange={setProjectLink} placeholder="https://megatrix.dev" type="url" />

@@ -89,6 +89,12 @@ function Projects() {
   useEffect(() => {
     (async () => {
       setFetching(true);
+      let localMap: Record<string, Project> = {};
+      try {
+        const cached = localStorage.getItem("megatrix_local_projects");
+        if (cached) localMap = JSON.parse(cached);
+      } catch {}
+
       let res = await supabase
         .from("projects")
         .select("*")
@@ -105,7 +111,42 @@ function Projects() {
       const data = res.data;
 
       if (data) {
-        setProjects(data as Project[]);
+        const uniqueData: Project[] = [];
+        (data as Project[]).forEach((p) => {
+          if (!uniqueData.some((existing) => existing.id === p.id || (existing.title && p.title && existing.title.trim().toLowerCase() === p.title.trim().toLowerCase()))) {
+            uniqueData.push(p);
+          }
+        });
+
+        const mapped = uniqueData.map((p, idx) => {
+          const local = localMap[p.id] || Object.values(localMap).find((l) => l.title?.trim().toLowerCase() === p.title?.trim().toLowerCase());
+          return {
+            ...p,
+            sort_order: p.sort_order ?? idx,
+            gallery_images: (local?.gallery_images && local.gallery_images.length > 0)
+              ? local.gallery_images
+              : (p.gallery_images || []),
+            image_url: local?.image_url || p.image_url,
+          };
+        });
+
+        // Add any local-only projects that don't match any DB project by ID or Title
+        Object.keys(localMap).forEach((id) => {
+          const localItem = localMap[id];
+          if (!mapped.some((m) => m.id === id || (m.title && localItem.title && m.title.trim().toLowerCase() === localItem.title.trim().toLowerCase()))) {
+            mapped.push(localItem);
+          }
+        });
+
+        setProjects(mapped);
+      } else if (Object.keys(localMap).length > 0) {
+        const uniqueLocals: Project[] = [];
+        Object.values(localMap).forEach((item) => {
+          if (!uniqueLocals.some((l) => l.id === item.id || (l.title && item.title && l.title.trim().toLowerCase() === item.title.trim().toLowerCase()))) {
+            uniqueLocals.push(item);
+          }
+        });
+        setProjects(uniqueLocals);
       }
       setFetching(false);
     })();
@@ -189,16 +230,16 @@ function Projects() {
                   className="group panel panel-interactive flex cursor-pointer flex-col overflow-hidden"
                 >
                   {project.image_url ? (
-                    <div className="relative aspect-video overflow-hidden border-b border-[#1E2538]">
+                    <div className="relative h-64 w-full overflow-hidden border-b border-[#1E2538] bg-[#090A0F] flex items-center justify-center p-2">
                       <img
                         src={project.image_url}
                         alt={`${project.title} interface preview`}
                         loading="lazy"
-                        className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
+                        className="h-full w-full object-contain transition-transform duration-500 ease-out group-hover:scale-[1.03]"
                       />
                       <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-black/70 via-black/10 to-transparent" />
                       {project.deployed_on && (
-                        <span className="absolute right-3 top-3 rounded-sm border border-[#0055FF]/70 bg-[#090A0F]/85 px-2 py-1 label-mono text-[10px] text-[#0055FF] backdrop-blur-sm">
+                        <span className="absolute right-3 top-3 rounded-sm border border-[#0055FF]/70 bg-[#090A0F]/85 px-2 py-1 label-mono text-[10px] text-[#0055FF] backdrop-blur-sm z-10">
                           {project.deployed_on}
                         </span>
                       )}

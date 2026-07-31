@@ -36,7 +36,7 @@ function NotFoundComponent() {
 }
 
 function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
-  console.error(error);
+  console.error("Root Error Boundary caught:", error);
   const router = useRouter();
   useEffect(() => {
     reportLovableError(error, { boundary: "tanstack_root_error_component" });
@@ -51,6 +51,11 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
         <p className="mt-2 text-sm text-muted-foreground">
           Something went wrong on our end. You can try refreshing or head back home.
         </p>
+        {error?.message && (
+          <p className="mt-3 text-[11px] font-mono text-red-400 bg-red-950/30 border border-red-500/30 p-2 text-left break-all max-h-32 overflow-y-auto">
+            {error.message}
+          </p>
+        )}
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <button
             onClick={() => {
@@ -122,26 +127,27 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
-  const [showPreloader, setShowPreloader] = useState(() => {
-    if (typeof window !== "undefined") {
-      return !sessionStorage.getItem("mt_preloader_seen");
+  const [showPreloader, setShowPreloader] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    if (!sessionStorage.getItem("mt_preloader_seen")) {
+      setShowPreloader(true);
     }
-    return true;
-  });
+  }, []);
 
   const handlePreloaderComplete = () => {
-    if (typeof window !== "undefined") {
-      sessionStorage.setItem("mt_preloader_seen", "true");
-    }
+    sessionStorage.setItem("mt_preloader_seen", "true");
     setShowPreloader(false);
   };
 
   return (
     <QueryClientProvider client={queryClient}>
-      {showPreloader && (
+      {mounted && showPreloader && (
         <Preloader onComplete={handlePreloaderComplete} duration={1200} />
       )}
-      <div className={showPreloader ? "invisible h-0 overflow-hidden" : "visible"}>
+      <div className={mounted && showPreloader ? "invisible h-0 overflow-hidden" : "visible"}>
         <Outlet />
       </div>
     </QueryClientProvider>
