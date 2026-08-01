@@ -22,13 +22,57 @@ export default function Navbar() {
     >
       <div className="mx-auto flex max-w-[1600px] items-center justify-between gap-6 px-6 py-3 md:px-12 md:py-4">
         <div className="flex items-center gap-10 lg:gap-14">
-          {/* LOGO */}
+          {/* LOGO — pixel art flips to Orbitron wordmark on hover */}
           <Link
             to="/"
             aria-label="Megatrix home"
-            className="flex shrink-0 items-center opacity-90 transition-opacity hover:opacity-100"
+            className="group relative flex h-10 shrink-0 items-center overflow-hidden md:h-11"
           >
-            <MTLogo className="h-9 w-auto md:h-10" />
+            {/* LAYER 1: Pixel-art MT mark (default visible, slides up + fades out on hover) */}
+            <span
+              className="absolute inset-0 flex items-center transition-all duration-300 ease-out group-hover:-translate-y-full group-hover:opacity-0"
+              aria-hidden="true"
+            >
+              <MTLogo className="h-9 w-auto md:h-10" />
+            </span>
+
+            {/* LAYER 2: Orbitron wordmark (hidden below, slides up + fades in on hover) */}
+            <span
+              className="absolute inset-0 flex items-center translate-y-full opacity-0 transition-all duration-300 ease-out group-hover:translate-y-0 group-hover:opacity-100"
+              aria-hidden="true"
+            >
+              <span
+                style={{
+                  fontFamily: "'Orbitron', sans-serif",
+                  fontWeight: 900,
+                  fontSize: "1.25rem",
+                  letterSpacing: "0.05em",
+                  lineHeight: 1,
+                  color: "#FFFFFF",
+                  whiteSpace: "nowrap",
+                  userSelect: "none",
+                }}
+              >
+                MegaTrix
+              </span>
+            </span>
+
+            {/* Invisible spacer — uses the wordmark to reserve full width */}
+            <span
+              style={{
+                fontFamily: "'Orbitron', sans-serif",
+                fontWeight: 900,
+                fontSize: "1.25rem",
+                letterSpacing: "0.05em",
+                lineHeight: 1,
+                whiteSpace: "nowrap",
+                visibility: "hidden",
+                userSelect: "none",
+              }}
+              aria-hidden="true"
+            >
+              MegaTrix
+            </span>
           </Link>
 
           {/* PRIMARY NAVIGATION */}

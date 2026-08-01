@@ -73,8 +73,57 @@ export default function Footer() {
         <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-4">
           {/* COLUMN 1: BRAND & MISSION */}
           <div className="space-y-4">
-            <Link to="/" className="inline-block">
-              <MTLogo className="h-10 w-auto" />
+            {/* LOGO — pixel art flips to Orbitron wordmark on hover */}
+            <Link
+              to="/"
+              aria-label="Megatrix home"
+              className="group relative inline-flex h-12 items-center overflow-hidden"
+            >
+              {/* LAYER 1: Pixel-art MT mark (default visible, slides up + fades out on hover) */}
+              <span
+                className="absolute inset-0 flex items-center transition-all duration-300 ease-out group-hover:-translate-y-full group-hover:opacity-0"
+                aria-hidden="true"
+              >
+                <MTLogo className="h-10 w-auto" />
+              </span>
+
+              {/* LAYER 2: Orbitron wordmark (slides up + fades in on hover) */}
+              <span
+                className="absolute inset-0 flex items-center translate-y-full opacity-0 transition-all duration-300 ease-out group-hover:translate-y-0 group-hover:opacity-100"
+                aria-hidden="true"
+              >
+                <span
+                  style={{
+                    fontFamily: "'Orbitron', sans-serif",
+                    fontWeight: 900,
+                    fontSize: "1.25rem",
+                    letterSpacing: "0.05em",
+                    lineHeight: 1,
+                    color: "#FFFFFF",
+                    whiteSpace: "nowrap",
+                    userSelect: "none",
+                  }}
+                >
+                  MegaTrix
+                </span>
+              </span>
+
+              {/* Invisible spacer — reserves width for the wordmark */}
+              <span
+                style={{
+                  fontFamily: "'Orbitron', sans-serif",
+                  fontWeight: 900,
+                  fontSize: "1.25rem",
+                  letterSpacing: "0.05em",
+                  lineHeight: 1,
+                  whiteSpace: "nowrap",
+                  visibility: "hidden",
+                  userSelect: "none",
+                }}
+                aria-hidden="true"
+              >
+                MegaTrix
+              </span>
             </Link>
             <p className="text-xs md:text-sm leading-relaxed text-[#CBD5E1]">
               Megatrix delivers high-performance full-stack web applications, hardened cloud infrastructure, and custom artificial intelligence pipelines with uncompromising execution.
