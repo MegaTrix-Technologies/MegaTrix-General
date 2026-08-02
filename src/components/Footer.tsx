@@ -4,6 +4,9 @@ import { Terminal, Mail, Phone, MapPin, ArrowUpRight, Cpu, Globe } from "lucide-
 import MTLogo from "@/components/MTLogo";
 import { supabase } from "@/integrations/supabase/client";
 
+/**
+ * Footer component displaying site navigation links, dynamic contact information from Supabase/cache, and social branding.
+ */
 export default function Footer() {
   const [contact, setContact] = useState({
     email: "contact@megatrix.com",
