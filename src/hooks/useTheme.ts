@@ -2,15 +2,6 @@ import { useEffect, useState } from "react";
 
 export type Theme = "dark" | "light";
 
-function getInitialTheme(): Theme {
-  if (typeof window === "undefined") return "dark";
-  // 1. Check saved preference
-  const saved = localStorage.getItem("mt_theme") as Theme | null;
-  if (saved === "dark" || saved === "light") return saved;
-  // 2. Fall back to OS preference
-  return window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
-}
-
 function applyTheme(theme: Theme) {
   const root = document.documentElement;
   if (theme === "light") {
@@ -21,17 +12,18 @@ function applyTheme(theme: Theme) {
 }
 
 export function useTheme() {
-  const [theme, setTheme] = useState<Theme>(() => getInitialTheme());
+  // Start as "dark" for SSR — the real value is corrected on first client paint below.
+  const [theme, setTheme] = useState<Theme>("dark");
 
   useEffect(() => {
-    // Ensure DOM attribute is synced
-    const current = getInitialTheme();
-    if (current !== theme) {
-      setTheme(current);
-    }
-    applyTheme(current);
+    // Read the ACTUAL data-theme already set by the inline anti-flicker script
+    // in __root.tsx. This is the source of truth and prevents the toggle thumb
+    // from being stuck in "dark" when the real saved/OS theme is "light".
+    const liveTheme: Theme =
+      document.documentElement.getAttribute("data-theme") === "light" ? "light" : "dark";
+    setTheme(liveTheme);
 
-    // Listen for OS theme preference changes when user has no explicit preference saved
+    // Keep in sync with OS preference changes only when no explicit preference is saved.
     const mediaQuery = window.matchMedia("(prefers-color-scheme: light)");
     const handleMediaChange = (e: MediaQueryListEvent) => {
       const saved = localStorage.getItem("mt_theme");
