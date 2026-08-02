@@ -138,7 +138,23 @@ function Projects() {
           }
         });
 
-        setProjects(mapped);
+        // If no DB or local projects exist, fallback to SEED_PROJECTS
+        if (mapped.length === 0) {
+          const seedsWithIds: Project[] = SEED_PROJECTS.map((sp, idx) => ({
+            id: `seed-${idx + 1}`,
+            title: sp.title,
+            description: sp.description,
+            tools: sp.tools,
+            image_url: sp.image_url,
+            project_link: sp.project_link,
+            github_link: sp.github_link,
+            deployed_on: sp.deployed_on,
+            sort_order: idx,
+          }));
+          setProjects(seedsWithIds);
+        } else {
+          setProjects(mapped);
+        }
       } else if (Object.keys(localMap).length > 0) {
         const uniqueLocals: Project[] = [];
         Object.values(localMap).forEach((item) => {
@@ -147,6 +163,19 @@ function Projects() {
           }
         });
         setProjects(uniqueLocals);
+      } else {
+        const seedsWithIds: Project[] = SEED_PROJECTS.map((sp, idx) => ({
+          id: `seed-${idx + 1}`,
+          title: sp.title,
+          description: sp.description,
+          tools: sp.tools,
+          image_url: sp.image_url,
+          project_link: sp.project_link,
+          github_link: sp.github_link,
+          deployed_on: sp.deployed_on,
+          sort_order: idx,
+        }));
+        setProjects(seedsWithIds);
       }
       setFetching(false);
     })();

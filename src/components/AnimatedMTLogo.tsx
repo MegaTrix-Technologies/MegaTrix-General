@@ -36,7 +36,7 @@ interface Props {
 
 export default function AnimatedMTLogo({
   className,
-  color = "var(--mt-logo-color, #FFFFFF)",
+  color = "var(--mt-animated-logo-color, #FFFFFF)",
   ghostColor = "var(--mt-logo-ghost, rgba(255, 255, 255, 0.12))",
   step = 45,
   hold = 1400,

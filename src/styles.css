@@ -94,9 +94,30 @@
   --mt-text-placeholder: #455270;
   --mt-blue: #0055FF;
   --mt-blue-hover: #1A66FF;
-  --mt-cyan: #22D3EE;
-  --mt-nav-bg: rgba(0, 0, 0, 0.80);
+  --mt-nav-bg: #090A0F;
   --mt-nav-border: #1E2538;
+  --mt-logo-color: #FFFFFF;
+  --mt-animated-logo-color: #FFFFFF;
+  --mt-footer-bg: #090A0F;
+  --mt-footer-border: #1E2538;
+  --mt-footer-text: #CBD5E1;
+  --mt-footer-heading: #0055FF;
+  --mt-footer-link: #CBD5E1;
+  --mt-footer-bottom-bg: #090A0F;
+  --mt-footer-bottom-border: #1E2538;
+  --mt-footer-bottom-text: #94A3B8;
+  --mt-footer-bottom-btn-bg: #000000;
+  --mt-footer-bottom-btn-border: #1E2538;
+  --mt-footer-bottom-btn-text: #CBD5E1;
+  --mt-form-box-bg: #090A0F;
+  --mt-form-box-border: #1E2538;
+  --mt-form-box-header: #FFFFFF;
+  --mt-form-box-subtext: #7C89A8;
+  --mt-form-label: #B8C4DE;
+  --mt-form-input-bg: #090A0F;
+  --mt-form-input-border: #1E2538;
+  --mt-form-input-text: #FFFFFF;
+  --mt-form-input-placeholder: #455270;
   --mt-panel-gradient-start: rgba(24, 30, 47, 0.9);
   --mt-panel-gradient-end: rgba(9, 10, 15, 0.95);
   --mt-chip-bg: rgba(9, 10, 15, 0.9);
@@ -207,9 +228,30 @@
   --mt-blue: #0044DD;
   --mt-blue-hover: #1A55EE;
   --mt-cyan: #0284C7;
-  --mt-nav-bg: #090A0F;
-  --mt-nav-border: #1E2538;
-  --mt-logo-color: #0044DD;
+  --mt-nav-bg: #F8FAFC;
+  --mt-nav-border: #D1D9EE;
+  --mt-logo-color: #0A0F1E;
+  --mt-animated-logo-color: #0044DD;
+  --mt-footer-bg: #F8FAFC;
+  --mt-footer-border: #D1D9EE;
+  --mt-footer-text: #0D1524;
+  --mt-footer-heading: #0044DD;
+  --mt-footer-link: #0D1524;
+  --mt-footer-bottom-bg: #0044DD;
+  --mt-footer-bottom-border: #0038B8;
+  --mt-footer-bottom-text: #FFFFFF;
+  --mt-footer-bottom-btn-bg: #FFFFFF;
+  --mt-footer-bottom-btn-border: rgba(255, 255, 255, 0.4);
+  --mt-footer-bottom-btn-text: #0044DD;
+  --mt-form-box-bg: #F8FAFC;
+  --mt-form-box-border: #D1D9EE;
+  --mt-form-box-header: #0A0F1E;
+  --mt-form-box-subtext: #475569;
+  --mt-form-label: #0A0F1E;
+  --mt-form-input-bg: #FFFFFF;
+  --mt-form-input-border: #CBD5E1;
+  --mt-form-input-text: #0044DD;
+  --mt-form-input-placeholder: #64748B;
   --mt-logo-ghost: rgba(0, 68, 221, 0.18);
   --mt-logo-glow: rgba(0, 68, 221, 0.8);
   --mt-panel-gradient-start: rgba(230, 237, 255, 0.95);
@@ -461,19 +503,11 @@
    Light-mode global overrides for components using hardcoded hex
    --------------------------------------------------------------- */
 
-/* Ensure Footer always renders in dark mode regardless of page theme */
-[data-theme="light"] footer,
-[data-theme="light"] .mt-footer {
-  --mt-bg: #090A0F;
-  --mt-bg-card: #12151E;
-  --mt-border: #1E2538;
-  --mt-border-accent: #2A3552;
-  --mt-text: #F8FAFC;
-  --mt-text-heading: #FFFFFF;
-  --mt-text-secondary: #B8C4DE;
-  --mt-text-muted: #7C89A8;
-  --mt-text-body: #CBD5E1;
-  --mt-blue: #0055FF;
-  color: #F8FAFC;
-  background-color: #090A0F;
+/* Global Theme-Aware Form Placeholder Rules */
+input::placeholder,
+textarea::placeholder,
+input::-webkit-input-placeholder,
+textarea::-webkit-input-placeholder {
+  color: var(--mt-form-input-placeholder) !important;
+  opacity: 0.75;
 }
