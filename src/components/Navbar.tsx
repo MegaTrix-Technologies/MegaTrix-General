@@ -3,6 +3,10 @@ import { Terminal, Sun, Moon } from "lucide-react";
 import MTLogo from "@/components/MTLogo";
 import { useTheme } from "@/hooks/useTheme";
 
+/**
+ * Navbar Component
+ * Renders the primary navigation header with responsive links, logo, theme toggler, and quick actions.
+ */
 // Main navigation header links configuration
 const NAV_LINKS = [
   { to: "/", label: "HOME" },
