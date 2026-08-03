@@ -44,7 +44,7 @@ const GRID: string[] = [
 
 export default function MTLogo({
   className = "h-12 w-auto",
-  color = "#FFFFFF",
+  color = "currentColor",
   alt = "MEGATRIX",
 }: Props) {
   return (

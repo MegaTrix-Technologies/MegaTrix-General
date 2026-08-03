@@ -299,22 +299,34 @@ function ContactPage() {
         </div>
 
         {/* INTERACTIVE CLIENT INQUIRY FORM BOX */}
-        <div className="border-2 border-[#1E2538] bg-[#090A0F] p-8 shadow-[0_0_40px_rgba(0,85,255,0.15)] rounded-sm">
-          <div className="mb-6 flex flex-wrap items-center justify-between gap-2 border-b border-[#1E2538] pb-4">
+        <div
+          className="border-2 p-8 shadow-md rounded-sm transition-colors duration-200"
+          style={{ backgroundColor: "var(--mt-form-box-bg)", borderColor: "var(--mt-form-box-border)" }}
+        >
+          <div
+            className="mb-6 flex flex-wrap items-center justify-between gap-2 border-b pb-4"
+            style={{ borderBottomColor: "var(--mt-form-box-border)" }}
+          >
             <div className="flex items-center gap-3">
-              <div className="flex h-8 w-8 items-center justify-center border border-[#0055FF] bg-[#0055FF]/20 text-[#0055FF]">
+              <div className="flex h-8 w-8 items-center justify-center border border-[var(--mt-blue)] bg-[var(--mt-blue)]/20 text-[var(--mt-blue)]">
                 <Send size={16} />
               </div>
               <div>
-                <h3 className="text-sm font-bold tracking-widest text-white">
+                <h3
+                  className="text-sm font-bold tracking-widest"
+                  style={{ color: "var(--mt-form-box-header)" }}
+                >
                   INITIATE PROJECT TRANSMISSION
                 </h3>
-                <p className="text-[10px] tracking-widest text-[#7C89A8]">
+                <p
+                  className="text-[10px] tracking-widest"
+                  style={{ color: "var(--mt-form-box-subtext)" }}
+                >
                   SUBMIT INQUIRY DETAILS, SPECIFICATIONS & ATTACHMENTS DIRECTLY TO OUR COMMAND CENTER
                 </p>
               </div>
             </div>
-            <span className="text-[10px] tracking-widest text-[#0055FF]">ENCRYPTED DATA NODE</span>
+            <span className="text-[10px] tracking-widest text-[var(--mt-blue)]">ENCRYPTED DATA NODE</span>
           </div>
 
           {inquirySuccessMsg && (
@@ -332,7 +344,10 @@ function ContactPage() {
           <form onSubmit={handleInquirySubmit} className="space-y-6">
             <div className="grid gap-6 md:grid-cols-3">
               <div>
-                <label className="block text-[10px] font-bold tracking-widest text-[#B8C4DE] mb-2">
+                <label
+                  className="block text-[10px] font-bold tracking-widest mb-2"
+                  style={{ color: "var(--mt-form-label)" }}
+                >
                   YOUR NAME / ORGANIZATION *
                 </label>
                 <input
@@ -341,12 +356,20 @@ function ContactPage() {
                   value={clientName}
                   onChange={(e) => setClientName(e.target.value)}
                   placeholder="e.g. John Doe / TechCorp"
-                  className="w-full border border-[#1E2538] bg-[#090A0F] px-4 py-3 text-xs text-white placeholder-[#455270] focus:outline-none focus:border-[#0055FF]"
+                  className="w-full rounded-sm border px-4 py-3 text-xs font-semibold focus:outline-none focus:border-[var(--mt-blue)]"
+                  style={{
+                    backgroundColor: "var(--mt-form-input-bg)",
+                    borderColor: "var(--mt-form-input-border)",
+                    color: "var(--mt-form-input-text)",
+                  }}
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold tracking-widest text-[#B8C4DE] mb-2">
+                <label
+                  className="block text-[10px] font-bold tracking-widest mb-2"
+                  style={{ color: "var(--mt-form-label)" }}
+                >
                   EMAIL ADDRESS *
                 </label>
                 <input
@@ -355,12 +378,20 @@ function ContactPage() {
                   value={clientEmail}
                   onChange={(e) => setClientEmail(e.target.value)}
                   placeholder="client@techcorp.com"
-                  className="w-full border border-[#1E2538] bg-[#090A0F] px-4 py-3 text-xs text-white placeholder-[#455270] focus:outline-none focus:border-[#0055FF]"
+                  className="w-full rounded-sm border px-4 py-3 text-xs font-semibold focus:outline-none focus:border-[var(--mt-blue)]"
+                  style={{
+                    backgroundColor: "var(--mt-form-input-bg)",
+                    borderColor: "var(--mt-form-input-border)",
+                    color: "var(--mt-form-input-text)",
+                  }}
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold tracking-widest text-[#B8C4DE] mb-2">
+                <label
+                  className="block text-[10px] font-bold tracking-widest mb-2"
+                  style={{ color: "var(--mt-form-label)" }}
+                >
                   PHONE / DIRECT CONTACT NUMBER
                 </label>
                 <input
@@ -368,13 +399,21 @@ function ContactPage() {
                   value={clientPhone}
                   onChange={(e) => setClientPhone(e.target.value)}
                   placeholder="+1 (555) 019-2831"
-                  className="w-full border border-[#1E2538] bg-[#090A0F] px-4 py-3 text-xs text-white placeholder-[#455270] focus:outline-none focus:border-[#0055FF]"
+                  className="w-full rounded-sm border px-4 py-3 text-xs font-semibold focus:outline-none focus:border-[var(--mt-blue)]"
+                  style={{
+                    backgroundColor: "var(--mt-form-input-bg)",
+                    borderColor: "var(--mt-form-input-border)",
+                    color: "var(--mt-form-input-text)",
+                  }}
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-[10px] font-bold tracking-widest text-[#B8C4DE] mb-2">
+              <label
+                className="block text-[10px] font-bold tracking-widest mb-2"
+                style={{ color: "var(--mt-form-label)" }}
+              >
                 PROJECT SUBJECT / DOMAIN *
               </label>
               <input
@@ -383,12 +422,20 @@ function ContactPage() {
                 value={clientSubject}
                 onChange={(e) => setClientSubject(e.target.value)}
                 placeholder="e.g. Enterprise SaaS Development, AI Pipeline, Cloud Security Hardening"
-                className="w-full border border-[#1E2538] bg-[#090A0F] px-4 py-3 text-xs text-white placeholder-[#455270] focus:outline-none focus:border-[#0055FF]"
+                className="w-full rounded-sm border px-4 py-3 text-xs font-semibold focus:outline-none focus:border-[var(--mt-blue)]"
+                style={{
+                  backgroundColor: "var(--mt-form-input-bg)",
+                  borderColor: "var(--mt-form-input-border)",
+                  color: "var(--mt-form-input-text)",
+                }}
               />
             </div>
 
             <div>
-              <label className="block text-[10px] font-bold tracking-widest text-[#B8C4DE] mb-2">
+              <label
+                className="block text-[10px] font-bold tracking-widest mb-2"
+                style={{ color: "var(--mt-form-label)" }}
+              >
                 PROJECT REQUIREMENTS & DETAILS *
               </label>
               <textarea
@@ -397,27 +444,40 @@ function ContactPage() {
                 value={clientMessage}
                 onChange={(e) => setClientMessage(e.target.value)}
                 placeholder="Describe your system requirements, architecture goals, tech stack preferences, timeline, and budget..."
-                className="w-full border border-[#1E2538] bg-[#090A0F] p-4 text-xs text-white placeholder-[#455270] focus:outline-none focus:border-[#0055FF]"
+                className="w-full rounded-sm border p-4 text-xs font-semibold focus:outline-none focus:border-[var(--mt-blue)]"
+                style={{
+                  backgroundColor: "var(--mt-form-input-bg)",
+                  borderColor: "var(--mt-form-input-border)",
+                  color: "var(--mt-form-input-text)",
+                }}
               />
             </div>
 
             {/* ATTACHMENTS & SPECIFICATION DOCUMENTS */}
             <div>
-              <label className="block text-[10px] font-bold tracking-widest text-[#B8C4DE] mb-2">
+              <label
+                className="block text-[10px] font-bold tracking-widest mb-2"
+                style={{ color: "var(--mt-form-label)" }}
+              >
                 ATTACH IMAGES, DOCUMENTS OR SPECIFICATION LINKS (OPTIONAL)
               </label>
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2.5">
                 <input
                   type="url"
                   value={attachmentUrlInput}
                   onChange={(e) => setAttachmentUrlInput(e.target.value)}
                   placeholder="Paste image URL, Figma link, Google Drive doc, or specification URL (https://...)"
-                  className="flex-1 border border-[#1E2538] bg-[#090A0F] px-4 py-2.5 text-xs text-white placeholder-[#455270] focus:outline-none focus:border-[#0055FF]"
+                  className="flex-1 rounded-sm border px-4 py-3 text-xs font-semibold focus:outline-none focus:border-[var(--mt-blue)]"
+                  style={{
+                    backgroundColor: "var(--mt-form-input-bg)",
+                    borderColor: "var(--mt-form-input-border)",
+                    color: "var(--mt-form-input-text)",
+                  }}
                 />
                 <button
                   type="button"
                   onClick={handleAddAttachment}
-                  className="flex items-center gap-1.5 border border-[#0055FF] bg-[#0055FF]/20 px-4 py-2.5 text-xs font-bold tracking-widest text-[#0055FF] hover:bg-[#0055FF] hover:text-white transition-all"
+                  className="flex items-center justify-center gap-2 rounded-sm border border-[var(--mt-blue)] bg-[var(--mt-blue)]/20 px-5 py-3 font-sans text-xs font-bold tracking-widest text-[var(--mt-blue)] hover:bg-[var(--mt-blue)] hover:text-white transition-all w-full sm:w-auto shrink-0"
                 >
                   <Paperclip size={14} />
                   ADD LINK

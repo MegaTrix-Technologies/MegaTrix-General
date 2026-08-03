@@ -549,23 +549,35 @@ function Home() {
           </div>
         </div>
 
-        {/* INTERACTIVE CLIENT INQUIRY FORM BOX (SOLID PITCH BLACK BG) */}
-        <div className="border-2 border-[#1E2538] bg-[#090A0F] p-8 shadow-[0_0_40px_rgba(0,85,255,0.15)] rounded-sm">
-          <div className="mb-6 flex flex-wrap items-center justify-between gap-2 border-b border-[#1E2538] pb-4">
+        {/* INTERACTIVE CLIENT INQUIRY FORM BOX */}
+        <div
+          className="border-2 p-8 shadow-md rounded-sm transition-colors duration-200"
+          style={{ backgroundColor: "var(--mt-form-box-bg)", borderColor: "var(--mt-form-box-border)" }}
+        >
+          <div
+            className="mb-6 flex flex-wrap items-center justify-between gap-2 border-b pb-4"
+            style={{ borderBottomColor: "var(--mt-form-box-border)" }}
+          >
             <div className="flex items-center gap-3">
-              <div className="flex h-9 w-9 items-center justify-center border border-[#0055FF] bg-[#0055FF]/20 text-[#0055FF]">
+              <div className="flex h-9 w-9 items-center justify-center border border-[var(--mt-blue)] bg-[var(--mt-blue)]/20 text-[var(--mt-blue)]">
                 <Send size={18} />
               </div>
               <div>
-                <h3 className="text-base font-bold tracking-widest text-white">
+                <h3
+                  className="text-base font-bold tracking-widest"
+                  style={{ color: "var(--mt-form-box-header)" }}
+                >
                   INITIATE PROJECT TRANSMISSION
                 </h3>
-                <p className="text-xs font-mono tracking-widest text-[#7C89A8]">
+                <p
+                  className="text-xs font-mono tracking-widest"
+                  style={{ color: "var(--mt-form-box-subtext)" }}
+                >
                   SUBMIT INQUIRY DETAILS, SPECIFICATIONS & ATTACHMENTS DIRECTLY TO OUR COMMAND CENTER
                 </p>
               </div>
             </div>
-            <span className="font-mono text-xs tracking-widest text-[#0055FF]">ENCRYPTED DATA NODE</span>
+            <span className="font-mono text-xs tracking-widest text-[var(--mt-blue)]">ENCRYPTED DATA NODE</span>
           </div>
 
           {inquirySuccessMsg && (
@@ -583,7 +595,10 @@ function Home() {
           <form onSubmit={handleInquirySubmit} className="space-y-6">
             <div className="grid gap-6 md:grid-cols-3">
               <div>
-                <label className="block font-mono text-xs font-bold tracking-widest text-[#B8C4DE] mb-2">
+                <label
+                  className="block font-mono text-xs font-bold tracking-widest mb-2"
+                  style={{ color: "var(--mt-form-label)" }}
+                >
                   YOUR NAME / ORGANIZATION *
                 </label>
                 <input
@@ -592,12 +607,20 @@ function Home() {
                   value={clientName}
                   onChange={(e) => setClientName(e.target.value)}
                   placeholder="e.g. John Doe / TechCorp"
-                  className="w-full rounded-sm border border-[#1E2538] bg-[#090A0F] px-4 py-3.5 text-sm text-white placeholder-[#455270] transition-colors duration-200 hover:border-[#2A3552] focus:border-[#0055FF] focus:outline-none focus:ring-1 focus:ring-[#0055FF]/40"
+                  className="w-full rounded-sm border px-4 py-3.5 text-sm font-semibold transition-colors duration-200 focus:border-[var(--mt-blue)] focus:outline-none focus:ring-1 focus:ring-[var(--mt-blue)]/40"
+                  style={{
+                    backgroundColor: "var(--mt-form-input-bg)",
+                    borderColor: "var(--mt-form-input-border)",
+                    color: "var(--mt-form-input-text)",
+                  }}
                 />
               </div>
 
               <div>
-                <label className="block font-mono text-xs font-bold tracking-widest text-[#B8C4DE] mb-2">
+                <label
+                  className="block font-mono text-xs font-bold tracking-widest mb-2"
+                  style={{ color: "var(--mt-form-label)" }}
+                >
                   EMAIL ADDRESS *
                 </label>
                 <input
@@ -606,12 +629,20 @@ function Home() {
                   value={clientEmail}
                   onChange={(e) => setClientEmail(e.target.value)}
                   placeholder="client@techcorp.com"
-                  className="w-full rounded-sm border border-[#1E2538] bg-[#090A0F] px-4 py-3.5 text-sm text-white placeholder-[#455270] transition-colors duration-200 hover:border-[#2A3552] focus:border-[#0055FF] focus:outline-none focus:ring-1 focus:ring-[#0055FF]/40"
+                  className="w-full rounded-sm border px-4 py-3.5 text-sm font-semibold transition-colors duration-200 focus:border-[var(--mt-blue)] focus:outline-none focus:ring-1 focus:ring-[var(--mt-blue)]/40"
+                  style={{
+                    backgroundColor: "var(--mt-form-input-bg)",
+                    borderColor: "var(--mt-form-input-border)",
+                    color: "var(--mt-form-input-text)",
+                  }}
                 />
               </div>
 
               <div>
-                <label className="block font-mono text-xs font-bold tracking-widest text-[#B8C4DE] mb-2">
+                <label
+                  className="block font-mono text-xs font-bold tracking-widest mb-2"
+                  style={{ color: "var(--mt-form-label)" }}
+                >
                   PHONE / DIRECT CONTACT NUMBER
                 </label>
                 <input
@@ -619,13 +650,21 @@ function Home() {
                   value={clientPhone}
                   onChange={(e) => setClientPhone(e.target.value)}
                   placeholder="+1 (555) 019-2831"
-                  className="w-full rounded-sm border border-[#1E2538] bg-[#090A0F] px-4 py-3.5 text-sm text-white placeholder-[#455270] transition-colors duration-200 hover:border-[#2A3552] focus:border-[#0055FF] focus:outline-none focus:ring-1 focus:ring-[#0055FF]/40"
+                  className="w-full rounded-sm border px-4 py-3.5 text-sm font-semibold transition-colors duration-200 focus:border-[var(--mt-blue)] focus:outline-none focus:ring-1 focus:ring-[var(--mt-blue)]/40"
+                  style={{
+                    backgroundColor: "var(--mt-form-input-bg)",
+                    borderColor: "var(--mt-form-input-border)",
+                    color: "var(--mt-form-input-text)",
+                  }}
                 />
               </div>
             </div>
 
             <div>
-              <label className="block font-mono text-xs font-bold tracking-widest text-[#B8C4DE] mb-2">
+              <label
+                className="block font-mono text-xs font-bold tracking-widest mb-2"
+                style={{ color: "var(--mt-form-label)" }}
+              >
                 PROJECT SUBJECT / DOMAIN *
               </label>
               <input
@@ -634,12 +673,20 @@ function Home() {
                 value={clientSubject}
                 onChange={(e) => setClientSubject(e.target.value)}
                 placeholder="e.g. Enterprise SaaS Development, AI Pipeline, Cloud Security Hardening"
-                className="w-full rounded-sm border border-[#1E2538] bg-[#090A0F] px-4 py-3.5 text-sm text-white placeholder-[#455270] transition-colors duration-200 hover:border-[#2A3552] focus:border-[#0055FF] focus:outline-none focus:ring-1 focus:ring-[#0055FF]/40"
+                className="w-full rounded-sm border px-4 py-3.5 text-sm font-semibold transition-colors duration-200 focus:border-[var(--mt-blue)] focus:outline-none focus:ring-1 focus:ring-[var(--mt-blue)]/40"
+                style={{
+                  backgroundColor: "var(--mt-form-input-bg)",
+                  borderColor: "var(--mt-form-input-border)",
+                  color: "var(--mt-form-input-text)",
+                }}
               />
             </div>
 
             <div>
-              <label className="block font-mono text-xs font-bold tracking-widest text-[#B8C4DE] mb-2">
+              <label
+                className="block font-mono text-xs font-bold tracking-widest mb-2"
+                style={{ color: "var(--mt-form-label)" }}
+              >
                 PROJECT REQUIREMENTS & DETAILS *
               </label>
               <textarea
@@ -648,27 +695,40 @@ function Home() {
                 value={clientMessage}
                 onChange={(e) => setClientMessage(e.target.value)}
                 placeholder="Describe your system requirements, architecture goals, tech stack preferences, timeline, and budget..."
-                className="w-full rounded-sm border border-[#1E2538] bg-[#090A0F] p-4 text-sm text-white placeholder-[#455270] transition-colors duration-200 hover:border-[#2A3552] focus:border-[#0055FF] focus:outline-none focus:ring-1 focus:ring-[#0055FF]/40"
+                className="w-full rounded-sm border p-4 text-sm font-semibold transition-colors duration-200 focus:border-[var(--mt-blue)] focus:outline-none focus:ring-1 focus:ring-[var(--mt-blue)]/40"
+                style={{
+                  backgroundColor: "var(--mt-form-input-bg)",
+                  borderColor: "var(--mt-form-input-border)",
+                  color: "var(--mt-form-input-text)",
+                }}
               />
             </div>
 
             {/* ATTACHMENTS & SPECIFICATION DOCUMENTS */}
             <div>
-              <label className="block font-mono text-xs font-bold tracking-widest text-[#B8C4DE] mb-2">
+              <label
+                className="block font-mono text-xs font-bold tracking-widest mb-2"
+                style={{ color: "var(--mt-form-label)" }}
+              >
                 ATTACH IMAGES, DOCUMENTS OR SPECIFICATION LINKS (OPTIONAL)
               </label>
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2.5">
                 <input
                   type="url"
                   value={attachmentUrlInput}
                   onChange={(e) => setAttachmentUrlInput(e.target.value)}
                   placeholder="Paste image URL, Figma link, Google Drive doc, or specification URL (https://...)"
-                  className="flex-1 rounded-sm border border-[#1E2538] bg-[#090A0F] px-4 py-3 text-sm text-white placeholder-[#455270] transition-colors duration-200 hover:border-[#2A3552] focus:border-[#0055FF] focus:outline-none focus:ring-1 focus:ring-[#0055FF]/40"
+                  className="flex-1 rounded-sm border px-4 py-3 text-sm font-semibold transition-colors duration-200 focus:border-[var(--mt-blue)] focus:outline-none focus:ring-1 focus:ring-[var(--mt-blue)]/40"
+                  style={{
+                    backgroundColor: "var(--mt-form-input-bg)",
+                    borderColor: "var(--mt-form-input-border)",
+                    color: "var(--mt-form-input-text)",
+                  }}
                 />
                 <button
                   type="button"
                   onClick={handleAddAttachment}
-                  className="flex items-center gap-2 border border-[#0055FF] bg-[#0055FF]/20 px-5 py-3 font-sans text-xs font-bold tracking-widest text-[#0055FF] hover:bg-[#0055FF] hover:text-white transition-all"
+                  className="flex items-center justify-center gap-2 rounded-sm border border-[var(--mt-blue)] bg-[var(--mt-blue)]/20 px-5 py-3 font-sans text-xs font-bold tracking-widest text-[var(--mt-blue)] hover:bg-[var(--mt-blue)] hover:text-white transition-all w-full sm:w-auto shrink-0"
                 >
                   <Paperclip size={15} />
                   ADD LINK

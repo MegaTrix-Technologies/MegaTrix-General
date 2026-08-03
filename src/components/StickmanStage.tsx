@@ -15,6 +15,7 @@ interface Point {
 export default function StickmanStage() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 960, height: 600 });
+  const [isMobile, setIsMobile] = useState(false);
 
   // Grid wall state
   const [walls, setWalls] = useState<boolean[][]>(() => createComplexInitialMaze());
@@ -23,7 +24,7 @@ export default function StickmanStage() {
   const [stickmanCell, setStickmanCell] = useState<{ r: number; c: number }>({ r: 1, c: 1 });
   const [stickmanPos, setStickmanPos] = useState<Point>({ x: 50, y: 50, r: 1, c: 1 });
 
-  // Mouse / Target goal state
+  // Mouse / Touch goal state
   const [targetCell, setTargetCell] = useState<{ r: number; c: number } | null>(null);
 
   // Dijkstra Shortest Path Result
@@ -31,7 +32,6 @@ export default function StickmanStage() {
   const [computationTime, setComputationTime] = useState<number>(0);
 
   // Animation states
-  const [isWalking, setIsWalking] = useState(false);
   const [facingRight, setFacingRight] = useState(true);
   const walkPhaseRef = useRef(0);
   const pathRef = useRef<Point[]>([]);
@@ -126,6 +126,33 @@ export default function StickmanStage() {
     return grid;
   }
 
+  // Resize listener to get exact arena pixel dimensions and mobile breakpoint state
+  useEffect(() => {
+    const updateSize = () => {
+      if (containerRef.current) {
+        const rect = containerRef.current.getBoundingClientRect();
+        setDimensions({ width: rect.width, height: rect.height });
+      }
+      setIsMobile(window.innerWidth < 768);
+    };
+    updateSize();
+    window.addEventListener("resize", updateSize);
+    return () => window.removeEventListener("resize", updateSize);
+  }, []);
+
+  const cellWidth = dimensions.width / COLS;
+  const cellHeight = dimensions.height / ROWS;
+
+  // Convert (r, c) to exact center pixel position (x, y)
+  const getCellCenter = useCallback(
+    (r: number, c: number): Point => {
+      const x = (c + 0.5) * cellWidth;
+      const y = (r + 0.5) * cellHeight;
+      return { x, y, r, c };
+    },
+    [cellWidth, cellHeight],
+  );
+
   // Generate randomized maze layout with guaranteed open passages
   const handleRegenerateMaze = () => {
     const grid: boolean[][] = Array.from({ length: ROWS }, () => Array(COLS).fill(false));
@@ -163,38 +190,11 @@ export default function StickmanStage() {
     setPathIndex(0);
   };
 
-  // Resize listener to get exact arena pixel dimensions
-  useEffect(() => {
-    const updateSize = () => {
-      if (containerRef.current) {
-        const rect = containerRef.current.getBoundingClientRect();
-        setDimensions({ width: rect.width, height: rect.height });
-      }
-    };
-    updateSize();
-    window.addEventListener("resize", updateSize);
-    return () => window.removeEventListener("resize", updateSize);
-  }, []);
-
-  const cellWidth = dimensions.width / COLS;
-  const cellHeight = dimensions.height / ROWS;
-
-  // Convert (r, c) to exact center pixel position (x, y)
-  const getCellCenter = useCallback(
-    (r: number, c: number): Point => {
-      const x = (c + 0.5) * cellWidth;
-      const y = (r + 0.5) * cellHeight;
-      return { x, y, r, c };
-    },
-    [cellWidth, cellHeight],
-  );
-
   // DIJKSTRA'S ALGORITHM IMPLEMENTATION
   const runDijkstra = useCallback(
     (start: { r: number; c: number }, target: { r: number; c: number }) => {
       const startTime = performance.now();
 
-      // If start or target is inside a wall, no valid path
       if (walls[start.r]?.[start.c] || walls[target.r]?.[target.c]) {
         setPath([]);
         setComputationTime(0);
@@ -226,9 +226,8 @@ export default function StickmanStage() {
         const { r, c } = current;
         visited[r][c] = true;
 
-        if (r === target.r && c === target.c) break; // Reached target!
+        if (r === target.r && c === target.c) break;
 
-        // 4-Directional Neighbors (Up, Down, Left, Right)
         const neighbors = [
           { r: r - 1, c },
           { r: r + 1, c },
@@ -254,7 +253,6 @@ export default function StickmanStage() {
         }
       }
 
-      // Reconstruct Shortest Path from Target to Start
       const pathPoints: Point[] = [];
       let curr: { r: number; c: number } | null = target;
 
@@ -275,8 +273,8 @@ export default function StickmanStage() {
     [walls, getCellCenter],
   );
 
-  // Mouse Move Handler inside Arena
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+  // Mouse & Touch Pointer Event Handler inside Arena
+  const handlePointerInteraction = (e: React.PointerEvent<HTMLDivElement>) => {
     if (!containerRef.current) return;
     const rect = containerRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
@@ -299,7 +297,7 @@ export default function StickmanStage() {
     }
   }, [targetCell, stickmanCell, runDijkstra]);
 
-  // Smooth movement loop & continuous sine-wave limb animation
+  // Smooth movement loop & continuous limb animation using requestAnimationFrame
   useEffect(() => {
     let animId: number;
 
@@ -317,10 +315,8 @@ export default function StickmanStage() {
           const speed = Math.max(14, Math.min(dist * 0.75, 24));
 
           if (dist > speed) {
-            setIsWalking(true);
             setFacingRight(dx >= 0);
 
-            // High-speed cyber sprint leg/arm animation phase
             walkPhaseRef.current += 0.5;
             const swing = Math.sin(walkPhaseRef.current);
             setLimbAngles({
@@ -337,7 +333,6 @@ export default function StickmanStage() {
               c: prev.c,
             };
           } else {
-            // Reached waypoint node! Advance pathIndexRef and cell coordinate
             pathIndexRef.current = currentIndex + 1;
             setPathIndex(currentIndex + 1);
             setStickmanCell({ r: nextWaypoint.r, c: nextWaypoint.c });
@@ -345,7 +340,6 @@ export default function StickmanStage() {
           }
         });
       } else {
-        setIsWalking(false);
         setLimbAngles((prev) => ({
           legLeft: prev.legLeft * 0.7,
           legRight: prev.legRight * 0.7,
@@ -369,34 +363,34 @@ export default function StickmanStage() {
   }, [path, stickmanPos, pathIndex]);
 
   return (
-    <section className="relative z-10 py-20 mx-auto max-w-[1600px] px-8 md:px-12">
+    <section className="relative z-10 py-12 md:py-20 mx-auto max-w-[1600px] px-6 md:px-12">
       {/* SECTION HEADER & CONTROL BAR */}
-      <div className="mb-8 flex flex-wrap items-end justify-between gap-6">
+      <div className="mb-6 md:mb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
           <div className="mb-3 inline-flex items-center gap-2 rounded-sm border border-[var(--mt-border)] bg-[var(--mt-bg-card)] px-3.5 py-1.5 font-mono text-xs md:text-sm font-bold tracking-wider text-[var(--mt-blue)]">
             <Cpu size={15} />
             DIJKSTRA CYBERNETIC MAZE RUNNER
           </div>
-          <h2 className="text-3xl font-extrabold text-[var(--mt-text-heading)] md:text-5xl">
+          <h2 className="text-2xl font-extrabold text-[var(--mt-text-heading)] md:text-5xl">
             SHORTEST PATH <span className="text-[var(--mt-blue)] glow-text">ALGORITHM ARENA</span>
           </h2>
-          <p className="mt-3 text-base md:text-lg text-[var(--mt-text-body)] max-w-3xl">
-            Hover or click inside the high-density cyber maze below — Dijkstra's Shortest Path Algorithm navigates winding corridors and obstacle walls in real-time.
+          <p className="mt-3 text-sm md:text-lg text-[var(--mt-text-body)] max-w-3xl">
+            Hover or tap inside the cyber maze below — Dijkstra's Shortest Path Algorithm navigates winding corridors and obstacle walls in real-time.
           </p>
         </div>
 
-        {/* CONTROLS BUTTONS */}
-        <div className="flex flex-wrap items-center gap-3">
+        {/* CONTROLS BUTTONS (RESPONSIVE STACK ON MOBILE) */}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
           <button
             onClick={handleRegenerateMaze}
-            className="flex items-center gap-2 border border-[var(--mt-blue)] bg-[var(--mt-blue)] px-4 py-2.5 font-mono text-xs font-bold tracking-widest text-white shadow-md hover:bg-[var(--mt-blue-hover)] transition-all"
+            className="flex items-center justify-center gap-2 border border-[var(--mt-blue)] bg-[var(--mt-blue)] px-4 py-2.5 font-mono text-xs font-bold tracking-widest text-white shadow-md hover:bg-[var(--mt-blue-hover)] transition-all rounded-sm"
           >
             <RefreshCw size={14} />
             REGENERATE MAZE
           </button>
           <button
             onClick={handleResetPosition}
-            className="flex items-center gap-2 border border-[var(--mt-border)] bg-[var(--mt-bg-card)] px-4 py-2.5 font-mono text-xs font-bold tracking-widest text-[var(--mt-text-secondary)] hover:border-[var(--mt-blue)] hover:text-[var(--mt-text-heading)] transition-all"
+            className="flex items-center justify-center gap-2 border border-[var(--mt-border)] bg-[var(--mt-bg-card)] px-4 py-2.5 font-mono text-xs font-bold tracking-widest text-[var(--mt-text-secondary)] hover:border-[var(--mt-blue)] hover:text-[var(--mt-text-heading)] transition-all rounded-sm"
           >
             <RotateCcw size={14} />
             RESET START
@@ -404,12 +398,13 @@ export default function StickmanStage() {
         </div>
       </div>
 
-      {/* DENSE HIGH-RESOLUTION MAZE ARENA CONTAINER (600px HEIGHT) */}
+      {/* DENSE HIGH-RESOLUTION MAZE ARENA CONTAINER (COMPACT RESPONSIVE HEIGHT ON MOBILE) */}
       <div
         ref={containerRef}
-        onMouseMove={handleMouseMove}
-        onMouseLeave={() => setTargetCell(null)}
-        className="group relative h-[540px] md:h-[600px] w-full overflow-hidden border-2 border-[#1E2538] bg-[#0B0D14] cursor-crosshair shadow-[0_0_50px_rgba(0,85,255,0.15)] hover:border-[#0055FF] transition-all rounded-sm"
+        onPointerDown={handlePointerInteraction}
+        onPointerMove={handlePointerInteraction}
+        onPointerLeave={() => setTargetCell(null)}
+        className="group relative h-[360px] sm:h-[460px] md:h-[600px] w-full overflow-hidden border-2 border-[#1E2538] bg-[#0B0D14] cursor-crosshair shadow-[0_0_50px_rgba(0,85,255,0.15)] hover:border-[#0055FF] transition-all rounded-sm touch-none"
       >
         {/* RETRO GRID CANVAS OVERLAY */}
         <div className="pointer-events-none absolute inset-0 retro-grid opacity-25" />
@@ -442,7 +437,7 @@ export default function StickmanStage() {
               points={polylinePoints}
               fill="none"
               stroke="#0055FF"
-              strokeWidth="3.5"
+              strokeWidth={isMobile ? "2.5" : "3.5"}
               strokeDasharray="5 3"
               className="animate-pulse drop-shadow-[0_0_15px_rgba(0,85,255,0.9)]"
             />
@@ -454,7 +449,7 @@ export default function StickmanStage() {
               key={idx}
               cx={p.x}
               cy={p.y}
-              r={idx === path.length - 1 ? 5 : 2.5}
+              r={idx === path.length - 1 ? (isMobile ? 3.5 : 5) : (isMobile ? 1.8 : 2.5)}
               fill={idx === path.length - 1 ? "#00FFFF" : "#0055FF"}
               className="drop-shadow-[0_0_8px_rgba(0,85,255,0.8)]"
             />
@@ -472,19 +467,19 @@ export default function StickmanStage() {
             }}
           >
             <div className="relative flex items-center justify-center">
-              <div className="h-7 w-7 rounded-full border border-[#0055FF] animate-ping opacity-75" />
-              <div className="absolute h-3.5 w-3.5 rounded-full bg-[#00FFFF]/50 border border-[#00FFFF]" />
+              <div className="h-5 w-5 md:h-7 md:w-7 rounded-full border border-[#0055FF] animate-ping opacity-75" />
+              <div className="absolute h-2.5 w-2.5 md:h-3.5 md:w-3.5 rounded-full bg-[#00FFFF]/50 border border-[#00FFFF]" />
             </div>
           </div>
         )}
 
         {/* STICKMAN CHARACTER SVG NAVIGATING MAZE */}
         <div
-          className="pointer-events-none absolute z-20"
+          className="pointer-events-none absolute z-20 transition-transform duration-75"
           style={{
             left: stickmanPos.x,
             top: stickmanPos.y,
-            transform: `translate(-50%, -50%) scaleX(${facingRight ? 1 : -1})`,
+            transform: `translate(-50%, -50%) scale(${isMobile ? 0.65 : 1}) scaleX(${facingRight ? 1 : -1})`,
           }}
         >
           <svg width="40" height="60" viewBox="0 0 40 60" className="drop-shadow-[0_0_14px_rgba(0,85,255,0.95)]">
@@ -542,29 +537,29 @@ export default function StickmanStage() {
           </svg>
         </div>
 
-        {/* HUD OVERLAY PANELS */}
-        <div className="pointer-events-none absolute top-4 left-4 right-4 flex items-center justify-between font-mono text-xs text-[#CBD5E1] z-10">
-          <div className="flex items-center gap-3 border border-[#1E2538] bg-[#090A0F]/90 px-3.5 py-1.5 shadow-md">
-            <span className="h-2 w-2 rounded-full bg-[#0055FF] animate-pulse" />
-            <span>ALGORITHM: <span className="text-[#0055FF] font-bold">DIJKSTRA SHORTEST PATH</span></span>
+        {/* HUD OVERLAY PANELS (COMPACT RESPONSIVE ON MOBILE) */}
+        <div className="pointer-events-none absolute top-2 left-2 right-2 sm:top-4 sm:left-4 sm:right-4 flex flex-wrap items-center justify-between gap-2 font-mono text-[10px] sm:text-xs text-[#CBD5E1] z-10">
+          <div className="flex items-center gap-2 border border-[#1E2538] bg-[#090A0F]/90 px-2.5 py-1 sm:px-3.5 sm:py-1.5 shadow-md">
+            <span className="h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full bg-[#0055FF] animate-pulse" />
+            <span>ALGORITHM: <span className="text-[#0055FF] font-bold">DIJKSTRA</span></span>
           </div>
 
-          <div className="flex items-center gap-4 border border-[#1E2538] bg-[#090A0F]/90 px-3.5 py-1.5 shadow-md">
+          <div className="flex items-center gap-3 border border-[#1E2538] bg-[#090A0F]/90 px-2.5 py-1 sm:px-3.5 sm:py-1.5 shadow-md">
             <span>NODES: <span className="text-white font-bold">{path.length > 0 ? path.length : 0}</span></span>
             <span>LATENCY: <span className="text-green-400 font-bold">{computationTime} ms</span></span>
           </div>
         </div>
 
         {/* BOTTOM HUD OVERLAY */}
-        <div className="pointer-events-none absolute bottom-4 left-4 right-4 flex items-center justify-between border-t border-[#1E2538] pt-2.5 font-mono text-xs tracking-widest text-[#7C89A8] z-10">
-          <div className="flex items-center gap-4">
-            <span className="text-[#0055FF] font-bold">STICKMAN POSITION:</span>
-            <span>GRID [ R: {stickmanCell.r} | C: {stickmanCell.c} ]</span>
+        <div className="pointer-events-none absolute bottom-2 left-2 right-2 sm:bottom-4 sm:left-4 sm:right-4 flex items-center justify-between border-t border-[#1E2538] pt-2 font-mono text-[9px] sm:text-xs tracking-widest text-[#7C89A8] z-10">
+          <div className="flex items-center gap-2 sm:gap-4">
+            <span className="text-[#0055FF] font-bold">POSITION:</span>
+            <span>GRID [ R:{stickmanCell.r} | C:{stickmanCell.c} ]</span>
           </div>
           <div className="hidden sm:block text-[#00FFFF]">
             {path.length > 1
-              ? `EXECUTING DIJKSTRA PATH (${path.length} NODES)`
-              : "HOVER MAZE CELL TO EXECUTE PATHFINDER"}
+              ? `EXECUTING PATH (${path.length} NODES)`
+              : "TAP/HOVER MAZE CELL TO EXECUTE PATHFINDER"}
           </div>
         </div>
       </div>

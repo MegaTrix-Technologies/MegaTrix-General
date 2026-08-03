@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 /**
  * Footer component displaying site navigation links, dynamic contact information from Supabase/cache, and social branding.
+ * Driven by pure CSS Custom Properties for 100% theme consistency across dark and bright modes.
  */
 export default function Footer() {
   const [contact, setContact] = useState({
@@ -66,7 +67,14 @@ export default function Footer() {
   };
 
   return (
-    <footer className="mt-footer relative z-20 border-t-2 border-[#1E2538] bg-black text-white font-sans" style={{ backgroundColor: "#090A0F", color: "#F8FAFC", borderTopColor: "#1E2538" }}>
+    <footer
+      className="mt-footer relative z-20 border-t-2 font-sans"
+      style={{
+        backgroundColor: "var(--mt-footer-bg)",
+        borderTopColor: "var(--mt-footer-border)",
+        color: "var(--mt-footer-text)",
+      }}
+    >
       {/* RETRO GRID OVERLAY */}
       <div className="pointer-events-none absolute inset-0 retro-grid opacity-15" />
       <div className="pointer-events-none absolute inset-0 scanlines opacity-20" />
@@ -87,7 +95,7 @@ export default function Footer() {
                 className="absolute inset-0 flex items-center transition-all duration-300 ease-out group-hover:-translate-y-full group-hover:opacity-0"
                 aria-hidden="true"
               >
-                <MTLogo className="h-10 w-auto" />
+                <MTLogo className="h-10 w-auto text-[var(--mt-logo-color)]" color="currentColor" />
               </span>
 
               {/* LAYER 2: Orbitron wordmark (slides up + fades in on hover) */}
@@ -102,7 +110,7 @@ export default function Footer() {
                     fontSize: "1.25rem",
                     letterSpacing: "0.05em",
                     lineHeight: 1,
-                    color: "#FFFFFF",
+                    color: "var(--mt-logo-color)",
                     whiteSpace: "nowrap",
                     userSelect: "none",
                   }}
@@ -128,10 +136,22 @@ export default function Footer() {
                 MegaTrix
               </span>
             </Link>
-            <p className="text-xs md:text-sm leading-relaxed text-[#CBD5E1]">
+
+            <p
+              className="text-xs md:text-sm leading-relaxed font-medium"
+              style={{ color: "var(--mt-footer-text)" }}
+            >
               Megatrix delivers high-performance full-stack web applications, hardened cloud infrastructure, and custom artificial intelligence pipelines with uncompromising execution.
             </p>
-            <div className="inline-flex items-center gap-2 border border-[#1E2538] bg-[#090A0F] px-3.5 py-1.5 font-mono text-xs text-[#0055FF]">
+
+            <div
+              className="inline-flex items-center gap-2 px-3.5 py-1.5 font-mono text-xs font-bold border"
+              style={{
+                borderColor: "var(--mt-footer-border)",
+                backgroundColor: "var(--mt-footer-bg)",
+                color: "var(--mt-footer-heading)",
+              }}
+            >
               <span className="h-2 w-2 rounded-full bg-green-400 animate-pulse" />
               SYSTEM STATUS: 100% OPERATIONAL
             </div>
@@ -139,11 +159,14 @@ export default function Footer() {
 
           {/* COLUMN 2: QUICK NAVIGATION */}
           <div>
-            <h3 className="mb-4 font-mono text-xs font-bold tracking-widest text-[#0055FF] flex items-center gap-2">
+            <h3
+              className="mb-4 font-mono text-xs font-bold tracking-widest flex items-center gap-2"
+              style={{ color: "var(--mt-footer-heading)" }}
+            >
               <Terminal size={14} />
               NAVIGATION ARCHIVE
             </h3>
-            <ul className="space-y-2.5 font-sans text-xs md:text-sm font-semibold text-[#CBD5E1]">
+            <ul className="space-y-2.5 font-sans text-xs md:text-sm font-semibold">
               {[
                 { to: "/", label: "Home" },
                 { to: "/projects", label: "Projects Catalog" },
@@ -153,9 +176,13 @@ export default function Footer() {
                 <li key={to}>
                   <Link
                     to={to}
-                    className="group inline-flex items-center gap-2 transition-colors hover:text-white"
+                    className="group inline-flex items-center gap-2 transition-colors"
+                    style={{ color: "var(--mt-footer-link)" }}
                   >
-                    <span className="text-[#0055FF] transition-transform duration-200 group-hover:translate-x-1">
+                    <span
+                      className="transition-transform duration-200 group-hover:translate-x-1"
+                      style={{ color: "var(--mt-footer-heading)" }}
+                    >
                       &rarr;
                     </span>
                     <span className="link-underline">{label}</span>
@@ -165,7 +192,7 @@ export default function Footer() {
               <li>
                 <Link
                   to="/admin"
-                  className="group inline-flex items-center gap-2 text-[#7C89A8] transition-colors hover:text-[#B8C4DE]"
+                  className="group inline-flex items-center gap-2 transition-colors text-[#7C89A8] [html[data-theme='light']_&]:text-[#475569] hover:opacity-100"
                 >
                   <span className="transition-transform duration-200 group-hover:translate-x-1">&rarr;</span>
                   <span className="link-underline">Command Center (Admin)</span>
@@ -176,29 +203,32 @@ export default function Footer() {
 
           {/* COLUMN 3: CORE ENGINEERING SERVICES */}
           <div>
-            <h3 className="mb-4 font-mono text-xs font-bold tracking-widest text-[#0055FF] flex items-center gap-2">
+            <h3
+              className="mb-4 font-mono text-xs font-bold tracking-widest flex items-center gap-2"
+              style={{ color: "var(--mt-footer-heading)" }}
+            >
               <Cpu size={14} />
               CORE COMPETENCIES
             </h3>
-            <ul className="space-y-2.5 text-xs md:text-sm text-[#CBD5E1]">
+            <ul className="space-y-2.5 text-xs md:text-sm font-semibold" style={{ color: "var(--mt-footer-link)" }}>
               <li className="flex items-center gap-2">
-                <span className="h-1.5 w-1.5 rounded-full bg-[#0055FF]" />
+                <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: "var(--mt-footer-heading)" }} />
                 Full-Stack SaaS Ecosystems
               </li>
               <li className="flex items-center gap-2">
-                <span className="h-1.5 w-1.5 rounded-full bg-[#0055FF]" />
+                <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: "var(--mt-footer-heading)" }} />
                 Cloud & DevOps Pipelines
               </li>
               <li className="flex items-center gap-2">
-                <span className="h-1.5 w-1.5 rounded-full bg-[#0055FF]" />
+                <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: "var(--mt-footer-heading)" }} />
                 AI & RAG Vector Inference
               </li>
               <li className="flex items-center gap-2">
-                <span className="h-1.5 w-1.5 rounded-full bg-[#0055FF]" />
+                <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: "var(--mt-footer-heading)" }} />
                 Multi-Tenant Databases
               </li>
               <li className="flex items-center gap-2">
-                <span className="h-1.5 w-1.5 rounded-full bg-[#0055FF]" />
+                <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: "var(--mt-footer-heading)" }} />
                 IVR Telephony & Fraud Control
               </li>
             </ul>
@@ -206,25 +236,28 @@ export default function Footer() {
 
           {/* COLUMN 4: DIRECT HEADQUARTERS & CONTACT */}
           <div>
-            <h3 className="mb-4 font-mono text-xs font-bold tracking-widest text-[#0055FF] flex items-center gap-2">
+            <h3
+              className="mb-4 font-mono text-xs font-bold tracking-widest flex items-center gap-2"
+              style={{ color: "var(--mt-footer-heading)" }}
+            >
               <Globe size={14} />
               COMMAND NODE CONTACT
             </h3>
-            <ul className="space-y-3 text-xs md:text-sm text-[#CBD5E1]">
+            <ul className="space-y-3 text-xs md:text-sm font-semibold" style={{ color: "var(--mt-footer-link)" }}>
               <li className="flex items-start gap-2.5">
-                <Mail size={16} className="mt-0.5 shrink-0 text-[#0055FF]" />
-                <a href={`mailto:${contact.email}`} className="link-underline break-all hover:text-white">
+                <Mail size={16} className="mt-0.5 shrink-0" style={{ color: "var(--mt-footer-heading)" }} />
+                <a href={`mailto:${contact.email}`} className="link-underline break-all">
                   {contact.email}
                 </a>
               </li>
               <li className="flex items-center gap-2.5">
-                <Phone size={16} className="shrink-0 text-[#0055FF]" />
-                <a href={`tel:${contact.phone.replace(/[^0-9+]/g, "")}`} className="link-underline hover:text-white">
+                <Phone size={16} className="shrink-0" style={{ color: "var(--mt-footer-heading)" }} />
+                <a href={`tel:${contact.phone.replace(/[^0-9+]/g, "")}`} className="link-underline">
                   {contact.phone}
                 </a>
               </li>
               <li className="flex items-start gap-2.5">
-                <MapPin size={16} className="mt-0.5 shrink-0 text-[#0055FF]" />
+                <MapPin size={16} className="mt-0.5 shrink-0" style={{ color: "var(--mt-footer-heading)" }} />
                 <span className="leading-6">{contact.address}</span>
               </li>
             </ul>
@@ -233,15 +266,29 @@ export default function Footer() {
       </div>
 
       {/* BOTTOM COPYRIGHT & TOP RETURN BAR */}
-      <div className="relative z-10 border-t border-[#1E2538] bg-[#090A0F] py-6">
+      <div
+        className="relative z-10 border-t py-6"
+        style={{
+          backgroundColor: "var(--mt-footer-bottom-bg)",
+          borderTopColor: "var(--mt-footer-bottom-border)",
+        }}
+      >
         <div className="mx-auto flex max-w-[1600px] flex-wrap items-center justify-between gap-4 px-8 md:px-12">
-          <div className="font-mono text-xs tracking-widest text-[#94A3B8]">
+          <div
+            className="font-mono text-xs font-bold tracking-widest"
+            style={{ color: "var(--mt-footer-bottom-text)" }}
+          >
             © 2026 MEGATRIX SOFTWARE HOUSE. ALL RIGHTS RESERVED.
           </div>
 
           <button
             onClick={scrollToTop}
-            className="group flex items-center gap-2 border border-[#1E2538] bg-black px-4 py-2 font-mono text-xs font-bold tracking-widest text-[#CBD5E1] hover:border-[#0055FF] hover:text-white transition-all"
+            className="group flex items-center gap-2 border px-4 py-2 font-mono text-xs font-bold tracking-widest transition-all hover:opacity-90"
+            style={{
+              backgroundColor: "var(--mt-footer-bottom-btn-bg)",
+              borderColor: "var(--mt-footer-bottom-btn-border)",
+              color: "var(--mt-footer-bottom-btn-text)",
+            }}
           >
             RETURN TO TOP
             <ArrowUpRight size={14} className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />

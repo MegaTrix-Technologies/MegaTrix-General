@@ -16,6 +16,20 @@ export default function Navbar() {
   const { theme, toggleTheme } = useTheme();
   const isLight = theme === "light";
 
+  // Colors that adapt to theme
+  const logoColor = isLight ? "#0A0F1E" : "#FFFFFF";
+  const wordmarkColor = isLight ? "#0A0F1E" : "#FFFFFF";
+  const navLinkActive = isLight ? "text-[#0A0F1E]" : "text-white";
+  const navLinkIdle = isLight
+    ? "text-[#3D5080] hover:bg-black/5 hover:text-[#0A0F1E]"
+    : "text-[#B8C4DE] hover:bg-white/5 hover:text-white";
+  const activeIndicator = isLight ? "bg-[#0044DD]" : "bg-[#0055FF]";
+  const mobileBorder = isLight ? "border-[#D1D9EE]" : "border-[#1E2538]";
+  const mobileLinkActive = isLight
+    ? "bg-[#0044DD]/10 text-[#0A0F1E]"
+    : "bg-[#0055FF]/20 text-white";
+  const mobileLinkIdle = isLight ? "text-[#3D5080] hover:text-[#0A0F1E]" : "text-[#B8C4DE] hover:text-white";
+
   return (
     <nav
       style={{ backgroundColor: "var(--mt-nav-bg)", borderBottomColor: "var(--mt-nav-border)" }}
@@ -34,7 +48,7 @@ export default function Navbar() {
               className="absolute inset-0 flex items-center transition-all duration-300 ease-out group-hover:-translate-y-full group-hover:opacity-0"
               aria-hidden="true"
             >
-              <MTLogo className="h-9 w-auto md:h-10" />
+              <MTLogo className="h-9 w-auto md:h-10" color={logoColor} />
             </span>
 
             {/* LAYER 2: Orbitron wordmark (hidden below, slides up + fades in on hover) */}
@@ -49,7 +63,7 @@ export default function Navbar() {
                   fontSize: "1.25rem",
                   letterSpacing: "0.05em",
                   lineHeight: 1,
-                  color: "#FFFFFF",
+                  color: wordmarkColor,
                   whiteSpace: "nowrap",
                   userSelect: "none",
                 }}
@@ -86,14 +100,12 @@ export default function Navbar() {
                   to={to}
                   aria-current={isActive ? "page" : undefined}
                   className={`relative rounded-sm px-3 py-2 font-sans text-xs font-bold tracking-[0.14em] transition-colors md:text-[13px] ${
-                    isActive
-                      ? "text-white"
-                      : "text-[#B8C4DE] hover:bg-white/5 hover:text-white"
+                    isActive ? navLinkActive : navLinkIdle
                   }`}
                 >
                   {label}
                   <span
-                    className={`pointer-events-none absolute inset-x-3 -bottom-[3px] h-[2px] origin-left bg-[#0055FF] transition-transform duration-200 ${
+                    className={`pointer-events-none absolute inset-x-3 -bottom-[3px] h-[2px] origin-left ${activeIndicator} transition-transform duration-200 ${
                       isActive ? "scale-x-100" : "scale-x-0"
                     }`}
                   />
@@ -105,38 +117,22 @@ export default function Navbar() {
 
         {/* RIGHT SIDE: THEME TOGGLE + CONTACT CTA */}
         <div className="flex items-center gap-3">
-          {/* THEME TOGGLE BUTTON */}
+          {/* THEME TOGGLE BUTTON — Minimalist Pill Switch */}
           <button
             onClick={toggleTheme}
             aria-label={isLight ? "Switch to dark mode" : "Switch to light mode"}
             title={isLight ? "Switch to dark mode" : "Switch to light mode"}
-            className="relative flex h-9 w-16 cursor-pointer items-center rounded-full border border-[#1E2538] bg-[#12151E] transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
-            style={{
-              boxShadow: "inset 0 1px 3px rgba(0,0,0,0.5)",
-            }}
+            className={`relative flex h-[28px] w-[54px] cursor-pointer items-center rounded-full p-0.5 transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0055FF] ${
+              isLight ? "bg-black" : "bg-white"
+            }`}
           >
-            {/* Track icons */}
+            {/* Sliding knob matching navbar color of current theme */}
             <span
-              className="absolute left-2 flex items-center justify-center transition-opacity duration-300"
-              style={{ opacity: isLight ? 1 : 0.3 }}
-            >
-              <Sun size={12} className="text-amber-400" />
-            </span>
-            <span
-              className="absolute right-2 flex items-center justify-center transition-opacity duration-300"
-              style={{ opacity: isLight ? 0.3 : 1 }}
-            >
-              <Moon size={12} className="text-[#7C89A8]" />
-            </span>
-            {/* Sliding thumb */}
-            <span
-              className="absolute h-6 w-6 rounded-full shadow-md transition-all duration-300"
+              className="h-[22px] w-[22px] rounded-full shadow-sm transition-all duration-300"
               style={{
-                left: isLight ? "calc(100% - 28px)" : "4px",
-                backgroundColor: isLight ? "#0044DD" : "#0055FF",
-                boxShadow: isLight
-                  ? "0 2px 8px rgba(0,68,221,0.6)"
-                  : "0 2px 8px rgba(0,85,255,0.6)",
+                left: isLight ? "calc(100% - 25px)" : "3px",
+                backgroundColor: isLight ? "#F8FAFC" : "#090A0F",
+                position: "absolute",
               }}
             />
           </button>
@@ -154,7 +150,7 @@ export default function Navbar() {
 
       {/* MOBILE NAVIGATION ROW */}
       <div
-        className="flex items-center gap-1 overflow-x-auto border-t border-[#1E2538] px-4 py-2 md:hidden"
+        className={`flex items-center gap-1 overflow-x-auto border-t ${mobileBorder} px-4 py-2 md:hidden`}
       >
         {NAV_LINKS.map(({ to, label }) => {
           const isActive = pathname === to;
@@ -164,9 +160,7 @@ export default function Navbar() {
               to={to}
               aria-current={isActive ? "page" : undefined}
               className={`whitespace-nowrap rounded-sm px-3 py-1.5 font-sans text-[11px] font-bold tracking-[0.14em] transition-colors ${
-                isActive
-                  ? "bg-[#0055FF]/20 text-white"
-                  : "text-[#B8C4DE] hover:text-white"
+                isActive ? mobileLinkActive : mobileLinkIdle
               }`}
             >
               {label}
