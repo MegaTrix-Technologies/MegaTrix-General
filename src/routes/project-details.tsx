@@ -17,8 +17,9 @@ import {
   RotateCcw,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { fetchProjectById, type Project } from "@/lib/projectsData";
+import OptimizedImage from "@/components/OptimizedImage";
 import Navbar from "@/components/Navbar";
-import Preloader from "@/components/Preloader";
 import MTLogo from "@/components/MTLogo";
 import Footer from "@/components/Footer";
 
@@ -26,25 +27,20 @@ export const Route = createFileRoute("/project-details")({
   validateSearch: (search: Record<string, unknown>) => ({
     id: (search.id as string) || "",
   }),
+  head: () => ({
+    meta: [
+      { title: "Project Details | MegaTrix" },
+      { name: "description", content: "Technical and architecture specification of systems engineered by MegaTrix." },
+      { property: "og:title", content: "Project Details | MegaTrix" },
+      { property: "og:description", content: "Technical and architecture specification of systems engineered by MegaTrix." },
+      { property: "og:type", content: "website" },
+    ],
+  }),
   component: ProjectDetailPage,
 });
 
-interface Project {
-  id: string;
-  title: string;
-  description: string;
-  tools: string[];
-  image_url: string | null;
-  gallery_images?: string[];
-  project_link: string | null;
-  github_link: string | null;
-  deployed_on: string | null;
-  created_at?: string;
-}
-
 function ProjectDetailPage() {
   const { id: projectId } = Route.useSearch();
-  const [animationDone, setAnimationDone] = useState(false);
 
   const [project, setProject] = useState<Project | null>(null);
   const [fetching, setFetching] = useState(true);
@@ -92,56 +88,22 @@ function ProjectDetailPage() {
   const handleMouseUp = () => setIsDragging(false);
 
   useEffect(() => {
+    let isMounted = true;
     (async () => {
       setFetching(true);
-      if (!projectId) {
-        setFetching(false);
-        return;
-      }
-
-      let localMap: Record<string, Project> = {};
-      try {
-        const cached = localStorage.getItem("megatrix_local_projects");
-        if (cached) localMap = JSON.parse(cached);
-      } catch {}
-
-      const { data } = await supabase
-        .from("projects")
-        .select("*")
-        .eq("id", projectId)
-        .maybeSingle();
-
-      let target: Project | null = data ? (data as Project) : null;
-
-      if (!target) {
-        const { data: allData } = await supabase.from("projects").select("*");
-        if (allData) {
-          const match = allData.find(
-            (p) =>
-              p.id === projectId ||
-              p.title.toLowerCase().replace(/[^a-z0-9]+/g, "-") === projectId,
-          );
-          if (match) target = match as Project;
+      const targetId = projectId || "seed-1";
+      const resolved = await fetchProjectById(targetId);
+      if (isMounted) {
+        setProject(resolved);
+        if (resolved?.title && typeof document !== "undefined") {
+          document.title = `${resolved.title} | MegaTrix`;
         }
+        setFetching(false);
       }
-
-      const local = localMap[projectId] || Object.values(localMap).find(
-        (p) => p.id === projectId || p.title.toLowerCase().replace(/[^a-z0-9]+/g, "-") === projectId
-      );
-
-      if (target || local) {
-        const merged: Project = {
-          ...(target || local!),
-          ...(local || {}),
-          gallery_images: (local?.gallery_images && local.gallery_images.length > 0)
-            ? local.gallery_images
-            : (target?.gallery_images || []),
-        };
-        setProject(merged);
-      }
-
-      setFetching(false);
     })();
+    return () => {
+      isMounted = false;
+    };
   }, [projectId]);
 
   const allImages: string[] = [];
@@ -185,17 +147,6 @@ function ProjectDetailPage() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [allImages.length, lightboxOpen]);
 
-  if (fetching || !animationDone) {
-    return (
-      <Preloader
-        onComplete={() => setAnimationDone(true)}
-        title="PROJECTS_LOAD.exe"
-        statusText="LOADING PROJECT DETAILS..."
-        duration={1000}
-      />
-    );
-  }
-
   return (
     <div className="relative min-h-screen bg-[var(--mt-bg)] text-[var(--mt-text)] font-sans">
       <div className="pointer-events-none fixed inset-0 iso-blocks opacity-60" />
@@ -207,7 +158,11 @@ function ProjectDetailPage() {
       <Navbar />
 
       {fetching ? (
-        null
+        <div className="relative z-10 mx-auto max-w-[1400px] px-6 md:px-12 py-20 text-center animate-pulse">
+          <div className="mx-auto h-8 w-64 bg-[var(--mt-bg-panel)] rounded-sm mb-6" />
+          <div className="mx-auto h-12 w-96 bg-[var(--mt-bg-panel)] rounded-sm mb-10" />
+          <div className="mx-auto h-[400px] max-w-4xl bg-[var(--mt-bg-panel)] rounded-sm" />
+        </div>
       ) : !project ? (
         <div className="relative z-10 mx-auto max-w-[1600px] px-8 md:px-12 py-32 text-center">
           <h2 className="text-2xl font-bold text-red-400">PROJECT RECORD NOT FOUND</h2>
@@ -269,14 +224,17 @@ function ProjectDetailPage() {
                 </button>
               )}
 
-              {/* CLEAN PRIMARY IMAGE RECTANGLE (ACCOMMODATES MOBILE APP & DESKTOP SCREENSHOTS PERFECTLY) */}
+              {/* CLEAN PRIMARY IMAGE RECTANGLE */}
               <div className="flex-1 group relative border border-[var(--mt-border)] bg-[var(--mt-bg-card)] p-3 shadow-[0_0_60px_rgba(0,85,255,0.2)] overflow-hidden flex items-center justify-center min-h-[400px] max-h-[620px]">
                 {allImages.length > 0 ? (
                   <div className="relative h-full w-full flex items-center justify-center bg-[var(--mt-bg)] overflow-hidden p-2">
-                    <img
+                    <OptimizedImage
                       src={allImages[activeImageIndex] || allImages[0]}
                       alt={project.title}
+                      thumbnailSize="lg"
+                      fetchPriority="high"
                       className="max-h-[580px] w-auto max-w-full object-contain transition-all duration-300 group-hover:scale-[1.02]"
+                      containerClassName="max-h-[580px] w-auto max-w-full flex items-center justify-center"
                     />
 
                     <button
@@ -346,7 +304,13 @@ function ProjectDetailPage() {
                           : "border-[var(--mt-border)] opacity-60 hover:opacity-100"
                       }`}
                     >
-                      <img src={imgUrl} alt={`Thumbnail ${idx + 1}`} className="max-h-full max-w-full h-auto w-auto object-contain" />
+                      <OptimizedImage
+                        src={imgUrl}
+                        alt={`Thumbnail ${idx + 1}`}
+                        thumbnailSize="sm"
+                        className="max-h-full max-w-full h-auto w-auto object-contain"
+                        containerClassName="h-full w-full flex items-center justify-center"
+                      />
                     </button>
                   ))}
                 </div>
@@ -384,8 +348,6 @@ function ProjectDetailPage() {
               </div>
             </div>
 
-
-
             {/* CENTERED ACTION BUTTONS */}
             <div className="flex flex-wrap items-center justify-center gap-6 pt-6 border-t border-[var(--mt-border)]">
               {project.project_link && (
@@ -422,7 +384,7 @@ function ProjectDetailPage() {
           <div className="flex items-center justify-between border-b border-[var(--mt-border)] pb-3 mb-3 shrink-0">
             <div>
               <h3 className="text-sm font-bold tracking-wider text-[var(--mt-text-heading)] uppercase">
-                {project.title}
+                {project?.title}
               </h3>
               <p className="text-[11px] font-mono text-[var(--mt-blue)] pt-0.5">
                 PAGE {activeImageIndex + 1} OF {allImages.length}
@@ -459,7 +421,13 @@ function ProjectDetailPage() {
                       }`}
                     >
                       <div className="min-h-[110px] max-h-[140px] w-full overflow-hidden bg-[var(--mt-bg-deep)] border border-[var(--mt-border)] flex items-center justify-center p-1.5 rounded-xs">
-                        <img src={imgUrl} alt={`Thumbnail ${idx + 1}`} className="max-h-full max-w-full h-auto w-auto object-contain" />
+                        <OptimizedImage
+                          src={imgUrl}
+                          alt={`Thumbnail ${idx + 1}`}
+                          thumbnailSize="sm"
+                          className="max-h-full max-w-full h-auto w-auto object-contain"
+                          containerClassName="h-full w-full flex items-center justify-center"
+                        />
                       </div>
                       <span
                         className={`mt-1.5 font-mono text-[10px] font-bold ${
@@ -476,7 +444,6 @@ function ProjectDetailPage() {
 
             {/* MAIN IMAGE DISPLAY AREA WITH INVISIBLE MOUSE SCROLLER ZOOM & PAN */}
             <div className="flex-1 relative flex items-center justify-center bg-[var(--mt-bg-deep)] border border-[var(--mt-border)] p-4 sm:p-8 overflow-hidden rounded-sm">
-              {/* IMAGE FRAME CONTAINER WITH MOUSE SCROLLER ZOOM AND PAN */}
               <div
                 onWheel={handleWheelZoom}
                 onMouseDown={handleMouseDown}
@@ -492,10 +459,13 @@ function ProjectDetailPage() {
                     transformOrigin: "center center",
                   }}
                 >
-                  <img
+                  <OptimizedImage
                     src={allImages[activeImageIndex]}
                     alt="Expanded Preview"
+                    thumbnailSize="full"
+                    fetchPriority="high"
                     className="max-h-[76vh] w-auto max-w-full object-contain pointer-events-none"
+                    containerClassName="max-h-[76vh] w-auto max-w-full flex items-center justify-center"
                   />
                 </div>
               </div>

@@ -28,6 +28,13 @@ import StickmanStage from "@/components/StickmanStage";
 import Footer from "@/components/Footer";
 
 export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "MegaTrix | Digital Systems & Enterprise Software" },
+      { name: "description", content: "High-performance full-stack applications, secure cloud infrastructure, and custom AI pipelines." },
+      { property: "og:title", content: "MegaTrix | Digital Systems & Enterprise Software" },
+    ],
+  }),
   component: Home,
 });
 

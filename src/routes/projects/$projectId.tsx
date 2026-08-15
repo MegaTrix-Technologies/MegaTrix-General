@@ -15,26 +15,21 @@ import {
   Layers,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { fetchProjectById, type Project } from "@/lib/projectsData";
 import Navbar from "@/components/Navbar";
 import Preloader from "@/components/Preloader";
 import Footer from "@/components/Footer";
 
 export const Route = createFileRoute("/projects/$projectId")({
+  head: () => ({
+    meta: [
+      { title: "Project Specification | MegaTrix" },
+      { name: "description", content: "Detailed technical and architecture specification of systems developed by MegaTrix." },
+      { property: "og:title", content: "Project Specification | MegaTrix" },
+    ],
+  }),
   component: ProjectDetailPage,
 });
-
-interface Project {
-  id: string;
-  title: string;
-  description: string;
-  tools: string[];
-  image_url: string | null;
-  gallery_images?: string[] | null;
-  project_link: string | null;
-  github_link: string | null;
-  deployed_on: string | null;
-  created_at?: string;
-}
 
 /* ─── IMAGE FALLBACK COMPONENT ─── */
 function GalleryImage({
@@ -170,42 +165,26 @@ function ProjectDetailPage() {
   const [lightboxIndex, setLightboxIndex] = useState(0);
 
   useEffect(() => {
+    let isMounted = true;
     const loaderTimer = setTimeout(() => {
-      if (fetching) setShowLoader(true);
+      if (fetching && isMounted) setShowLoader(true);
     }, 400);
 
     (async () => {
       setFetching(true);
-      if (!projectId) {
+      const targetId = projectId || "seed-1";
+      const resolved = await fetchProjectById(targetId);
+      if (isMounted) {
+        setProject(resolved);
         setFetching(false);
         clearTimeout(loaderTimer);
-        return;
       }
-
-      const { data } = await supabase
-        .from("projects")
-        .select("*")
-        .eq("id", projectId)
-        .maybeSingle();
-
-      if (data) {
-        setProject(data as Project);
-      } else {
-        const { data: allData } = await supabase.from("projects").select("*");
-        if (allData) {
-          const match = allData.find(
-            (p) =>
-              p.id === projectId ||
-              p.title.toLowerCase().replace(/[^a-z0-9]+/g, "-") === projectId,
-          );
-          if (match) setProject(match as Project);
-        }
-      }
-      setFetching(false);
-      clearTimeout(loaderTimer);
     })();
 
-    return () => clearTimeout(loaderTimer);
+    return () => {
+      isMounted = false;
+      clearTimeout(loaderTimer);
+    };
   }, [projectId]);
 
   /* Build the full images array (cover + gallery, deduplicated) */

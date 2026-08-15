@@ -7,6 +7,13 @@ import MTLogo from "@/components/MTLogo";
 import Footer from "@/components/Footer";
 
 export const Route = createFileRoute("/architecture")({
+  head: () => ({
+    meta: [
+      { title: "Architecture | MegaTrix" },
+      { name: "description", content: "Core competencies, high-throughput systems, and architectural standards at MegaTrix." },
+      { property: "og:title", content: "Architecture | MegaTrix" },
+    ],
+  }),
   component: ArchitecturePage,
 });
 

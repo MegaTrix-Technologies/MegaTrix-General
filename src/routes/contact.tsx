@@ -20,6 +20,13 @@ import MTLogo from "@/components/MTLogo";
 import Footer from "@/components/Footer";
 
 export const Route = createFileRoute("/contact")({
+  head: () => ({
+    meta: [
+      { title: "Contact | MegaTrix" },
+      { name: "description", content: "Initiate project transmission with the MegaTrix enterprise software engineering team." },
+      { property: "og:title", content: "Contact | MegaTrix" },
+    ],
+  }),
   component: ContactPage,
 });
 

@@ -27,6 +27,12 @@ import Navbar from "@/components/Navbar";
 import MTLogo from "@/components/MTLogo";
 
 export const Route = createFileRoute("/admin")({
+  head: () => ({
+    meta: [
+      { title: "Admin Console | MegaTrix" },
+      { name: "robots", content: "noindex, nofollow" },
+    ],
+  }),
   component: AdminPage,
 });
 

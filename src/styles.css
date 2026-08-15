@@ -511,3 +511,17 @@ textarea::-webkit-input-placeholder {
   color: var(--mt-form-input-placeholder) !important;
   opacity: 0.75;
 }
+
+/* Skeleton Shimmer Animation */
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.animate-shimmer {
+  animation: shimmer 1.6s infinite ease-in-out;
+}
