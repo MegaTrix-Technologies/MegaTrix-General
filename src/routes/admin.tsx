@@ -245,7 +245,7 @@ function AdminPage() {
     }
 
     if (res.data) {
-      const mapped = (res.data as Project[]).map((p, idx) => {
+      const mapped: Project[] = (res.data as Project[]).map((p, idx) => {
         const local = localMap[p.id] || Object.values(localMap).find((l) => l.title === p.title);
         return {
           ...p,
@@ -607,7 +607,7 @@ function AdminPage() {
 
         <form
           onSubmit={handleLogin}
-          className="relative z-10 w-full max-w-md border border-[#1E2538] bg-[#12151E] p-8 shadow-[0_0_40px_rgba(0,85,255,0.15)]"
+          className="relative z-10 w-full max-w-md border border-[#1E2538] bg-black p-8 shadow-[0_0_40px_rgba(0,85,255,0.15)]"
         >
           <div className="mb-6 flex items-center gap-4">
             <div className="flex h-14 w-14 items-center justify-center bg-[#0055FF] p-2 shadow-[0_0_20px_rgba(0,85,255,0.4)]">
@@ -728,7 +728,7 @@ function AdminPage() {
         </div>
 
         {/* CLIENT INQUIRIES / SUBMISSIONS PANEL */}
-        <div className="mb-10 border border-[#1E2538] bg-[#12151E] p-6 shadow-[0_0_30px_rgba(0,85,255,0.1)]">
+        <div className="mb-10 border border-[#1E2538] bg-black p-6 shadow-[0_0_30px_rgba(0,85,255,0.1)]">
           <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-[#1E2538] pb-4">
             <div className="flex items-center gap-3">
               <div className="flex h-9 w-9 items-center justify-center border border-[#0055FF] bg-[#0055FF]/20 text-[#0055FF]">
@@ -825,7 +825,7 @@ function AdminPage() {
                       <select
                         value={selectedSubmission.status}
                         onChange={(e) => handleUpdateSubmissionStatus(selectedSubmission.id, e.target.value)}
-                        className="border border-[#1E2538] bg-[#12151E] px-3 py-1 text-[10px] font-bold tracking-widest text-white focus:outline-none focus:border-[#0055FF]"
+                        className="border border-[#1E2538] bg-black px-3 py-1 text-[10px] font-bold tracking-widest text-white focus:outline-none focus:border-[#0055FF]"
                       >
                         <option value="NEW">STATUS: NEW</option>
                         <option value="READ">STATUS: READ</option>
@@ -873,7 +873,7 @@ function AdminPage() {
                     <div className="mb-1.5 text-[9px] tracking-widest text-[#7C89A8]">
                       PROJECT REQUIREMENTS & MESSAGE
                     </div>
-                    <div className="border border-[#1E2538] bg-[#12151E] p-4 text-xs leading-relaxed text-[#B8C4DE] whitespace-pre-wrap">
+                    <div className="border border-[#1E2538] bg-black p-4 text-xs leading-relaxed text-[#B8C4DE] whitespace-pre-wrap">
                       {selectedSubmission.message}
                     </div>
                   </div>
@@ -888,7 +888,7 @@ function AdminPage() {
                         {selectedSubmission.attachments.map((link, idx) => (
                           <div
                             key={idx}
-                            className="flex items-center justify-between border border-[#1E2538] bg-[#12151E] p-3 text-xs"
+                            className="flex items-center justify-between border border-[#1E2538] bg-black p-3 text-xs"
                           >
                             <span className="truncate max-w-md text-[#B8C4DE]">{link}</span>
                             <a
@@ -935,7 +935,7 @@ function AdminPage() {
             {/* CONTACT SETTINGS FORM */}
             <form
               onSubmit={handleSaveContact}
-              className="space-y-3 border border-[#1E2538] bg-[#12151E] p-5 shadow-[0_0_20px_rgba(0,85,255,0.08)]"
+              className="space-y-3 border border-[#1E2538] bg-black p-5 shadow-[0_0_20px_rgba(0,85,255,0.08)]"
             >
               <h2 className="mb-3 flex items-center gap-2 text-xs font-bold tracking-widest text-white">
                 <Mail size={14} className="text-[#0055FF]" />
@@ -993,7 +993,7 @@ function AdminPage() {
             {/* ADD / EDIT PROJECT FORM */}
             <form
               onSubmit={handleAddProject}
-              className="space-y-3 border border-[#1E2538] bg-[#12151E] p-5"
+              className="space-y-3 border border-[#1E2538] bg-black p-5"
             >
               <div className="flex items-center justify-between mb-3">
                 <h2 className="flex items-center gap-2 text-xs font-bold tracking-widest text-white">
@@ -1070,7 +1070,7 @@ function AdminPage() {
                   className={`relative flex flex-col items-center justify-center p-6 border-2 border-dashed transition-all rounded-sm text-center ${
                     isDragging
                       ? "border-[#0055FF] bg-[#0055FF]/20"
-                      : "border-[#1E2538] bg-[#12151E] hover:border-[#0055FF]/50"
+                      : "border-[#1E2538] bg-black hover:border-[#0055FF]/50"
                   }`}
                 >
                   <Upload size={24} className="mb-2 text-[#0055FF]" />
@@ -1111,7 +1111,7 @@ function AdminPage() {
                     )}
                   </label>
                   {imageUrl ? (
-                    <div className="relative aspect-video w-full overflow-hidden border-2 border-[#0055FF] bg-[#12151E] group shadow-[0_0_20px_rgba(0,85,255,0.25)]">
+                    <div className="relative aspect-video w-full overflow-hidden border-2 border-[#0055FF] bg-black group shadow-[0_0_20px_rgba(0,85,255,0.25)]">
                       <img src={imageUrl} alt="Cover Preview" className="h-full w-full object-cover" />
                       <div className="absolute top-2 left-2 flex items-center gap-1.5 border border-[#0055FF] bg-black/80 px-2.5 py-1 text-[9px] font-bold text-[#00FFFF] backdrop-blur-sm">
                         <Star size={11} className="fill-[#00FFFF]" />
@@ -1127,7 +1127,7 @@ function AdminPage() {
                       </button>
                     </div>
                   ) : (
-                    <div className="flex aspect-video w-full flex-col items-center justify-center border border-dashed border-[#1E2538] bg-[#12151E] text-center p-4">
+                    <div className="flex aspect-video w-full flex-col items-center justify-center border border-dashed border-[#1E2538] bg-black text-center p-4">
                       <ImageIcon size={24} className="mb-2 text-[#1E2538]" />
                       <p className="text-[10px] tracking-widest text-[#7C89A8]">
                         NO COVER IMAGE SET YET
@@ -1143,7 +1143,7 @@ function AdminPage() {
                       value={imageUrl}
                       onChange={(e) => setImageUrl(e.target.value)}
                       placeholder="Or paste Cover Image URL..."
-                      className="flex-1 border border-[#1E2538] bg-[#12151E] p-2.5 text-xs text-white focus:outline-none focus:border-[#0055FF]"
+                      className="flex-1 border border-[#1E2538] bg-black p-2.5 text-xs text-white focus:outline-none focus:border-[#0055FF]"
                     />
                   </div>
                 </div>
@@ -1161,7 +1161,7 @@ function AdminPage() {
                       {galleryImages.map((img, idx) => (
                         <div
                           key={idx}
-                          className="group relative aspect-video overflow-hidden border border-[#1E2538] bg-[#12151E]"
+                          className="group relative aspect-video overflow-hidden border border-[#1E2538] bg-black"
                         >
                           <img src={img} alt={`Gallery ${idx + 1}`} className="h-full w-full object-cover" />
                           <div className="absolute top-1 left-1 bg-black/80 px-1.5 py-0.5 text-[8px] font-bold text-white border border-[#1E2538]">
@@ -1208,7 +1208,7 @@ function AdminPage() {
                       }}
                       placeholder="Paste single Gallery Image URL..."
                       disabled={galleryImages.length >= 10}
-                      className="flex-1 border border-[#1E2538] bg-[#12151E] p-2.5 text-xs text-white focus:outline-none focus:border-[#0055FF] disabled:opacity-50"
+                      className="flex-1 border border-[#1E2538] bg-black p-2.5 text-xs text-white focus:outline-none focus:border-[#0055FF] disabled:opacity-50"
                     />
                     <button
                       type="button"
@@ -1242,14 +1242,14 @@ function AdminPage() {
               EXISTING DATABASE RECORDS ({projects.length})
             </h2>
             {projects.length === 0 ? (
-              <div className="border border-dashed border-[#1E2538] bg-[#12151E]/50 p-10 text-center text-[11px] tracking-widest text-[#7C89A8]">
+              <div className="border border-dashed border-[#1E2538] bg-black/50 p-10 text-center text-[11px] tracking-widest text-[#7C89A8]">
                 NO PROJECT ENTRIES FOUND.
               </div>
             ) : (
               projects.map((p, index) => (
                 <div
                   key={`${p.id}-${p.sort_order ?? index}`}
-                  className="flex items-center justify-between gap-4 border border-[#1E2538] bg-[#12151E] p-4"
+                  className="flex items-center justify-between gap-4 border border-[#1E2538] bg-black p-4"
                 >
                   <div className="min-w-0 space-y-1">
                     <div className="flex items-center gap-2">

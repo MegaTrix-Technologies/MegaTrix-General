@@ -112,12 +112,7 @@ function Home() {
     setTimeout(() => setCopiedField(null), 2000);
   };
 
-  const handlePreloaderComplete = () => {
-    if (typeof window !== "undefined") {
-      sessionStorage.setItem("mt_preloader_seen", "true");
-    }
-    setLoading(false);
-  };
+
 
   const handleAddAttachment = () => {
     if (attachmentUrlInput.trim()) {
@@ -195,10 +190,7 @@ function Home() {
       <section id="top" className="relative z-10 mx-auto max-w-[1600px] px-6 py-20 md:px-12 md:py-32">
         <div className="grid items-center gap-14 md:grid-cols-[minmax(0,1fr)_auto]">
           <div className="min-w-0">
-            <div className="mb-7 inline-flex items-center gap-2 rounded-sm border border-[var(--mt-border)] bg-[var(--mt-bg-card)] px-3.5 py-1.5 font-mono text-xs md:text-sm font-bold tracking-wider text-[var(--mt-blue)]">
-              <Terminal size={15} className="text-[var(--mt-blue)]" />
-              ENTERPRISE SOFTWARE ENGINEERING &amp; ARCHITECTURE
-            </div>
+
             <h1 className="max-w-4xl text-[2.5rem] font-extrabold leading-[1.05] text-[var(--mt-text-heading)] md:text-[4.25rem]">
               BUILDING NEXT-GEN
               <br />
@@ -286,10 +278,7 @@ function Home() {
       {/* 2. DEVELOPMENT WORKFLOW / PROTOCOL SECTION (CLEAN SEAMLESS BACKGROUND) */}
       <section id="protocol" className="relative z-10 mx-auto max-w-[1600px] px-8 md:px-12 py-20">
         <div className="mb-12 max-w-3xl">
-          <div className="mb-3 inline-flex items-center gap-2 border border-[var(--mt-border)] bg-[var(--mt-bg-card)] px-3.5 py-1.5 font-mono text-xs md:text-sm font-bold tracking-wider text-[var(--mt-blue)]">
-            <Terminal size={15} />
-            OPERATIONAL PROTOCOL
-          </div>
+
           <h2 className="text-3xl md:text-5xl font-extrabold text-[var(--mt-text-heading)] tracking-tight">
             FROM CONCEPT TO <span className="text-[var(--mt-blue)] glow-text">DEPLOYMENT</span>
           </h2>
@@ -379,10 +368,7 @@ function Home() {
       {/* 3. CLIENT TESTIMONIALS / STATUS LOGS SECTION (CLEAN SEAMLESS BACKGROUND) */}
       <section className="relative z-10 mx-auto max-w-[1600px] px-8 md:px-12 py-20">
         <div className="mb-12 max-w-3xl">
-          <div className="mb-3 inline-flex items-center gap-2 border border-[var(--mt-border)] bg-[var(--mt-bg-card)] px-3.5 py-1.5 font-mono text-xs md:text-sm font-bold tracking-wider text-[var(--mt-blue)]">
-            <Terminal size={15} />
-            VERIFIED CLIENT TRANSMISSIONS
-          </div>
+
           <h2 className="text-3xl md:text-5xl font-extrabold text-[var(--mt-text-heading)] tracking-tight">
             INCOMING TRANSMISSIONS <span className="text-[var(--mt-blue)] glow-text">- CLIENT LOGS</span>
           </h2>
@@ -448,10 +434,7 @@ function Home() {
       {/* CONTACT & CLIENT TRANSMISSION FORM SECTION */}
       <section id="contact" className="relative z-10 mx-auto max-w-[1600px] px-8 md:px-12 py-20">
         <div className="mb-12 max-w-3xl">
-          <div className="mb-3 inline-flex items-center gap-2 border border-[var(--mt-border)] bg-[var(--mt-bg-card)] px-3.5 py-1.5 font-mono text-xs md:text-sm font-bold tracking-wider text-[var(--mt-blue)]">
-            <Terminal size={15} />
-            SECURE COMMUNICATION CHANNEL
-          </div>
+
           <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight text-[var(--mt-text-heading)]">
             GET IN <span className="text-[var(--mt-blue)] glow-text">TOUCH</span>
           </h2>
@@ -747,7 +730,7 @@ function Home() {
                   {attachments.map((url, idx) => (
                     <div
                       key={idx}
-                      className="flex items-center gap-2 border border-[#1E2538] bg-[#12151E] px-3.5 py-2 font-mono text-xs tracking-widest text-[#B8C4DE]"
+                      className="flex items-center gap-2 border border-[#1E2538] bg-black px-3.5 py-2 font-mono text-xs tracking-widest text-[#B8C4DE]"
                     >
                       <FileText size={14} className="text-[#0055FF]" />
                       <span className="max-w-xs truncate">{url}</span>

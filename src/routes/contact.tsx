@@ -104,12 +104,7 @@ function ContactPage() {
     setTimeout(() => setCopiedField(null), 2000);
   };
 
-  const handlePreloaderComplete = () => {
-    if (typeof window !== "undefined") {
-      sessionStorage.setItem("mt_preloader_seen", "true");
-    }
-    setLoading(false);
-  };
+
 
   const handleAddAttachment = () => {
     if (attachmentUrlInput.trim()) {
@@ -197,10 +192,7 @@ function ContactPage() {
       {/* CONTACT SECTION */}
       <section className="relative z-10 mx-auto max-w-[1600px] px-8 md:px-12 py-10 md:py-16">
         <div className="mb-14 max-w-2xl">
-          <div className="mb-3 inline-flex items-center gap-2 rounded-sm border border-[var(--mt-border)] bg-[var(--mt-bg-card)] px-3.5 py-1.5 font-mono text-xs md:text-sm font-bold tracking-wider text-[var(--mt-blue)]">
-            <Terminal size={15} />
-            SECURE COMMUNICATION CHANNEL
-          </div>
+
           <h1 className="text-3xl font-bold tracking-tight md:text-5xl">
             GET IN <span className="text-[var(--mt-blue)] glow-text">TOUCH</span>
           </h1>
@@ -496,7 +488,7 @@ function ContactPage() {
                   {attachments.map((url, idx) => (
                     <div
                       key={idx}
-                      className="flex items-center gap-2 border border-[#1E2538] bg-[#12151E] px-3 py-1.5 text-[10px] tracking-widest text-[#B8C4DE]"
+                      className="flex items-center gap-2 border border-[#1E2538] bg-black px-3 py-1.5 text-[10px] tracking-widest text-[#B8C4DE]"
                     >
                       <FileText size={12} className="text-[#0055FF]" />
                       <span className="max-w-xs truncate">{url}</span>

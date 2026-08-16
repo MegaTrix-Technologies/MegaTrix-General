@@ -191,10 +191,7 @@ function ProjectDetailPage() {
 
           {/* CENTERED PROJECT TITLE & HEADER */}
           <div className="text-center max-w-4xl mx-auto space-y-4">
-            <div className="inline-flex items-center gap-2 rounded-sm border border-[var(--mt-border)] bg-[var(--mt-bg-card)] px-3.5 py-1.5 font-mono text-xs md:text-sm font-bold tracking-wider text-[var(--mt-blue)]">
-              <Terminal size={15} />
-              ENTERPRISE SYSTEM SPECIFICATION
-            </div>
+
 
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-[var(--mt-text-heading)] leading-tight">
               {project.title}

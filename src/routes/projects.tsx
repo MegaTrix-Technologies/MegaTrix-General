@@ -29,12 +29,12 @@ export const Route = createFileRoute("/projects")({
 
 function Projects() {
   const [fetching, setFetching] = useState(false);
-  const [projects, setProjects] = useState<Project[]>(SEED_PROJECTS);
+  const [projects, setProjects] = useState<Project[]>([]);
 
   useEffect(() => {
     let isMounted = true;
     // Prewarm browser image cache immediately
-    preloadProjectsAssets(SEED_PROJECTS);
+    preloadProjectsAssets([]);
 
     (async () => {
       const data = await fetchAllProjects();
@@ -73,10 +73,7 @@ function Projects() {
       {/* HERO */}
       <section className="relative z-10 mx-auto max-w-[1600px] px-6 py-12 md:px-12 md:py-20">
         <div className="max-w-2xl">
-          <div className="mb-5 inline-flex items-center gap-2 rounded-sm border border-[var(--mt-border)] bg-[var(--mt-bg-card)] px-3.5 py-1.5 font-mono text-xs md:text-sm font-bold tracking-wider text-[var(--mt-blue)]">
-            <Terminal size={15} className="text-[var(--mt-blue)]" />
-            PORTFOLIO ARCHIVE
-          </div>
+
           <h1 className="text-4xl font-bold leading-[1.05] md:text-6xl" style={{ color: "var(--mt-text-heading)" }}>
             FEATURED
             <span className="glow-text" style={{ color: "var(--mt-blue)" }}> DEPLOYMENTS</span>

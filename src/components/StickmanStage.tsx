@@ -367,10 +367,7 @@ export default function StickmanStage() {
       {/* SECTION HEADER & CONTROL BAR */}
       <div className="mb-6 md:mb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-          <div className="mb-3 inline-flex items-center gap-2 rounded-sm border border-[var(--mt-border)] bg-[var(--mt-bg-card)] px-3.5 py-1.5 font-mono text-xs md:text-sm font-bold tracking-wider text-[var(--mt-blue)]">
-            <Cpu size={15} />
-            DIJKSTRA CYBERNETIC MAZE RUNNER
-          </div>
+
           <h2 className="text-2xl font-extrabold text-[var(--mt-text-heading)] md:text-5xl">
             SHORTEST PATH <span className="text-[var(--mt-blue)] glow-text">ALGORITHM ARENA</span>
           </h2>

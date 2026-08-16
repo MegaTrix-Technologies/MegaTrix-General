@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { ImageIcon } from "lucide-react";
 
-interface OptimizedImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
+interface OptimizedImageProps extends Omit<React.ImgHTMLAttributes<HTMLImageElement>, "src"> {
   src?: string | null;
   alt: string;
   className?: string;

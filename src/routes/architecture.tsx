@@ -54,10 +54,7 @@ function ArchitecturePage() {
 
       {/* HERO / HEADER */}
       <section className="relative z-10 mx-auto max-w-[1600px] px-8 md:px-12 py-10 md:py-16">
-        <div className="mb-6 inline-flex items-center gap-2 rounded-sm border border-[var(--mt-border)] bg-[var(--mt-bg-card)] px-3.5 py-1.5 font-mono text-xs md:text-sm font-bold tracking-wider text-[var(--mt-blue)]">
-          <Terminal size={15} />
-          SYSTEM ARCHITECTURE &amp; CORE COMPETENCIES
-        </div>
+
         <h1 className="max-w-4xl text-4xl font-extrabold tracking-tight md:text-6xl" style={{ color: "var(--mt-text-heading)" }}>
           ENGINEERED FOR <span className="glow-text" style={{ color: "var(--mt-blue)" }}>UNCOMPROMISING SCALE</span>
         </h1>

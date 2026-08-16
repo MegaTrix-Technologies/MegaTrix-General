@@ -96,7 +96,7 @@ function Lightbox({
       {/* Terminal-frame close button */}
       <button
         onClick={onClose}
-        className="absolute right-5 top-5 z-10 flex items-center justify-center border border-[#1E2538] bg-[#12151E] p-2.5 text-[#7C89A8] hover:border-red-500/70 hover:text-red-400 transition-colors"
+        className="absolute right-5 top-5 z-10 flex items-center justify-center border border-[#1E2538] bg-black p-2.5 text-[#7C89A8] hover:border-red-500/70 hover:text-red-400 transition-colors"
         title="Close [ESC]"
       >
         <X size={20} />
@@ -287,11 +287,7 @@ function ProjectDetailPage() {
                 [ // BACK TO PROJECTS ARCHIVE ]
               </Link>
 
-              {/* Breadcrumb tag */}
-              <div className="flex items-center gap-2 border border-[#1E2538] bg-[#12151E] px-3.5 py-2 font-mono text-[10px] font-bold tracking-widest text-[#0055FF] self-start sm:self-auto">
-                <Terminal size={12} />
-                // ENTERPRISE SYSTEM SPECIFICATION
-              </div>
+
             </div>
           </div>
 
@@ -322,7 +318,7 @@ function ProjectDetailPage() {
 
                 {/* Image count pill */}
                 {allImages.length > 0 && (
-                  <div className="inline-flex items-center gap-2 border border-[#1E2538] bg-[#12151E] px-3.5 py-2 font-mono text-[10px] tracking-widest text-[#7C89A8]">
+                  <div className="inline-flex items-center gap-2 border border-[#1E2538] bg-black px-3.5 py-2 font-mono text-[10px] tracking-widest text-[#7C89A8]">
                     <ImageIcon size={11} className="text-[#0055FF]" />
                     {allImages.length} ATTACHMENT{allImages.length > 1 ? "S" : ""}
                   </div>
@@ -338,9 +334,9 @@ function ProjectDetailPage() {
               {/* ── LEFT: Hero Image ── */}
               <div className="space-y-5">
                 {/* Primary hero frame */}
-                <div className="relative border border-[#1E2538] bg-[#12151E] shadow-[0_0_40px_rgba(0,85,255,0.15)] overflow-hidden">
+                <div className="relative border border-[#1E2538] bg-black shadow-[0_0_40px_rgba(0,85,255,0.15)] overflow-hidden">
                   {/* Terminal title bar */}
-                  <div className="flex items-center justify-between border-b border-[#1E2538] bg-[#0A0C14] px-4 py-2.5">
+                  <div className="flex items-center justify-between border-b border-[#1E2538] bg-black px-4 py-2.5">
                     <div className="flex items-center gap-2">
                       <div className="h-2.5 w-2.5 rounded-full bg-red-500/70" />
                       <div className="h-2.5 w-2.5 rounded-full bg-yellow-500/70" />
@@ -477,7 +473,7 @@ function ProjectDetailPage() {
                                 globalIdx >= 0 ? globalIdx : idx,
                               )
                             }
-                            className={`group relative aspect-video overflow-hidden border bg-[#12151E] transition-all duration-200 ${
+                            className={`group relative aspect-video overflow-hidden border bg-black transition-all duration-200 ${
                               activeImageIndex === globalIdx
                                 ? "border-[#0055FF] shadow-[0_0_20px_rgba(0,85,255,0.35)]"
                                 : "border-[#1E2538] hover:border-[#0055FF]/50 hover:shadow-[0_0_14px_rgba(0,85,255,0.2)]"
@@ -511,8 +507,8 @@ function ProjectDetailPage() {
               <div className="space-y-6">
 
                 {/* Description block */}
-                <div className="border border-[#1E2538] bg-[#12151E]">
-                  <div className="flex items-center gap-2 border-b border-[#1E2538] bg-[#0A0C14] px-4 py-3">
+                <div className="border border-[#1E2538] bg-black">
+                  <div className="flex items-center gap-2 border-b border-[#1E2538] bg-black px-4 py-3">
                     <Terminal size={12} className="text-[#0055FF] flex-shrink-0" />
                     <span className="font-mono text-[9px] font-bold tracking-widest text-[#0055FF]">
                       ARCHITECTURE &amp; SYSTEM DESCRIPTION
@@ -527,8 +523,8 @@ function ProjectDetailPage() {
 
                 {/* Tech stack block */}
                 {project.tools && project.tools.length > 0 && (
-                  <div className="border border-[#1E2538] bg-[#12151E]">
-                    <div className="flex items-center gap-2 border-b border-[#1E2538] bg-[#0A0C14] px-4 py-3">
+                  <div className="border border-[#1E2538] bg-black">
+                    <div className="flex items-center gap-2 border-b border-[#1E2538] bg-black px-4 py-3">
                       <Cpu size={12} className="text-[#0055FF] flex-shrink-0" />
                       <span className="font-mono text-[9px] font-bold tracking-widest text-[#0055FF]">
                         TECH STACK ({project.tools.length})
@@ -583,7 +579,7 @@ function ProjectDetailPage() {
                 )}
 
                 {/* System metadata card */}
-                <div className="border border-[#1E2538] bg-[#12151E] p-4 space-y-3">
+                <div className="border border-[#1E2538] bg-black p-4 space-y-3">
                   <div className="font-mono text-[9px] font-bold tracking-widest text-[#455270] pb-2 border-b border-[#1E2538]">
                     // SYSTEM_METADATA
                   </div>

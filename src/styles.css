@@ -71,17 +71,17 @@
 
   /* Matrix retro-gaming palette */
   --matrix-bg: #090A0F;
-  --matrix-card: #12151E;
+  --matrix-card: #000000;
   --matrix-border: #1E2538;
   --matrix-blue: #0055FF;
   --matrix-glow: rgba(0, 85, 255, 0.2);
 
   /* MegaTrix Theme Tokens — DARK */
   --mt-bg: #090A0F;
-  --mt-bg-card: #12151E;
-  --mt-bg-panel: #0D0F17;
-  --mt-bg-deep: #050608;
-  --mt-bg-modal: rgba(8, 9, 13, 0.97);
+  --mt-bg-card: #000000;
+  --mt-bg-panel: #000000;
+  --mt-bg-deep: #000000;
+  --mt-bg-modal: rgba(0, 0, 0, 0.97);
   --mt-border: #1E2538;
   --mt-border-accent: #2A3552;
   --mt-text: #F8FAFC;
@@ -109,18 +109,18 @@
   --mt-footer-bottom-btn-bg: #000000;
   --mt-footer-bottom-btn-border: #1E2538;
   --mt-footer-bottom-btn-text: #CBD5E1;
-  --mt-form-box-bg: #090A0F;
+  --mt-form-box-bg: #000000;
   --mt-form-box-border: #1E2538;
   --mt-form-box-header: #FFFFFF;
   --mt-form-box-subtext: #7C89A8;
   --mt-form-label: #B8C4DE;
-  --mt-form-input-bg: #090A0F;
+  --mt-form-input-bg: #000000;
   --mt-form-input-border: #1E2538;
   --mt-form-input-text: #FFFFFF;
   --mt-form-input-placeholder: #455270;
-  --mt-panel-gradient-start: rgba(24, 30, 47, 0.9);
-  --mt-panel-gradient-end: rgba(9, 10, 15, 0.95);
-  --mt-chip-bg: rgba(9, 10, 15, 0.9);
+  --mt-panel-gradient-start: #000000;
+  --mt-panel-gradient-end: #000000;
+  --mt-chip-bg: #000000;
   --mt-chip-text: #B8C4DE;
   --mt-chip-border: #2A3552;
   --mt-chip-hover-text: #FFFFFF;
@@ -131,15 +131,15 @@
 
   --background: #090A0F;
   --foreground: #F8FAFC;
-  --card: #12151E;
+  --card: #000000;
   --card-foreground: #F8FAFC;
-  --popover: #12151E;
+  --popover: #000000;
   --popover-foreground: #F8FAFC;
   --primary: #0055FF;
   --primary-foreground: #FFFFFF;
   --secondary: #1E2538;
   --secondary-foreground: #F8FAFC;
-  --muted: #12151E;
+  --muted: #000000;
   --muted-foreground: #B8C4DE;
   --accent: #0055FF;
   --accent-foreground: #FFFFFF;
@@ -166,15 +166,15 @@
 .dark {
   --background: #090A0F;
   --foreground: #F8FAFC;
-  --card: #12151E;
+  --card: #000000;
   --card-foreground: #F8FAFC;
-  --popover: #12151E;
+  --popover: #000000;
   --popover-foreground: #F8FAFC;
   --primary: #0055FF;
   --primary-foreground: #FFFFFF;
   --secondary: #1E2538;
   --secondary-foreground: #F8FAFC;
-  --muted: #12151E;
+  --muted: #000000;
   --muted-foreground: #B8C4DE;
   --accent: #0055FF;
   --accent-foreground: #FFFFFF;
@@ -419,7 +419,6 @@
 @utility panel {
   position: relative;
   border: 1px solid var(--mt-border);
-  background-image: linear-gradient(160deg, var(--mt-panel-gradient-start) 0%, var(--mt-panel-gradient-end) 60%);
   background-color: var(--mt-bg-card);
   border-radius: 0.25rem;
   transition:
