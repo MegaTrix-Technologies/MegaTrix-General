@@ -7,9 +7,18 @@ import {
   ArrowRight,
   ArrowLeft,
   ImageIcon,
+  Loader2,
+  Cpu,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { fetchAllProjects, preloadProjectsAssets, SEED_PROJECTS, getProjectAllImages, type Project } from "@/lib/projectsData";
+import {
+  fetchAllProjects,
+  preloadProjectsAssets,
+  SEED_PROJECTS,
+  getProjectAllImages,
+  getLocalProjectsMap,
+  type Project,
+} from "@/lib/projectsData";
 import OptimizedImage from "@/components/OptimizedImage";
 import Navbar from "@/components/Navbar";
 import MTLogo from "@/components/MTLogo";
@@ -29,21 +38,39 @@ export const Route = createFileRoute("/projects")({
 });
 
 function Projects() {
-  const [fetching, setFetching] = useState(false);
-  const [projects, setProjects] = useState<Project[]>([]);
+  // SWR: Initialize synchronously from local cache so existing projects render in 0ms!
+  const [projects, setProjects] = useState<Project[]>(() => {
+    try {
+      const map = getLocalProjectsMap();
+      const cachedList = Object.values(map);
+      return cachedList.length > 0 ? cachedList : [];
+    } catch {
+      return [];
+    }
+  });
+  const [fetching, setFetching] = useState(true);
 
   useEffect(() => {
     let isMounted = true;
-    // Prewarm browser image cache immediately
-    preloadProjectsAssets([]);
+    // Prewarm browser image cache
+    preloadProjectsAssets(projects.length > 0 ? projects : []);
 
     (async () => {
-      const data = await fetchAllProjects();
-      if (isMounted) {
-        setProjects(data);
-        preloadProjectsAssets(data);
+      try {
+        const data = await fetchAllProjects();
+        if (isMounted) {
+          setProjects(data);
+          preloadProjectsAssets(data);
+        }
+      } catch (err) {
+        console.warn("Failed to fetch fresh projects:", err);
+      } finally {
+        if (isMounted) {
+          setFetching(false);
+        }
       }
     })();
+
     return () => {
       isMounted = false;
     };
@@ -74,7 +101,6 @@ function Projects() {
       {/* HERO */}
       <section className="relative z-10 mx-auto max-w-[1600px] px-6 py-12 md:px-12 md:py-20">
         <div className="max-w-2xl">
-
           <h1 className="text-4xl font-bold leading-[1.05] md:text-6xl" style={{ color: "var(--mt-text-heading)" }}>
             FEATURED
             <span className="glow-text" style={{ color: "var(--mt-blue)" }}> DEPLOYMENTS</span>
@@ -87,13 +113,71 @@ function Projects() {
 
         {/* PROJECTS */}
         <div className="pt-14 md:pt-20">
-          <div className="mb-6 flex flex-wrap items-center gap-4 border-b pb-4" style={{ borderColor: "var(--mt-border)" }}>
-            <div className="label-mono" style={{ color: "var(--mt-blue)" }}>
-              TOTAL SYSTEMS RECORDED: [ {String(projects.length).padStart(3, "0")} ]
+          {/* HEADER STATUS / SYNC TELEMETRY */}
+          <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b pb-4" style={{ borderColor: "var(--mt-border)" }}>
+            <div className="flex items-center gap-2.5 label-mono" style={{ color: "var(--mt-blue)" }}>
+              {fetching && projects.length === 0 ? (
+                <>
+                  <span className="h-2 w-2 rounded-full bg-cyan-400 animate-ping" />
+                  <span className="text-cyan-400">INITIALIZING SYSTEMS DATABASE...</span>
+                </>
+              ) : (
+                <span>TOTAL SYSTEMS RECORDED: [ {String(projects.length).padStart(3, "0")} ]</span>
+              )}
             </div>
+
+            {fetching && projects.length > 0 && (
+              <span className="label-mono text-[10px] text-green-400 flex items-center gap-1.5 font-bold">
+                <span className="h-1.5 w-1.5 rounded-full bg-green-400 animate-pulse" />
+                // LIVE SYNC ACTIVE
+              </span>
+            )}
           </div>
 
-          {projects.length === 0 ? (
+          {/* SKELETON LOADER (DISPLAYED ONLY WHILE INITIAL FETCHING WITH EMPTY CACHE) */}
+          {fetching && projects.length === 0 ? (
+            <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+              {Array.from({ length: 6 }).map((_, idx) => (
+                <div
+                  key={idx}
+                  className="panel flex flex-col overflow-hidden border animate-pulse"
+                  style={{ borderColor: "var(--mt-border)", backgroundColor: "var(--mt-bg-card)" }}
+                >
+                  {/* SKELETON IMAGE FRAME */}
+                  <div
+                    className="relative h-64 w-full border-b flex flex-col items-center justify-center p-4 bg-[var(--mt-bg)]"
+                    style={{ borderColor: "var(--mt-border)" }}
+                  >
+                    <div className="h-12 w-12 rounded-full border border-[var(--mt-blue)]/30 bg-[var(--mt-blue)]/10 flex items-center justify-center mb-3">
+                      <Cpu size={20} className="text-[var(--mt-blue)]/50 animate-spin" />
+                    </div>
+                    <span className="label-mono text-[10px] text-[var(--mt-text-muted)] tracking-widest">
+                      // RETRIEVING ASSETS #{idx + 1}...
+                    </span>
+                  </div>
+
+                  {/* SKELETON CARD BODY */}
+                  <div className="flex flex-1 flex-col gap-5 p-6">
+                    <div className="space-y-3">
+                      <div className="h-5 w-3/4 rounded-xs bg-[var(--mt-bg-panel)]" />
+                      <div className="h-3.5 w-full rounded-xs bg-[var(--mt-bg-panel)]/60" />
+                      <div className="h-3.5 w-5/6 rounded-xs bg-[var(--mt-bg-panel)]/40" />
+                      <div className="flex gap-2 pt-2">
+                        <div className="h-6 w-16 rounded-xs bg-[var(--mt-bg-panel)]" />
+                        <div className="h-6 w-20 rounded-xs bg-[var(--mt-bg-panel)]" />
+                        <div className="h-6 w-14 rounded-xs bg-[var(--mt-bg-panel)]" />
+                      </div>
+                    </div>
+                    <div className="border-t pt-4 flex justify-between items-center" style={{ borderColor: "var(--mt-border)" }}>
+                      <div className="h-3 w-32 rounded-xs bg-[var(--mt-bg-panel)]" />
+                      <div className="h-3 w-4 rounded-xs bg-[var(--mt-blue)]/40" />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : !fetching && projects.length === 0 ? (
+            /* EMPTY STATE (ONLY WHEN FETCH FINISHED AND RETURNED 0 RECORDS) */
             <div
               className="rounded-sm border border-dashed p-16 text-center"
               style={{ borderColor: "var(--mt-border)", backgroundColor: "var(--mt-bg-card)" }}
@@ -106,6 +190,7 @@ function Projects() {
               </p>
             </div>
           ) : (
+            /* POPULATED PROJECTS GRID */
             <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
               {projects.map((project, index) => {
                 const projectImgs = getProjectAllImages(project);
@@ -160,53 +245,53 @@ function Projects() {
                       </div>
                     )}
 
-                  <div className="flex flex-1 flex-col gap-5 p-6">
-                    <div className="flex-1">
-                      <h3
-                        className="text-lg font-bold leading-snug transition-colors duration-200"
-                        style={{ color: "var(--mt-text-heading)" }}
+                    <div className="flex flex-1 flex-col gap-5 p-6">
+                      <div className="flex-1">
+                        <h3
+                          className="text-lg font-bold leading-snug transition-colors duration-200"
+                          style={{ color: "var(--mt-text-heading)" }}
+                        >
+                          {project.title}
+                        </h3>
+
+                        {/* DESCRIPTION */}
+                        <p className="mt-3 line-clamp-3 text-[13px] leading-6" style={{ color: "var(--mt-text-secondary)" }}>
+                          {project.description}
+                        </p>
+
+                        {/* TECHNOLOGIES */}
+                        {project.tools?.length ? (
+                          <div className="mt-5 flex flex-wrap gap-1.5">
+                            {project.tools.slice(0, 5).map((tool) => (
+                              <span key={tool} className="chip">
+                                {tool}
+                              </span>
+                            ))}
+                            {project.tools.length > 5 && (
+                              <span className="chip" style={{ borderColor: "var(--mt-blue)", color: "var(--mt-blue)" }}>
+                                +{project.tools.length - 5}
+                              </span>
+                            )}
+                          </div>
+                        ) : null}
+                      </div>
+
+                      {/* CALL TO ACTION */}
+                      <div
+                        className="flex items-center justify-between border-t pt-4 label-mono font-bold transition-colors duration-200"
+                        style={{ borderColor: "var(--mt-border)", color: "var(--mt-text-secondary)" }}
                       >
-                        {project.title}
-                      </h3>
-
-                      {/* DESCRIPTION */}
-                      <p className="mt-3 line-clamp-3 text-[13px] leading-6" style={{ color: "var(--mt-text-secondary)" }}>
-                        {project.description}
-                      </p>
-
-                      {/* TECHNOLOGIES */}
-                      {project.tools?.length ? (
-                        <div className="mt-5 flex flex-wrap gap-1.5">
-                          {project.tools.slice(0, 5).map((tool) => (
-                            <span key={tool} className="chip">
-                              {tool}
-                            </span>
-                          ))}
-                          {project.tools.length > 5 && (
-                            <span className="chip" style={{ borderColor: "var(--mt-blue)", color: "var(--mt-blue)" }}>
-                              +{project.tools.length - 5}
-                            </span>
-                          )}
-                        </div>
-                      ) : null}
+                        <span>VIEW PROJECT DETAILS</span>
+                        <ArrowRight
+                          size={15}
+                          className="transition-transform duration-200 group-hover:translate-x-1"
+                          style={{ color: "var(--mt-blue)" }}
+                        />
+                      </div>
                     </div>
-
-                    {/* CALL TO ACTION */}
-                    <div
-                      className="flex items-center justify-between border-t pt-4 label-mono font-bold transition-colors duration-200"
-                      style={{ borderColor: "var(--mt-border)", color: "var(--mt-text-secondary)" }}
-                    >
-                      <span>VIEW PROJECT DETAILS</span>
-                      <ArrowRight
-                        size={15}
-                        className="transition-transform duration-200 group-hover:translate-x-1"
-                        style={{ color: "var(--mt-blue)" }}
-                      />
-                    </div>
-                  </div>
-                </Link>
-              );
-            })}
+                  </Link>
+                );
+              })}
             </div>
           )}
         </div>
