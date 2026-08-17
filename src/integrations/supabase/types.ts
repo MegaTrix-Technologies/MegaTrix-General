@@ -82,10 +82,12 @@ export type Database = {
           created_at: string
           deployed_on: string | null
           description: string
+          gallery_images: string[] | null
           github_link: string | null
           id: string
           image_url: string | null
           project_link: string | null
+          sort_order: number | null
           title: string
           tools: string[]
         }
@@ -93,10 +95,12 @@ export type Database = {
           created_at?: string
           deployed_on?: string | null
           description: string
+          gallery_images?: string[] | null
           github_link?: string | null
           id?: string
           image_url?: string | null
           project_link?: string | null
+          sort_order?: number | null
           title: string
           tools?: string[]
         }
@@ -104,10 +108,12 @@ export type Database = {
           created_at?: string
           deployed_on?: string | null
           description?: string
+          gallery_images?: string[] | null
           github_link?: string | null
           id?: string
           image_url?: string | null
           project_link?: string | null
+          sort_order?: number | null
           title?: string
           tools?: string[]
         }

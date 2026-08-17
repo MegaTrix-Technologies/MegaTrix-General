@@ -11,14 +11,13 @@ interface OptimizedImageProps extends Omit<React.ImgHTMLAttributes<HTMLImageElem
 }
 
 /**
- * Automatically optimizes Unsplash / CDN URLs for fast thumbnail downloads
+ * Automatically optimizes Unsplash and Cloudinary CDN URLs for fast thumbnail downloads
  */
 export function getOptimizedImageUrl(
   url?: string | null,
   size: "sm" | "md" | "lg" | "full" = "md"
 ): string {
   if (!url) return "";
-  if (!url.includes("unsplash.com")) return url;
 
   const widthMap = {
     sm: 240,
@@ -37,17 +36,30 @@ export function getOptimizedImageUrl(
   const targetWidth = widthMap[size];
   const targetQuality = qualityMap[size];
 
-  try {
-    const urlObj = new URL(url);
-    urlObj.searchParams.set("w", targetWidth.toString());
-    urlObj.searchParams.set("q", targetQuality.toString());
-    urlObj.searchParams.set("auto", "format");
-    urlObj.searchParams.set("fit", "crop");
-    return urlObj.toString();
-  } catch {
-    // If not a parseable URL, fallback to replacing query params
-    return url.replace(/w=\d+/, `w=${targetWidth}`).replace(/q=\d+/, `q=${targetQuality}`);
+  // Cloudinary Optimization
+  if (url.includes("res.cloudinary.com") && url.includes("/upload/")) {
+    const transform = `f_auto,q_auto,w_${targetWidth},c_limit`;
+    if (!url.includes("/upload/" + transform)) {
+      return url.replace("/upload/", `/upload/${transform}/`);
+    }
+    return url;
   }
+
+  // Unsplash Optimization
+  if (url.includes("unsplash.com")) {
+    try {
+      const urlObj = new URL(url);
+      urlObj.searchParams.set("w", targetWidth.toString());
+      urlObj.searchParams.set("q", targetQuality.toString());
+      urlObj.searchParams.set("auto", "format");
+      urlObj.searchParams.set("fit", "crop");
+      return urlObj.toString();
+    } catch {
+      return url.replace(/w=\d+/, `w=${targetWidth}`).replace(/q=\d+/, `q=${targetQuality}`);
+    }
+  }
+
+  return url;
 }
 
 export default function OptimizedImage({

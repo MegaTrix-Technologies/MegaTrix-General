@@ -17,10 +17,15 @@ import {
   X,
   ChevronUp,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   Image as ImageIcon,
   Edit3,
   Star,
   Upload,
+  Cloud,
+  Layers,
+  Settings,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
@@ -65,6 +70,69 @@ interface ContactSubmission {
   created_at: string;
 }
 
+/**
+ * Client-side canvas image compression helper to avoid large payload and quota failures
+ */
+async function compressImageFile(file: File, maxWidth = 1920, maxHeight = 1920, quality = 0.85): Promise<File> {
+  if (!file.type.startsWith("image/") || file.type === "image/svg+xml" || file.type === "image/gif") {
+    return file;
+  }
+
+  return new Promise((resolve) => {
+    const img = new Image();
+    const reader = new FileReader();
+
+    reader.onload = (e) => {
+      img.onload = () => {
+        let width = img.width;
+        let height = img.height;
+
+        if (width > maxWidth || height > maxHeight) {
+          if (width > height) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          } else {
+            width = Math.round((width * maxHeight) / height);
+            height = maxHeight;
+          }
+        }
+
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) {
+          resolve(file);
+          return;
+        }
+
+        ctx.drawImage(img, 0, 0, width, height);
+
+        const outputType = "image/webp";
+        canvas.toBlob(
+          (blob) => {
+            if (blob && blob.size < file.size) {
+              const compressedFile = new File([blob], file.name.replace(/\.[^/.]+$/, ".webp"), {
+                type: outputType,
+                lastModified: Date.now(),
+              });
+              resolve(compressedFile);
+            } else {
+              resolve(file);
+            }
+          },
+          outputType,
+          quality
+        );
+      };
+      img.onerror = () => resolve(file);
+      img.src = e.target?.result as string;
+    };
+    reader.onerror = () => resolve(file);
+    reader.readAsDataURL(file);
+  });
+}
+
 function AdminPage() {
   const [isAuthed, setIsAuthed] = useState(false);
   const [email, setEmail] = useState("");
@@ -76,21 +144,84 @@ function AdminPage() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [tools, setTools] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
-  const [galleryImages, setGalleryImages] = useState<string[]>([]);
-  const [galleryInput, setGalleryInput] = useState("");
+  
+  // Unified 10-Picture state: Slot 0 = Cover, Slots 1..9 = Gallery
+  const [projectImages, setProjectImages] = useState<string[]>([]);
+  const [imageUrlInput, setImageUrlInput] = useState("");
+
   const [projectLink, setProjectLink] = useState("");
   const [githubLink, setGithubLink] = useState("");
   const [deployedOn, setDeployedOn] = useState("");
   const [saving, setSaving] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState("");
   const [editingProjectId, setEditingProjectId] = useState<string | null>(null);
 
   const [isDragging, setIsDragging] = useState(false);
 
-  const uploadFileToWeb = async (file: File): Promise<string> => {
+  // Optional Cloudinary Settings
+  const [cloudinaryName, setCloudinaryName] = useState(
+    () => (typeof window !== "undefined" ? localStorage.getItem("megatrix_cloudinary_name") || import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || "" : "")
+  );
+  const [cloudinaryPreset, setCloudinaryPreset] = useState(
+    () => (typeof window !== "undefined" ? localStorage.getItem("megatrix_cloudinary_preset") || import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || "" : "")
+  );
+  const [showCloudinarySettings, setShowCloudinarySettings] = useState(false);
+  const [cloudinarySavedMsg, setCloudinarySavedMsg] = useState("");
+
+  const handleSaveCloudinaryConfig = (e: React.FormEvent) => {
+    e.preventDefault();
     try {
-      const fileExt = file.name.split(".").pop() || "png";
+      localStorage.setItem("megatrix_cloudinary_name", cloudinaryName.trim());
+      localStorage.setItem("megatrix_cloudinary_preset", cloudinaryPreset.trim());
+      setCloudinarySavedMsg("CLOUDINARY CONFIGURATION SAVED.");
+      setTimeout(() => setCloudinarySavedMsg(""), 3000);
+    } catch {}
+  };
+
+  const uploadToCloudinary = async (file: File): Promise<string | null> => {
+    const cloudName = cloudinaryName.trim() || import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || "";
+    const preset = cloudinaryPreset.trim() || import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || "";
+    if (!cloudName || !preset) return null;
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("upload_preset", preset);
+
+      const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+        method: "POST",
+        body: formData,
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data.secure_url) {
+          return data.secure_url;
+        }
+      } else {
+        const errorData = await res.json().catch(() => ({}));
+        console.warn("Cloudinary error response:", errorData);
+      }
+    } catch (err) {
+      console.warn("Cloudinary upload failed, falling back to storage:", err);
+    }
+    return null;
+  };
+
+  const uploadFileToWeb = async (rawFile: File): Promise<string> => {
+    // Step 1: Compress image client-side to keep size small & ultra-fast
+    const file = await compressImageFile(rawFile);
+
+    // Step 2: Try Cloudinary if configured
+    const cloudinaryUrl = await uploadToCloudinary(file);
+    if (cloudinaryUrl) {
+      return cloudinaryUrl;
+    }
+
+    // Step 3: Try Supabase Storage
+    try {
+      const fileExt = file.name.split(".").pop() || "webp";
       const fileName = `${Date.now()}_${Math.random().toString(36).substring(2, 8)}.${fileExt}`;
       const filePath = `uploads/${fileName}`;
 
@@ -108,7 +239,7 @@ function AdminPage() {
       }
     } catch {}
 
-    // Fallback: Client-side Data URL conversion (100% works without external bucket setup)
+    // Step 4: Fallback to lightweight compressed base64 data URL
     return new Promise((resolve) => {
       const reader = new FileReader();
       reader.onload = (event) => resolve(event.target?.result as string);
@@ -117,82 +248,68 @@ function AdminPage() {
   };
 
   const handleBatchFileUpload = async (filesList: FileList | File[]) => {
-    const files = Array.from(filesList);
-    if (!files.length) return;
+    const rawFiles = Array.from(filesList);
+    if (!rawFiles.length) return;
+
+    const availableSlots = 10 - projectImages.length;
+    if (availableSlots <= 0) {
+      alert("MAXIMUM LIMIT REACHED: A project can have up to 10 pictures.");
+      return;
+    }
+
+    const filesToUpload = rawFiles.slice(0, availableSlots);
     setUploadingImage(true);
+    setUploadProgress(`Processing ${filesToUpload.length} image(s)...`);
 
-    let currentCover = imageUrl;
-    const newGallery = [...galleryImages];
-
-    for (const file of files) {
-      const webUrl = await uploadFileToWeb(file);
-      if (webUrl) {
-        if (!currentCover) {
-          currentCover = webUrl;
-          setImageUrl(webUrl);
-        } else if (newGallery.length < 10) {
-          newGallery.push(webUrl);
-        }
+    const uploadedUrls: string[] = [];
+    for (let i = 0; i < filesToUpload.length; i++) {
+      const file = filesToUpload[i];
+      setUploadProgress(`Uploading ${i + 1} of ${filesToUpload.length}: ${file.name}...`);
+      const url = await uploadFileToWeb(file);
+      if (url) {
+        uploadedUrls.push(url);
       }
     }
 
-    setGalleryImages(newGallery);
+    setProjectImages((prev) => [...prev, ...uploadedUrls].slice(0, 10));
     setUploadingImage(false);
+    setUploadProgress("");
+  };
+
+  const handleAddImageUrl = (e?: React.FormEvent | React.MouseEvent | React.KeyboardEvent) => {
+    if (e) e.preventDefault();
+    if (!imageUrlInput.trim()) return;
+    if (projectImages.length >= 10) {
+      alert("MAXIMUM LIMIT REACHED: Admin can add a maximum of 10 pictures per project.");
+      return;
+    }
+    setProjectImages((prev) => [...prev, imageUrlInput.trim()]);
+    setImageUrlInput("");
   };
 
   const handleSetAsCover = (index: number) => {
-    const selectedImage = galleryImages[index];
-    const oldCover = imageUrl;
-
-    setImageUrl(selectedImage);
-    setGalleryImages((prev) => {
-      const updated = [...prev];
-      if (oldCover) {
-        updated[index] = oldCover;
-      } else {
-        updated.splice(index, 1);
-      }
-      return updated;
+    if (index === 0) return;
+    setProjectImages((prev) => {
+      const copy = [...prev];
+      const [selected] = copy.splice(index, 1);
+      return [selected, ...copy];
     });
   };
 
-  const handleRemoveCover = () => {
-    if (galleryImages.length > 0) {
-      const [first, ...rest] = galleryImages;
-      setImageUrl(first);
-      setGalleryImages(rest);
-    } else {
-      setImageUrl("");
-    }
+  const handleMoveImage = (index: number, direction: "left" | "right") => {
+    const targetIndex = direction === "left" ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= projectImages.length) return;
+    setProjectImages((prev) => {
+      const copy = [...prev];
+      const temp = copy[index];
+      copy[index] = copy[targetIndex];
+      copy[targetIndex] = temp;
+      return copy;
+    });
   };
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, isCover: boolean) => {
-    const files = e.target.files;
-    if (!files || files.length === 0) return;
-    if (isCover) {
-      setUploadingImage(true);
-      const webUrl = await uploadFileToWeb(files[0]);
-      if (webUrl) setImageUrl(webUrl);
-      setUploadingImage(false);
-    } else {
-      handleBatchFileUpload(files);
-    }
-    e.target.value = "";
-  };
-
-  const handleAddGalleryImage = (e?: React.MouseEvent | React.KeyboardEvent) => {
-    if (e) e.preventDefault();
-    if (!galleryInput.trim()) return;
-    if (galleryImages.length >= 10) {
-      alert("MAXIMUM LIMIT REACHED: Admin can add a maximum of 10 gallery images per project.");
-      return;
-    }
-    setGalleryImages((prev) => [...prev, galleryInput.trim()]);
-    setGalleryInput("");
-  };
-
-  const handleRemoveGalleryImage = (index: number) => {
-    setGalleryImages((prev) => prev.filter((_, i) => i !== index));
+  const handleRemoveImage = (index: number) => {
+    setProjectImages((prev) => prev.filter((_, i) => i !== index));
   };
 
   // Contact Info state
@@ -351,9 +468,17 @@ function AdminPage() {
     setTitle(project.title || "");
     setDescription(project.description || "");
     setTools(Array.isArray(project.tools) ? project.tools.join(", ") : "");
-    setImageUrl(project.image_url || "");
-    setGalleryImages(project.gallery_images || []);
-    setGalleryInput("");
+    
+    // Assemble all up to 10 images into unified projectImages array
+    const allImgs: string[] = [];
+    if (project.image_url) allImgs.push(project.image_url);
+    if (project.gallery_images && Array.isArray(project.gallery_images)) {
+      project.gallery_images.forEach((img) => {
+        if (img && !allImgs.includes(img)) allImgs.push(img);
+      });
+    }
+    setProjectImages(allImgs.slice(0, 10));
+    setImageUrlInput("");
     setProjectLink(project.project_link || "");
     setGithubLink(project.github_link || "");
     setDeployedOn(project.deployed_on || "");
@@ -365,9 +490,8 @@ function AdminPage() {
     setTitle("");
     setDescription("");
     setTools("");
-    setImageUrl("");
-    setGalleryImages([]);
-    setGalleryInput("");
+    setProjectImages([]);
+    setImageUrlInput("");
     setProjectLink("");
     setGithubLink("");
     setDeployedOn("");
@@ -380,20 +504,24 @@ function AdminPage() {
     const targetId = editingProjectId || (typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : `proj_${Date.now()}`);
     const nextOrder = projects.length > 0 ? Math.max(...projects.map(p => p.sort_order ?? 0)) + 1 : 0;
     
+    // Slot 0 is Primary Cover, Slots 1..9 are Gallery Images
+    const coverImage = projectImages[0] || null;
+    const galleryImgs = projectImages.slice(1);
+
     const updatedRecord: Project = {
       id: targetId,
       title,
       description,
       tools: toolsArray,
-      image_url: imageUrl.trim() || null,
-      gallery_images: galleryImages,
+      image_url: coverImage,
+      gallery_images: galleryImgs,
       project_link: projectLink.trim() || null,
       github_link: githubLink.trim() || null,
       deployed_on: deployedOn.trim() || null,
       sort_order: editingProjectId ? (projects.find(p => p.id === editingProjectId)?.sort_order ?? 0) : nextOrder,
     };
 
-    // Save to local cache immediately so gallery_images are preserved 100%
+    // Save to local cache immediately so all 10 images are preserved 100%
     try {
       const cached = localStorage.getItem("megatrix_local_projects");
       const localMap: Record<string, Project> = cached ? JSON.parse(cached) : {};
@@ -407,8 +535,8 @@ function AdminPage() {
       title,
       description,
       tools: toolsArray,
-      image_url: imageUrl.trim() || null,
-      gallery_images: galleryImages,
+      image_url: coverImage,
+      gallery_images: galleryImgs,
       project_link: projectLink.trim() || null,
       github_link: githubLink.trim() || null,
       deployed_on: deployedOn.trim() || null,
@@ -1044,22 +1172,87 @@ function AdminPage() {
                 />
               </div>
 
-              {/* ADVANCED MULTI-IMAGE MEDIA MANAGER */}
+              {/* ADVANCED UNIFIED 10-PICTURE MEDIA MANAGER */}
               <div className="space-y-4 border border-[#1E2538] bg-[#090A0F] p-4 rounded-sm">
-                <div className="flex items-center justify-between border-b border-[#1E2538] pb-2">
+                <div className="flex items-center justify-between border-b border-[#1E2538] pb-2.5">
                   <span className="text-[11px] font-bold tracking-widest text-[#0055FF] flex items-center gap-1.5">
                     <ImageIcon size={14} />
-                    PROJECT MEDIA GALLERY & COVER MANAGER
+                    PROJECT MEDIA MANAGER ({projectImages.length} / 10 PHOTOS)
                   </span>
-                  <span className="text-[10px] font-bold text-[#CBD5E1] font-mono">
-                    {galleryImages.length} / 10 GALLERY IMAGES
-                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setShowCloudinarySettings((p) => !p)}
+                    className="flex items-center gap-1 font-mono text-[10px] text-[#7C89A8] hover:text-[#0055FF] transition-colors"
+                    title="Configure Cloudinary Unsigned Upload"
+                  >
+                    <Settings size={12} />
+                    <Cloud size={12} />
+                    {showCloudinarySettings ? "HIDE STORAGE SETTINGS" : "STORAGE SETTINGS"}
+                  </button>
                 </div>
+
+                {/* OPTIONAL CLOUDINARY CONFIG ACCORDION */}
+                {showCloudinarySettings && (
+                  <div className="border border-[#0055FF]/40 bg-black/80 p-3.5 space-y-2.5 text-xs rounded-sm">
+                    <div className="flex items-center justify-between border-b border-[#1E2538] pb-1.5">
+                      <span className="font-bold text-white flex items-center gap-1.5 text-[11px]">
+                        <Cloud size={14} className="text-[#0055FF]" />
+                        CLOUDINARY DIRECT CLIENT UPLOAD (OPTIONAL)
+                      </span>
+                      <span className="text-[9px] font-mono text-green-400">SERVERLESS READY</span>
+                    </div>
+                    <p className="text-[10px] text-[#7C89A8] leading-relaxed">
+                      Uploads images straight from browser to Cloudinary CDN via Unsigned Upload Preset. If left empty, defaults to Supabase Storage.
+                    </p>
+                    {cloudinarySavedMsg && (
+                      <div className="border border-green-500/50 bg-green-950/40 p-2 text-[10px] text-green-400 font-mono">
+                        {cloudinarySavedMsg}
+                      </div>
+                    )}
+                    <div className="grid sm:grid-cols-2 gap-2">
+                      <div>
+                        <label className="block text-[9px] font-mono text-[#7C89A8] mb-1">CLOUD NAME</label>
+                        <input
+                          type="text"
+                          value={cloudinaryName}
+                          onChange={(e) => setCloudinaryName(e.target.value)}
+                          placeholder="e.g. dm123xyz"
+                          className="w-full border border-[#1E2538] bg-[#090A0F] p-2 text-xs text-white focus:outline-none focus:border-[#0055FF]"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[9px] font-mono text-[#7C89A8] mb-1">UNSIGNED UPLOAD PRESET</label>
+                        <input
+                          type="text"
+                          value={cloudinaryPreset}
+                          onChange={(e) => setCloudinaryPreset(e.target.value)}
+                          placeholder="e.g. megatrix_uploads"
+                          className="w-full border border-[#1E2538] bg-[#090A0F] p-2 text-xs text-white focus:outline-none focus:border-[#0055FF]"
+                        />
+                      </div>
+                    </div>
+                    <div className="flex justify-end pt-1">
+                      <button
+                        type="button"
+                        onClick={handleSaveCloudinaryConfig}
+                        className="border border-[#0055FF] bg-[#0055FF]/20 px-3 py-1 text-[10px] font-bold text-[#0055FF] hover:bg-[#0055FF] hover:text-white transition-all"
+                      >
+                        SAVE STORAGE CONFIG
+                      </button>
+                    </div>
+                  </div>
+                )}
 
                 {/* BATCH UPLOAD DROPZONE */}
                 <div
-                  onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
-                  onDragLeave={(e) => { e.preventDefault(); setIsDragging(false); }}
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    if (projectImages.length < 10) setIsDragging(true);
+                  }}
+                  onDragLeave={(e) => {
+                    e.preventDefault();
+                    setIsDragging(false);
+                  }}
                   onDrop={(e) => {
                     e.preventDefault();
                     setIsDragging(false);
@@ -1067,158 +1260,191 @@ function AdminPage() {
                       handleBatchFileUpload(e.dataTransfer.files);
                     }
                   }}
-                  className={`relative flex flex-col items-center justify-center p-6 border-2 border-dashed transition-all rounded-sm text-center ${
-                    isDragging
+                  className={`relative flex flex-col items-center justify-center p-5 border-2 border-dashed transition-all rounded-sm text-center ${
+                    projectImages.length >= 10
+                      ? "border-[#1E2538] bg-black/40 opacity-60 cursor-not-allowed"
+                      : isDragging
                       ? "border-[#0055FF] bg-[#0055FF]/20"
                       : "border-[#1E2538] bg-black hover:border-[#0055FF]/50"
                   }`}
                 >
-                  <Upload size={24} className="mb-2 text-[#0055FF]" />
-                  <p className="text-xs font-bold tracking-widest text-white mb-1">
-                    DRAG & DROP MULTIPLE IMAGES HERE
+                  <Upload size={22} className="mb-1.5 text-[#0055FF]" />
+                  <p className="text-xs font-bold tracking-widest text-white mb-0.5">
+                    {projectImages.length >= 10
+                      ? "MAXIMUM 10 PHOTOS REACHED"
+                      : "DRAG & DROP UP TO 10 PHOTOS HERE"}
                   </p>
                   <p className="text-[10px] text-[#7C89A8] mb-3">
-                    Upload up to 10 project images at once (First file auto-sets as Cover image)
+                    {projectImages.length >= 10
+                      ? "Remove an image below if you want to add another photo."
+                      : `Select multiple files or drop them. (${10 - projectImages.length} slots remaining)`}
                   </p>
-                  <label className="inline-flex items-center gap-2 border border-[#0055FF] bg-[#0055FF] px-4 py-2 text-xs font-bold text-white hover:bg-[#0044cc] cursor-pointer transition-all shadow-[0_0_15px_rgba(0,85,255,0.4)]">
-                    <Upload size={14} />
-                    {uploadingImage ? "PROCESSING MEDIA..." : "SELECT MEDIA FILES (MULTI-SELECT)"}
-                    <input
-                      type="file"
-                      accept="image/*"
-                      multiple
-                      className="hidden"
-                      onChange={(e) => {
-                        if (e.target.files) handleBatchFileUpload(e.target.files);
-                        e.target.value = "";
-                      }}
-                    />
-                  </label>
-                </div>
-
-                {/* COVER IMAGE PREVIEW CARD */}
-                <div>
-                  <label className="block text-[10px] tracking-widest text-[#B8C4DE] font-semibold mb-1.5 flex items-center justify-between">
-                    <span>PRIMARY COVER IMAGE</span>
-                    {imageUrl && (
-                      <button
-                        type="button"
-                        onClick={handleRemoveCover}
-                        className="text-[9px] text-red-400 hover:underline"
-                      >
-                        REMOVE COVER
-                      </button>
-                    )}
-                  </label>
-                  {imageUrl ? (
-                    <div className="relative aspect-video w-full overflow-hidden border-2 border-[#0055FF] bg-black group shadow-[0_0_20px_rgba(0,85,255,0.25)]">
-                      <img src={imageUrl} alt="Cover Preview" className="h-full w-full object-cover" />
-                      <div className="absolute top-2 left-2 flex items-center gap-1.5 border border-[#0055FF] bg-black/80 px-2.5 py-1 text-[9px] font-bold text-[#00FFFF] backdrop-blur-sm">
-                        <Star size={11} className="fill-[#00FFFF]" />
-                        PRIMARY COVER IMAGE
-                      </div>
-                      <button
-                        type="button"
-                        onClick={handleRemoveCover}
-                        className="absolute top-2 right-2 rounded bg-red-600/90 p-1 text-white hover:bg-red-700"
-                        title="Remove cover image"
-                      >
-                        <X size={14} />
-                      </button>
+                  
+                  {uploadingImage ? (
+                    <div className="flex items-center gap-2 border border-[#0055FF] bg-[#0055FF]/20 px-4 py-2 text-xs font-bold text-white animate-pulse">
+                      <Upload size={14} className="animate-bounce" />
+                      {uploadProgress || "OPTIMIZING & UPLOADING PHOTOS..."}
                     </div>
                   ) : (
-                    <div className="flex aspect-video w-full flex-col items-center justify-center border border-dashed border-[#1E2538] bg-black text-center p-4">
-                      <ImageIcon size={24} className="mb-2 text-[#1E2538]" />
-                      <p className="text-[10px] tracking-widest text-[#7C89A8]">
-                        NO COVER IMAGE SET YET
-                      </p>
-                      <p className="text-[9px] text-[#0055FF] mt-1 font-mono">
-                        Upload images above or click "Set as Cover" on any gallery thumbnail below
-                      </p>
-                    </div>
+                    <label
+                      className={`inline-flex items-center gap-2 border border-[#0055FF] bg-[#0055FF] px-4 py-2 text-xs font-bold text-white transition-all shadow-[0_0_15px_rgba(0,85,255,0.4)] ${
+                        projectImages.length >= 10
+                          ? "opacity-50 cursor-not-allowed pointer-events-none"
+                          : "hover:bg-[#0044cc] cursor-pointer"
+                      }`}
+                    >
+                      <Upload size={14} />
+                      SELECT MULTIPLE PHOTOS (MAX 10)
+                      <input
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        disabled={projectImages.length >= 10}
+                        className="hidden"
+                        onChange={(e) => {
+                          if (e.target.files) handleBatchFileUpload(e.target.files);
+                          e.target.value = "";
+                        }}
+                      />
+                    </label>
                   )}
-                  <div className="mt-2 flex gap-2">
-                    <input
-                      type="text"
-                      value={imageUrl}
-                      onChange={(e) => setImageUrl(e.target.value)}
-                      placeholder="Or paste Cover Image URL..."
-                      className="flex-1 border border-[#1E2538] bg-black p-2.5 text-xs text-white focus:outline-none focus:border-[#0055FF]"
-                    />
-                  </div>
                 </div>
 
-                {/* GALLERY IMAGES GRID (MAX 10) */}
+                {/* PASTE DIRECT IMAGE URL */}
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={imageUrlInput}
+                    onChange={(e) => setImageUrlInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        handleAddImageUrl(e);
+                      }
+                    }}
+                    placeholder={
+                      projectImages.length >= 10
+                        ? "Max 10 images reached"
+                        : "Or paste image URL (Cloudinary, Unsplash, CDN)..."
+                    }
+                    disabled={projectImages.length >= 10 || uploadingImage}
+                    className="flex-1 border border-[#1E2538] bg-black p-2.5 text-xs text-white focus:outline-none focus:border-[#0055FF] disabled:opacity-50 font-mono"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleAddImageUrl}
+                    disabled={projectImages.length >= 10 || !imageUrlInput.trim() || uploadingImage}
+                    className="border border-[#0055FF] bg-[#0055FF]/20 px-3.5 py-1.5 text-xs font-bold text-[#0055FF] hover:bg-[#0055FF] hover:text-white disabled:opacity-50 transition-all cursor-pointer whitespace-nowrap"
+                  >
+                    + ADD URL
+                  </button>
+                </div>
+
+                {/* VISUAL 10-PICTURE MANAGER GRID */}
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <label className="block text-[10px] tracking-widest text-[#B8C4DE] font-semibold">
-                      GALLERY IMAGES ({galleryImages.length} / 10)
+                      PROJECT PHOTOS LIST ({projectImages.length} / 10)
                     </label>
+                    {projectImages.length > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => setProjectImages([])}
+                        className="text-[9px] font-bold text-red-400 hover:underline tracking-wider"
+                      >
+                        CLEAR ALL PHOTOS
+                      </button>
+                    )}
                   </div>
 
-                  {galleryImages.length > 0 ? (
+                  {projectImages.length > 0 ? (
                     <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
-                      {galleryImages.map((img, idx) => (
-                        <div
-                          key={idx}
-                          className="group relative aspect-video overflow-hidden border border-[#1E2538] bg-black"
-                        >
-                          <img src={img} alt={`Gallery ${idx + 1}`} className="h-full w-full object-cover" />
-                          <div className="absolute top-1 left-1 bg-black/80 px-1.5 py-0.5 text-[8px] font-bold text-white border border-[#1E2538]">
-                            #{idx + 1}
+                      {projectImages.map((img, idx) => {
+                        const isCover = idx === 0;
+                        return (
+                          <div
+                            key={idx}
+                            className={`group relative aspect-video overflow-hidden border bg-black transition-all ${
+                              isCover
+                                ? "border-[#0055FF] shadow-[0_0_15px_rgba(0,85,255,0.35)]"
+                                : "border-[#1E2538] hover:border-[#0055FF]/60"
+                            }`}
+                          >
+                            <img
+                              src={img}
+                              alt={`Project Photo ${idx + 1}`}
+                              className="h-full w-full object-cover"
+                            />
+
+                            {/* BADGE: COVER vs GALLERY */}
+                            <div className="absolute top-1 left-1">
+                              {isCover ? (
+                                <span className="flex items-center gap-1 border border-[#0055FF] bg-black/90 px-1.5 py-0.5 text-[8px] font-bold text-[#00FFFF] shadow-sm backdrop-blur-xs">
+                                  <Star size={9} className="fill-[#00FFFF]" />
+                                  #1 COVER
+                                </span>
+                              ) : (
+                                <span className="border border-[#1E2538] bg-black/80 px-1.5 py-0.5 text-[8px] font-bold text-[#B8C4DE]">
+                                  #{idx + 1}
+                                </span>
+                              )}
+                            </div>
+
+                            {/* REORDER & ACTION OVERLAY */}
+                            <div className="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1 p-1.5">
+                              {!isCover && (
+                                <button
+                                  type="button"
+                                  onClick={() => handleSetAsCover(idx)}
+                                  className="w-full flex items-center justify-center gap-1 border border-[#0055FF] bg-[#0055FF] px-1 py-1 text-[9px] font-bold text-white hover:bg-[#0044cc] shadow-sm"
+                                  title="Set as Primary Cover Image"
+                                >
+                                  <Star size={10} />
+                                  SET COVER
+                                </button>
+                              )}
+
+                              <div className="flex w-full gap-1">
+                                <button
+                                  type="button"
+                                  onClick={() => handleMoveImage(idx, "left")}
+                                  disabled={idx === 0}
+                                  className="flex-1 flex items-center justify-center border border-[#1E2538] bg-[#090A0F] py-1 text-[9px] text-[#B8C4DE] hover:text-white hover:border-[#0055FF] disabled:opacity-25"
+                                  title="Move Left"
+                                >
+                                  <ChevronLeft size={12} />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => handleMoveImage(idx, "right")}
+                                  disabled={idx === projectImages.length - 1}
+                                  className="flex-1 flex items-center justify-center border border-[#1E2538] bg-[#090A0F] py-1 text-[9px] text-[#B8C4DE] hover:text-white hover:border-[#0055FF] disabled:opacity-25"
+                                  title="Move Right"
+                                >
+                                  <ChevronRight size={12} />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => handleRemoveImage(idx)}
+                                  className="flex-1 flex items-center justify-center border border-red-500/50 bg-red-950/80 py-1 text-[9px] font-bold text-red-300 hover:bg-red-900"
+                                  title="Delete Photo"
+                                >
+                                  <Trash2 size={11} />
+                                </button>
+                              </div>
+                            </div>
                           </div>
-                          <div className="absolute inset-0 bg-black/75 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1.5 p-1">
-                            <button
-                              type="button"
-                              onClick={() => handleSetAsCover(idx)}
-                              className="w-full flex items-center justify-center gap-1 border border-[#0055FF] bg-[#0055FF] px-1.5 py-1 text-[9px] font-bold text-white hover:bg-[#0044cc]"
-                            >
-                              <Star size={10} />
-                              MAKE COVER
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => handleRemoveGalleryImage(idx)}
-                              className="w-full flex items-center justify-center gap-1 border border-red-500/50 bg-red-950/80 px-1.5 py-1 text-[9px] font-bold text-red-300 hover:bg-red-900"
-                            >
-                              <Trash2 size={10} />
-                              REMOVE
-                            </button>
-                          </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   ) : (
-                    <p className="text-[10px] text-[#7C89A8] italic font-mono border border-dashed border-[#1E2538] p-3 text-center">
-                      No additional gallery images added yet.
-                    </p>
+                    <div className="border border-dashed border-[#1E2538] p-4 text-center">
+                      <ImageIcon size={24} className="mx-auto mb-1.5 text-[#1E2538]" />
+                      <p className="text-[10px] text-[#7C89A8] font-mono">
+                        NO PHOTOS ADDED YET. UPLOAD OR PASTE UP TO 10 PHOTOS.
+                      </p>
+                    </div>
                   )}
-
-                  {/* PASTE DIRECT URL FOR GALLERY */}
-                  <div className="mt-2.5 flex gap-2">
-                    <input
-                      type="text"
-                      value={galleryInput}
-                      onChange={(e) => setGalleryInput(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                          e.preventDefault();
-                          handleAddGalleryImage(e);
-                        }
-                      }}
-                      placeholder="Paste single Gallery Image URL..."
-                      disabled={galleryImages.length >= 10}
-                      className="flex-1 border border-[#1E2538] bg-black p-2.5 text-xs text-white focus:outline-none focus:border-[#0055FF] disabled:opacity-50"
-                    />
-                    <button
-                      type="button"
-                      onClick={handleAddGalleryImage}
-                      disabled={galleryImages.length >= 10 || !galleryInput.trim()}
-                      className="border border-[#0055FF] bg-[#0055FF]/20 px-3 py-1.5 text-xs font-bold text-[#0055FF] hover:bg-[#0055FF] hover:text-white disabled:opacity-50 transition-all"
-                    >
-                      + ADD URL
-                    </button>
-                  </div>
                 </div>
               </div>
 

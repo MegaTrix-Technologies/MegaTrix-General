@@ -230,3 +230,22 @@ export const preloadProjectsAssets = (projectsList?: Project[]): void => {
     }
   });
 };
+
+/**
+ * Returns all photos for a project (Cover image + gallery images, up to 10 photos total)
+ */
+export const getProjectAllImages = (project?: Project | null): string[] => {
+  if (!project) return [];
+  const list: string[] = [];
+  if (project.image_url && project.image_url.trim()) {
+    list.push(project.image_url.trim());
+  }
+  if (Array.isArray(project.gallery_images)) {
+    project.gallery_images.forEach((img) => {
+      if (img && typeof img === "string" && img.trim() && !list.includes(img.trim())) {
+        list.push(img.trim());
+      }
+    });
+  }
+  return list.slice(0, 10);
+};

@@ -6,9 +6,10 @@ import {
   Github,
   ArrowRight,
   ArrowLeft,
+  ImageIcon,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { fetchAllProjects, preloadProjectsAssets, SEED_PROJECTS, type Project } from "@/lib/projectsData";
+import { fetchAllProjects, preloadProjectsAssets, SEED_PROJECTS, getProjectAllImages, type Project } from "@/lib/projectsData";
 import OptimizedImage from "@/components/OptimizedImage";
 import Navbar from "@/components/Navbar";
 import MTLogo from "@/components/MTLogo";
@@ -106,44 +107,58 @@ function Projects() {
             </div>
           ) : (
             <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
-              {projects.map((project, index) => (
-                <Link
-                  key={project.id}
-                  to="/project-details"
-                  search={{ id: project.id }}
-                  className="group panel panel-interactive flex cursor-pointer flex-col overflow-hidden"
-                >
-                  {project.image_url ? (
-                    <div
-                      className="relative h-64 w-full overflow-hidden border-b flex items-center justify-center p-2"
-                      style={{ borderColor: "var(--mt-border)", backgroundColor: "var(--mt-bg)" }}
-                    >
-                      <OptimizedImage
-                        src={project.image_url}
-                        alt={`${project.title} interface preview`}
-                        thumbnailSize="md"
-                        fetchPriority={index < 3 ? "high" : "auto"}
-                        className="h-full w-full object-contain transition-transform duration-500 ease-out group-hover:scale-[1.03]"
-                        containerClassName="h-full w-full flex items-center justify-center"
-                      />
-                      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                      {project.deployed_on && (
-                        <span
-                          className="absolute right-3 top-3 rounded-sm border px-2 py-1 label-mono text-[10px] backdrop-blur-sm z-10"
-                          style={{ borderColor: "var(--mt-blue)", backgroundColor: "var(--mt-bg)", color: "var(--mt-blue)" }}
-                        >
-                          {project.deployed_on}
-                        </span>
-                      )}
-                    </div>
-                  ) : (
-                    <div
-                      className="flex aspect-video items-center justify-center border-b label-mono"
-                      style={{ borderColor: "var(--mt-border)", backgroundColor: "var(--mt-bg-panel)", color: "var(--mt-border-accent)" }}
-                    >
-                      NO IMAGE PROVIDED
-                    </div>
-                  )}
+              {projects.map((project, index) => {
+                const projectImgs = getProjectAllImages(project);
+                return (
+                  <Link
+                    key={project.id}
+                    to="/project-details"
+                    search={{ id: project.id }}
+                    className="group panel panel-interactive flex cursor-pointer flex-col overflow-hidden"
+                  >
+                    {project.image_url ? (
+                      <div
+                        className="relative h-64 w-full overflow-hidden border-b flex items-center justify-center p-2"
+                        style={{ borderColor: "var(--mt-border)", backgroundColor: "var(--mt-bg)" }}
+                      >
+                        <OptimizedImage
+                          src={project.image_url}
+                          alt={`${project.title} interface preview`}
+                          thumbnailSize="md"
+                          fetchPriority={index < 3 ? "high" : "auto"}
+                          className="h-full w-full object-contain transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+                          containerClassName="h-full w-full flex items-center justify-center"
+                        />
+                        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                        
+                        {/* PHOTO COUNT BADGE */}
+                        {projectImgs.length > 1 && (
+                          <span
+                            className="absolute left-3 top-3 rounded-sm border px-2 py-1 label-mono text-[10px] backdrop-blur-sm z-10 flex items-center gap-1"
+                            style={{ borderColor: "var(--mt-border)", backgroundColor: "rgba(0,0,0,0.8)", color: "#fff" }}
+                          >
+                            <ImageIcon size={11} style={{ color: "var(--mt-blue)" }} />
+                            {projectImgs.length} PHOTOS
+                          </span>
+                        )}
+
+                        {project.deployed_on && (
+                          <span
+                            className="absolute right-3 top-3 rounded-sm border px-2 py-1 label-mono text-[10px] backdrop-blur-sm z-10"
+                            style={{ borderColor: "var(--mt-blue)", backgroundColor: "var(--mt-bg)", color: "var(--mt-blue)" }}
+                          >
+                            {project.deployed_on}
+                          </span>
+                        )}
+                      </div>
+                    ) : (
+                      <div
+                        className="flex aspect-video items-center justify-center border-b label-mono"
+                        style={{ borderColor: "var(--mt-border)", backgroundColor: "var(--mt-bg-panel)", color: "var(--mt-border-accent)" }}
+                      >
+                        NO IMAGE PROVIDED
+                      </div>
+                    )}
 
                   <div className="flex flex-1 flex-col gap-5 p-6">
                     <div className="flex-1">
@@ -190,7 +205,8 @@ function Projects() {
                     </div>
                   </div>
                 </Link>
-              ))}
+              );
+            })}
             </div>
           )}
         </div>

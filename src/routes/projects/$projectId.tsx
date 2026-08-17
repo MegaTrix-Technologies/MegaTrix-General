@@ -15,7 +15,7 @@ import {
   Layers,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { fetchProjectById, type Project } from "@/lib/projectsData";
+import { fetchProjectById, getProjectAllImages, type Project } from "@/lib/projectsData";
 import Navbar from "@/components/Navbar";
 import Preloader from "@/components/Preloader";
 import Footer from "@/components/Footer";
@@ -187,19 +187,11 @@ function ProjectDetailPage() {
     };
   }, [projectId]);
 
-  /* Build the full images array (cover + gallery, deduplicated) */
-  const allImages: string[] = [];
-  if (project?.image_url) allImages.push(project.image_url);
-  if (project?.gallery_images && Array.isArray(project.gallery_images)) {
-    for (const img of project.gallery_images) {
-      if (img && !allImages.includes(img)) allImages.push(img);
-    }
-  }
+  /* Build the full images array (cover + gallery, up to 10 photos) */
+  const allImages = getProjectAllImages(project);
 
-  /* Gallery-only images (excluding the primary cover) */
-  const galleryOnly = project?.gallery_images?.filter(
-    (img): img is string => !!img && img !== project.image_url,
-  ) ?? [];
+  /* All images for gallery view */
+  const galleryOnly = allImages;
 
   const openLightbox = useCallback((idx: number) => {
     setLightboxIndex(idx);

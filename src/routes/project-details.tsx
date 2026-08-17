@@ -17,7 +17,7 @@ import {
   RotateCcw,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { fetchProjectById, type Project } from "@/lib/projectsData";
+import { fetchProjectById, getProjectAllImages, type Project } from "@/lib/projectsData";
 import OptimizedImage from "@/components/OptimizedImage";
 import Navbar from "@/components/Navbar";
 import MTLogo from "@/components/MTLogo";
@@ -106,13 +106,7 @@ function ProjectDetailPage() {
     };
   }, [projectId]);
 
-  const allImages: string[] = [];
-  if (project?.image_url) allImages.push(project.image_url);
-  if (project?.gallery_images && Array.isArray(project.gallery_images)) {
-    project.gallery_images.forEach((img) => {
-      if (img && !allImages.includes(img)) allImages.push(img);
-    });
-  }
+  const allImages = getProjectAllImages(project);
 
   useEffect(() => {
     if (lightboxOpen) {
@@ -191,18 +185,25 @@ function ProjectDetailPage() {
 
           {/* CENTERED PROJECT TITLE & HEADER */}
           <div className="text-center max-w-4xl mx-auto space-y-4">
-
-
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-[var(--mt-text-heading)] leading-tight">
               {project.title}
             </h1>
 
-            {project.deployed_on && (
-              <div className="flex items-center justify-center gap-2 font-mono text-xs text-[var(--mt-text-muted)] pt-1">
-                <span className="h-2 w-2 rounded-full bg-green-400 animate-pulse" />
-                DEPLOYED ON: <span className="text-[var(--mt-text-heading)] font-bold">{project.deployed_on}</span>
-              </div>
-            )}
+            <div className="flex flex-wrap items-center justify-center gap-3 font-mono text-xs text-[var(--mt-text-muted)] pt-1">
+              {project.deployed_on && (
+                <div className="flex items-center gap-2 border border-[var(--mt-border)] bg-[var(--mt-bg-card)] px-3 py-1.5 rounded-xs shadow-xs">
+                  <span className="h-2 w-2 rounded-full bg-green-400 animate-pulse" />
+                  <span>DEPLOYED ON:</span>
+                  <span className="text-[var(--mt-text-heading)] font-bold">{project.deployed_on}</span>
+                </div>
+              )}
+              {allImages.length > 0 && (
+                <div className="flex items-center gap-1.5 border border-[var(--mt-blue)]/50 bg-[var(--mt-blue)]/10 px-3 py-1.5 text-[var(--mt-blue)] rounded-xs shadow-xs font-bold">
+                  <ImageIcon size={13} />
+                  <span>{allImages.length} {allImages.length === 1 ? "PHOTO" : "PHOTOS"} ATTACHED</span>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* CENTERED PRIMARY IMAGE DISPLAY WITH BORDER-ATTACHED ARROWS */}
@@ -227,16 +228,22 @@ function ProjectDetailPage() {
                   <div className="relative h-full w-full flex items-center justify-center bg-[var(--mt-bg)] overflow-hidden p-2">
                     <OptimizedImage
                       src={allImages[activeImageIndex] || allImages[0]}
-                      alt={project.title}
+                      alt={`${project.title} photo ${activeImageIndex + 1}`}
                       thumbnailSize="lg"
                       fetchPriority="high"
                       className="max-h-[580px] w-auto max-w-full object-contain transition-all duration-300 group-hover:scale-[1.02]"
                       containerClassName="max-h-[580px] w-auto max-w-full flex items-center justify-center"
                     />
 
+                    {/* PHOTO COUNTER BADGE */}
+                    <div className="absolute top-4 left-4 z-20 flex items-center gap-1.5 border border-[var(--mt-border)] bg-[var(--mt-bg)]/90 px-3 py-1.5 font-mono text-xs font-bold tracking-widest text-[var(--mt-text-heading)] shadow-md backdrop-blur-sm">
+                      <ImageIcon size={13} className="text-[var(--mt-blue)]" />
+                      <span>PHOTO {activeImageIndex + 1} / {allImages.length}</span>
+                    </div>
+
                     <button
                       onClick={() => setLightboxOpen(true)}
-                      className="absolute right-4 top-4 z-20 flex items-center gap-2 border border-[var(--mt-border)] bg-[var(--mt-bg)]/90 px-4 py-2 font-sans text-xs font-bold tracking-widest text-[var(--mt-text-heading)] hover:border-[var(--mt-blue)] hover:text-[var(--mt-blue)] transition-all shadow-lg"
+                      className="absolute right-4 top-4 z-20 flex items-center gap-2 border border-[var(--mt-border)] bg-[var(--mt-bg)]/90 px-4 py-2 font-sans text-xs font-bold tracking-widest text-[var(--mt-text-heading)] hover:border-[var(--mt-blue)] hover:text-[var(--mt-blue)] transition-all shadow-lg cursor-pointer"
                     >
                       <Maximize2 size={14} /> EXPAND VIEW
                     </button>
@@ -287,15 +294,15 @@ function ProjectDetailPage() {
             {allImages.length > 1 && (
               <div className="space-y-3">
                 <div className="flex items-center justify-between max-w-5xl mx-auto font-mono text-xs font-semibold tracking-wider text-[var(--mt-text-muted)]">
-                  <span>SYSTEM GALLERY ({allImages.length} ATTACHMENTS)</span>
-                  <span>IMAGE {activeImageIndex + 1} OF {allImages.length}</span>
+                  <span>ATTACHED GALLERY ({allImages.length} PHOTOS)</span>
+                  <span>CLICK THUMBNAIL TO SWITCH</span>
                 </div>
                 <div className="flex flex-wrap justify-center items-center gap-3 max-h-52 overflow-y-auto p-1.5">
                   {allImages.map((imgUrl, idx) => (
                     <button
                       key={idx}
                       onClick={() => setActiveImageIndex(idx)}
-                      className={`relative h-28 max-w-[150px] shrink-0 overflow-hidden border p-1 bg-[var(--mt-bg-deep)] flex items-center justify-center transition-all cursor-pointer rounded-xs ${
+                      className={`relative h-24 sm:h-28 max-w-[150px] shrink-0 overflow-hidden border p-1 bg-[var(--mt-bg-deep)] flex items-center justify-center transition-all cursor-pointer rounded-xs ${
                         activeImageIndex === idx
                           ? "border-[var(--mt-blue)] bg-[var(--mt-blue)]/10 shadow-[0_0_20px_rgba(0,85,255,0.6)] scale-105"
                           : "border-[var(--mt-border)] opacity-60 hover:opacity-100"
@@ -308,6 +315,9 @@ function ProjectDetailPage() {
                         className="max-h-full max-w-full h-auto w-auto object-contain"
                         containerClassName="h-full w-full flex items-center justify-center"
                       />
+                      <span className="absolute bottom-1 right-1 bg-black/80 px-1 py-0.2 text-[8px] font-mono text-white">
+                        #{idx + 1}
+                      </span>
                     </button>
                   ))}
                 </div>
@@ -315,9 +325,60 @@ function ProjectDetailPage() {
             )}
           </div>
 
+          {/* DEDICATED ALL-PHOTOS GALLERY GRID (SHOWCASING UP TO 10 PICS) */}
+          {allImages.length > 1 && (
+            <div className="max-w-5xl mx-auto pt-6 border-t border-[var(--mt-border)] space-y-5">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 font-mono text-xs font-bold tracking-widest text-[var(--mt-blue)]">
+                  <Layers size={16} />
+                  PROJECT PHOTO GALLERY ({allImages.length} PHOTOS)
+                </div>
+                <span className="font-mono text-xs text-[var(--mt-text-muted)]">
+                  CLICK ANY PHOTO TO ENLARGE
+                </span>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3.5">
+                {allImages.map((imgUrl, idx) => (
+                  <div
+                    key={idx}
+                    onClick={() => {
+                      setActiveImageIndex(idx);
+                      setLightboxOpen(true);
+                    }}
+                    className={`group relative aspect-video overflow-hidden border bg-[var(--mt-bg-card)] cursor-pointer transition-all duration-200 rounded-xs ${
+                      activeImageIndex === idx
+                        ? "border-[var(--mt-blue)] shadow-[0_0_15px_rgba(0,85,255,0.4)]"
+                        : "border-[var(--mt-border)] hover:border-[var(--mt-blue)]/70 hover:shadow-lg hover:scale-[1.02]"
+                    }`}
+                  >
+                    <OptimizedImage
+                      src={imgUrl}
+                      alt={`${project.title} photo ${idx + 1}`}
+                      thumbnailSize="sm"
+                      className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      containerClassName="h-full w-full flex items-center justify-center"
+                    />
+                    
+                    {/* OVERLAY BADGE */}
+                    <div className="absolute top-1.5 left-1.5 border border-[#1E2538] bg-black/80 px-1.5 py-0.5 font-mono text-[8px] font-bold text-white tracking-widest">
+                      {idx === 0 ? "★ COVER" : `PHOTO #${idx + 1}`}
+                    </div>
+
+                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <span className="font-mono text-[9px] font-bold tracking-widest text-white flex items-center gap-1 bg-[var(--mt-blue)] px-2 py-1 shadow-sm">
+                        <Maximize2 size={10} /> VIEW #{idx + 1}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* OPEN, UNBOXED DETAILS BELOW IMAGE */}
           <div className="max-w-4xl mx-auto space-y-12 pt-4">
-            {/* DESCRIPTION (NO CONTAINER BOX BORDER) */}
+            {/* DESCRIPTION */}
             <div className="space-y-4">
               <div className="font-mono text-xs font-bold tracking-widest text-[var(--mt-blue)]">
                 ARCHITECTURE & SYSTEM DESCRIPTION
