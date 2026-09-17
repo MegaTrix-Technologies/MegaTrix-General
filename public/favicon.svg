@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  MEGATRIX — Solid Vector SVG Favicon
-  ═════════════════════════════════════
-  • Solid, continuous vector shape (no internal pixel gaps) for maximum 16px favicon clarity
+  MEGATRIX — Solid Vector SVG Favicon (Electric Blue)
+  ══════════════════════════════════════════════════
+  • Solid, continuous vector shape (no internal pixel gaps) for maximum 16px/32px favicon clarity
   • Transparent background
-  • Adaptive CSS media query:
-    - Dark mode browser theme  ➔ #FFFFFF (White)
-    - Light mode browser theme ➔ #090A0F (Black)
+  • Electric Blue brand color (#3B82F6)
 -->
 <svg
   xmlns="http://www.w3.org/2000/svg"
@@ -18,12 +16,7 @@
   <title>MEGATRIX</title>
   <style>
     .mark {
-      fill: #090A0F;
-    }
-    @media (prefers-color-scheme: dark) {
-      .mark {
-        fill: #FFFFFF;
-      }
+      fill: #3B82F6;
     }
   </style>
 
