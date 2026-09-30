@@ -27,9 +27,10 @@ export function ZanderioChat({
   // Show ONLY on home page when preloader is finished and not on admin
   const shouldShow = (!homeOnly || isHomePage) && !isPreloaderActive && !isAdminRoute;
 
-  // 1. Script injection & mounting lifecycle
+  // 1. Script injection & mounting lifecycle (only inject once shouldShow is true)
   useEffect(() => {
     if (typeof window === "undefined" || typeof document === "undefined") return;
+    if (!shouldShow) return;
 
     let script = document.querySelector<HTMLScriptElement>(
       `script[src="${WIDGET_SCRIPT_SRC}"]`
@@ -42,7 +43,7 @@ export function ZanderioChat({
       script.defer = true;
       document.head.appendChild(script);
     }
-  }, [widgetId]);
+  }, [widgetId, shouldShow]);
 
   // 2. Control widget visibility (Hide during preloader and on non-home pages)
   useEffect(() => {
@@ -68,7 +69,6 @@ export function ZanderioChat({
 
     updateVisibility();
 
-    // Re-verify visibility periodically during initialization
     const interval = setInterval(updateVisibility, 100);
     const timeout = setTimeout(() => clearInterval(interval), 4000);
 
@@ -92,6 +92,8 @@ export function ZanderioChat({
              ============================================================ */
           :host, #zanderio-root {
             color-scheme: light !important;
+            --z-primary: #0044DD !important;
+            --z-primary-dark: #0030A0 !important;
             --z-bg: #FFFFFF !important;
             --z-bg-muted: #F1F5FD !important;
             --z-border: #D1D9EE !important;
@@ -103,29 +105,90 @@ export function ZanderioChat({
             --z-shadow-brand: 0 0 20px rgba(0, 68, 221, 0.25) !important;
           }
 
-          /* --- DIALOG CONTAINER (ALL SCREEN SIZES) --- */
+          /* --- 1. FLOATING LAUNCHER BUTTON (GLOWING CIRCULAR AVATAR TARGET STYLE) --- */
+          #zanderio-root > button[aria-label="Open chat"],
+          :not([role="dialog"]) > button[aria-label="Open chat"] {
+            position: fixed !important;
+            bottom: 24px !important;
+            right: 24px !important;
+            z-index: 2147483640 !important;
+            width: 58px !important;
+            height: 58px !important;
+            background: #000000 !important;
+            border: 1.5px solid #0055FF !important;
+            box-shadow: 0 0 16px 2px rgba(0, 85, 255, 0.55), 0 0 32px rgba(0, 85, 255, 0.25) !important;
+            padding: 0 !important;
+            color: #FFFFFF !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            border-radius: 9999px !important;
+            overflow: hidden !important;
+            cursor: pointer !important;
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease, border-color 0.2s ease !important;
+          }
+
+          #zanderio-root > button[aria-label="Open chat"]:hover,
+          :not([role="dialog"]) > button[aria-label="Open chat"]:hover {
+            transform: scale(1.08) !important;
+            border-color: #3388FF !important;
+            box-shadow: 0 0 24px 4px rgba(0, 102, 255, 0.8), 0 0 45px rgba(0, 85, 255, 0.45) !important;
+          }
+
+          #zanderio-root > button[aria-label="Open chat"] img,
+          :not([role="dialog"]) > button[aria-label="Open chat"] img {
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: cover !important;
+            border-radius: 9999px !important;
+            display: block !important;
+          }
+
+          @media (max-width: 640px) {
+            #zanderio-root > button[aria-label="Open chat"],
+            :not([role="dialog"]) > button[aria-label="Open chat"] {
+              bottom: calc(24px + env(safe-area-inset-bottom, 0px)) !important;
+              right: 20px !important;
+              width: 52px !important;
+              height: 52px !important;
+            }
+          }
+
+          /* HIDE DUPLICATE EXTERNAL FLOATING CLOSE BUTTON WHEN DIALOG IS OPEN */
+          #zanderio-root > button[aria-label="Close chat"],
+          :not([role="dialog"]) > button[aria-label="Close chat"] {
+            display: none !important;
+          }
+
+          /* --- 2. HIDE PROACTIVE NUDGE / GREETING SPEECH BUBBLE IN MEGATRIX --- */
+          div[role="button"][aria-label="Open chat"] {
+            display: none !important;
+          }
+
+          /* --- 3. DIALOG CONTAINER --- */
           [role="dialog"] {
             background: #FFFFFF !important;
             border: 1px solid #D1D9EE !important;
             box-shadow: 0 0 0 1px #D1D9EE, 0 20px 40px -12px rgba(0, 68, 221, 0.18) !important;
             backdrop-filter: blur(12px) !important;
             font-family: var(--z-font) !important;
+            z-index: 2147483645 !important;
           }
 
-          /* Desktop View */
+          /* Desktop View (> 640px) */
           @media (min-width: 641px) {
             [role="dialog"] {
-              width: 390px !important;
+              width: 400px !important;
               max-width: calc(100vw - 32px) !important;
-              height: min(620px, calc(100dvh - 110px)) !important;
-              max-height: calc(100dvh - 110px) !important;
-              bottom: 84px !important;
-              right: 20px !important;
+              height: min(630px, calc(100dvh - 48px)) !important;
+              max-height: calc(100dvh - 48px) !important;
+              bottom: 24px !important;
+              right: 24px !important;
               border-radius: 16px !important;
             }
           }
 
-          /* Mobile Screen Adaptation (< 641px) */
+          /* Mobile Screen Full View (< 641px) */
           @media (max-width: 640px) {
             [role="dialog"] {
               inset: 0 !important;
@@ -139,7 +202,7 @@ export function ZanderioChat({
             }
           }
 
-          /* --- HEADER STYLING --- */
+          /* --- 4. HEADER BAR & ACTION BUTTONS --- */
           [role="dialog"] > div > div:first-child,
           [role="dialog"] header,
           div:has(> button[aria-label="Close chat"]) {
@@ -159,28 +222,40 @@ export function ZanderioChat({
             text-transform: uppercase !important;
           }
 
-          /* Header Action Buttons */
-          button[aria-label="Close chat"],
-          button[aria-label="Expand chat"],
-          button[aria-label="Shrink chat"],
-          button[aria-label="Open full view"],
-          button[aria-label="Exit full view"] {
+          /* Header Action Buttons (STAYS INSIDE HEADER) */
+          [role="dialog"] header button,
+          [role="dialog"] button[aria-label="Close chat"],
+          [role="dialog"] button[aria-label="Expand chat"],
+          [role="dialog"] button[aria-label="Shrink chat"],
+          [role="dialog"] button[aria-label="Open full view"],
+          [role="dialog"] button[aria-label="Exit full view"] {
+            position: static !important;
+            width: 30px !important;
+            height: 30px !important;
             background: rgba(0, 68, 221, 0.06) !important;
             border: 1px solid rgba(0, 68, 221, 0.12) !important;
             border-radius: 6px !important;
             color: #0D1524 !important;
-            padding: 5px !important;
+            padding: 4px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
             transition: all 0.15s ease !important;
+            box-shadow: none !important;
+            cursor: pointer !important;
           }
-          button[aria-label="Close chat"]:hover,
-          button[aria-label="Expand chat"]:hover,
-          button[aria-label="Open full view"]:hover {
+
+          [role="dialog"] header button:hover,
+          [role="dialog"] button[aria-label="Close chat"]:hover,
+          [role="dialog"] button[aria-label="Expand chat"]:hover,
+          [role="dialog"] button[aria-label="Open full view"]:hover {
             background: rgba(0, 68, 221, 0.15) !important;
             border-color: #0044DD !important;
             color: #0044DD !important;
+            transform: scale(1.04) !important;
           }
 
-          /* --- MESSAGES & CHAT STREAM --- */
+          /* --- 5. MESSAGES & CHAT STREAM --- */
           [role="dialog"] div:has(> div > div[style*="border-radius"]),
           div[style*="overflow-y: auto"] {
             background: #FFFFFF !important;
@@ -208,7 +283,7 @@ export function ZanderioChat({
             box-shadow: 0 3px 10px rgba(0, 68, 221, 0.25) !important;
           }
 
-          /* --- STARTER / SUGGESTED QUESTIONS (HIGH CONTRAST) --- */
+          /* --- 6. STARTER / SUGGESTED QUESTIONS --- */
           div[role="group"][aria-label="Suggested questions"] {
             padding: 4px 16px 12px !important;
             gap: 8px !important;
@@ -255,7 +330,7 @@ export function ZanderioChat({
             opacity: 0.8 !important;
           }
 
-          /* --- INPUT COMPOSER --- */
+          /* --- 7. INPUT COMPOSER --- */
           div:has(> div > textarea) {
             background: #FFFFFF !important;
             border-top: 1px solid #D1D9EE !important;
@@ -293,41 +368,6 @@ export function ZanderioChat({
             background: #1A55EE !important;
             transform: scale(1.05) !important;
           }
-
-          /* --- LAUNCHER FLOATING BUTTON --- */
-          button[aria-label="Open chat"],
-          button[aria-label="Close chat"] {
-            background: linear-gradient(135deg, #0044DD 0%, #0030A0 100%) !important;
-            border: 1px solid rgba(255, 255, 255, 0.4) !important;
-            box-shadow: 0 0 0 1px #CBD5E1, 0 8px 24px -4px rgba(0, 68, 221, 0.4) !important;
-            color: #FFFFFF !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            width: 56px !important;
-            height: 56px !important;
-            border-radius: 50% !important;
-            cursor: pointer !important;
-            transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease !important;
-          }
-
-          button[aria-label="Open chat"]:hover,
-          button[aria-label="Close chat"]:hover {
-            transform: scale(1.1) !important;
-            box-shadow: 0 0 0 2px #0044DD, 0 0 28px rgba(0, 68, 221, 0.5) !important;
-          }
-
-          /* Chat Icon Fallback */
-          button[aria-label="Open chat"]:empty::after,
-          button[aria-label="Open chat"]:not(:has(svg)):not(:has(img))::after {
-            content: "" !important;
-            display: block !important;
-            width: 24px !important;
-            height: 24px !important;
-            background-color: #FFFFFF !important;
-            -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z'/%3E%3C/svg%3E") no-repeat center / contain !important;
-            mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z'/%3E%3C/svg%3E") no-repeat center / contain !important;
-          }
         `;
       }
 
@@ -337,6 +377,8 @@ export function ZanderioChat({
       return `
         :host, #zanderio-root {
           color-scheme: dark !important;
+          --z-primary: #0055FF !important;
+          --z-primary-dark: #0038B8 !important;
           --z-bg: #090A0F !important;
           --z-bg-muted: #111728 !important;
           --z-border: #1E2538 !important;
@@ -348,24 +390,85 @@ export function ZanderioChat({
           --z-shadow-brand: 0 0 24px rgba(0, 85, 255, 0.45) !important;
         }
 
-        /* --- DIALOG CONTAINER (RESPONSIVE & CYBERPUNK) --- */
+        /* --- 1. FLOATING LAUNCHER BUTTON (GLOWING CIRCULAR AVATAR TARGET STYLE) --- */
+        #zanderio-root > button[aria-label="Open chat"],
+        :not([role="dialog"]) > button[aria-label="Open chat"] {
+          position: fixed !important;
+          bottom: 24px !important;
+          right: 24px !important;
+          z-index: 2147483640 !important;
+          width: 58px !important;
+          height: 58px !important;
+          background: #000000 !important;
+          border: 1.5px solid #0055FF !important;
+          box-shadow: 0 0 16px 2px rgba(0, 85, 255, 0.55), 0 0 32px rgba(0, 85, 255, 0.25) !important;
+          padding: 0 !important;
+          color: #FFFFFF !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          border-radius: 9999px !important;
+          overflow: hidden !important;
+          cursor: pointer !important;
+          transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease, border-color 0.2s ease !important;
+        }
+
+        #zanderio-root > button[aria-label="Open chat"]:hover,
+        :not([role="dialog"]) > button[aria-label="Open chat"]:hover {
+          transform: scale(1.08) !important;
+          border-color: #3388FF !important;
+          box-shadow: 0 0 24px 4px rgba(0, 102, 255, 0.8), 0 0 45px rgba(0, 85, 255, 0.45) !important;
+        }
+
+        #zanderio-root > button[aria-label="Open chat"] img,
+        :not([role="dialog"]) > button[aria-label="Open chat"] img {
+          width: 100% !important;
+          height: 100% !important;
+          object-fit: cover !important;
+          border-radius: 9999px !important;
+          display: block !important;
+        }
+
+        @media (max-width: 640px) {
+          #zanderio-root > button[aria-label="Open chat"],
+          :not([role="dialog"]) > button[aria-label="Open chat"] {
+            bottom: calc(24px + env(safe-area-inset-bottom, 0px)) !important;
+            right: 20px !important;
+            width: 52px !important;
+            height: 52px !important;
+          }
+        }
+
+        /* HIDE DUPLICATE EXTERNAL FLOATING CLOSE BUTTON WHEN DIALOG IS OPEN */
+        #zanderio-root > button[aria-label="Close chat"],
+        :not([role="dialog"]) > button[aria-label="Close chat"] {
+          display: none !important;
+        }
+
+        /* --- 2. HIDE PROACTIVE NUDGE / GREETING SPEECH BUBBLE IN MEGATRIX --- */
+        div[role="button"][aria-label="Open chat"] {
+          display: none !important;
+        }
+
+        /* --- 3. DIALOG CONTAINER --- */
         [role="dialog"] {
           background: #090A0F !important;
           border: 1px solid #1E2538 !important;
           box-shadow: 0 0 0 1px #1E2538, 0 24px 56px -12px rgba(0, 0, 0, 0.9), 0 0 30px rgba(0, 85, 255, 0.25) !important;
           backdrop-filter: blur(16px) !important;
           font-family: var(--z-font) !important;
+          z-index: 2147483645 !important;
         }
 
         /* Desktop & Tablet View (> 640px) */
         @media (min-width: 641px) {
           [role="dialog"] {
-            width: 390px !important;
+            width: 400px !important;
             max-width: calc(100vw - 32px) !important;
-            height: min(630px, calc(100dvh - 110px)) !important;
-            max-height: calc(100dvh - 110px) !important;
-            bottom: 84px !important;
-            right: 20px !important;
+            height: min(630px, calc(100dvh - 48px)) !important;
+            max-height: calc(100dvh - 48px) !important;
+            bottom: 24px !important;
+            right: 24px !important;
             border-radius: 16px !important;
           }
         }
@@ -382,14 +485,9 @@ export function ZanderioChat({
             position: fixed !important;
             z-index: 2147483647 !important;
           }
-
-          /* Hide floating launcher circle on mobile when modal is already open */
-          button[aria-label="Close chat"] {
-            display: none !important;
-          }
         }
 
-        /* --- CYBERPUNK HEADER BAR --- */
+        /* --- 4. CYBERPUNK HEADER BAR & ACTION BUTTONS --- */
         [role="dialog"] > div > div:first-child,
         [role="dialog"] header,
         div:has(> button[aria-label="Close chat"]) {
@@ -409,28 +507,40 @@ export function ZanderioChat({
           text-transform: uppercase !important;
         }
 
-        /* Header Action Buttons */
-        button[aria-label="Close chat"],
-        button[aria-label="Expand chat"],
-        button[aria-label="Shrink chat"],
-        button[aria-label="Open full view"],
-        button[aria-label="Exit full view"] {
+        /* Header Action Buttons (STAYS INSIDE HEADER) */
+        [role="dialog"] header button,
+        [role="dialog"] button[aria-label="Close chat"],
+        [role="dialog"] button[aria-label="Expand chat"],
+        [role="dialog"] button[aria-label="Shrink chat"],
+        [role="dialog"] button[aria-label="Open full view"],
+        [role="dialog"] button[aria-label="Exit full view"] {
+          position: static !important;
+          width: 30px !important;
+          height: 30px !important;
           background: rgba(255, 255, 255, 0.05) !important;
           border: 1px solid rgba(255, 255, 255, 0.1) !important;
           border-radius: 6px !important;
           color: #CBD5E1 !important;
-          padding: 5px !important;
+          padding: 4px !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
           transition: all 0.15s ease !important;
+          box-shadow: none !important;
+          cursor: pointer !important;
         }
-        button[aria-label="Close chat"]:hover,
-        button[aria-label="Expand chat"]:hover,
-        button[aria-label="Open full view"]:hover {
+
+        [role="dialog"] header button:hover,
+        [role="dialog"] button[aria-label="Close chat"]:hover,
+        [role="dialog"] button[aria-label="Expand chat"]:hover,
+        [role="dialog"] button[aria-label="Open full view"]:hover {
           background: rgba(0, 85, 255, 0.25) !important;
           border-color: #0055FF !important;
           color: #FFFFFF !important;
+          transform: scale(1.04) !important;
         }
 
-        /* --- MESSAGES STREAM --- */
+        /* --- 5. MESSAGES STREAM --- */
         [role="dialog"] div:has(> div > div[style*="border-radius"]),
         div[style*="overflow-y: auto"] {
           background: #090A0F !important;
@@ -459,7 +569,7 @@ export function ZanderioChat({
           box-shadow: 0 4px 14px rgba(0, 85, 255, 0.35) !important;
         }
 
-        /* --- STARTER / SUGGESTED QUESTIONS (FIX READABILITY & CONTRAST) --- */
+        /* --- 6. STARTER / SUGGESTED QUESTIONS --- */
         div[role="group"][aria-label="Suggested questions"] {
           padding: 4px 16px 12px !important;
           gap: 8px !important;
@@ -481,7 +591,6 @@ export function ZanderioChat({
           text-align: left !important;
         }
 
-        /* Fix the hardcoded dark gray text inside question spans */
         div[role="group"][aria-label="Suggested questions"] button span,
         button:has(.z-suggest-arrow) span {
           color: #E2E8F0 !important;
@@ -507,7 +616,7 @@ export function ZanderioChat({
           opacity: 0.9 !important;
         }
 
-        /* --- INPUT COMPOSER --- */
+        /* --- 7. INPUT COMPOSER --- */
         div:has(> div > textarea) {
           background: #090A0F !important;
           border-top: 1px solid #1E2538 !important;
@@ -546,42 +655,7 @@ export function ZanderioChat({
           transform: scale(1.05) !important;
         }
 
-        /* --- LAUNCHER FLOATING BUTTON (FIX BLANK WHITE CIRCLE) --- */
-        button[aria-label="Open chat"],
-        button[aria-label="Close chat"] {
-          background: linear-gradient(135deg, #0055FF 0%, #0038B8 100%) !important;
-          border: 1px solid rgba(255, 255, 255, 0.2) !important;
-          box-shadow: 0 0 0 1px #1E2538, 0 8px 24px -4px rgba(0, 85, 255, 0.5), 0 0 20px rgba(0, 85, 255, 0.3) !important;
-          color: #FFFFFF !important;
-          display: flex !important;
-          align-items: center !important;
-          justify-content: center !important;
-          width: 56px !important;
-          height: 56px !important;
-          border-radius: 50% !important;
-          cursor: pointer !important;
-          transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease !important;
-        }
-
-        button[aria-label="Open chat"]:hover,
-        button[aria-label="Close chat"]:hover {
-          transform: scale(1.1) !important;
-          box-shadow: 0 0 0 2px #0055FF, 0 0 32px rgba(0, 85, 255, 0.7) !important;
-        }
-
-        /* Inject modern MegaTrix AI chat icon when the button is empty */
-        button[aria-label="Open chat"]:empty::after,
-        button[aria-label="Open chat"]:not(:has(svg)):not(:has(img))::after {
-          content: "" !important;
-          display: block !important;
-          width: 24px !important;
-          height: 24px !important;
-          background-color: #FFFFFF !important;
-          -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z'/%3E%3C/svg%3E") no-repeat center / contain !important;
-          mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z'/%3E%3C/svg%3E") no-repeat center / contain !important;
-        }
-
-        /* --- SCROLLBAR STYLING --- */
+        /* --- 8. SCROLLBAR STYLING --- */
         ::-webkit-scrollbar {
           width: 6px;
           height: 6px;
@@ -611,6 +685,9 @@ export function ZanderioChat({
         styleEl = document.createElement("style");
         styleEl.id = THEME_STYLE_ID;
         host.shadowRoot.appendChild(styleEl);
+      } else if (styleEl.nextSibling) {
+        // Keep style tag at bottom of shadowRoot
+        host.shadowRoot.appendChild(styleEl);
       }
 
       if (styleEl.textContent !== css) {
@@ -632,17 +709,15 @@ export function ZanderioChat({
       return true;
     };
 
-    // Continuous check until Shadow DOM is ready, then apply
     let attempts = 0;
     const interval = setInterval(() => {
       attempts++;
       const applied = applyThemeToShadowRoot();
-      if (applied || attempts > 60) {
+      if (applied || attempts > 80) {
         clearInterval(interval);
       }
-    }, 150);
+    }, 200);
 
-    // Watch for theme changes on <html data-theme="...">
     const observer = new MutationObserver((mutations) => {
       for (const m of mutations) {
         if (m.type === "attributes" && m.attributeName === "data-theme") {
@@ -656,9 +731,32 @@ export function ZanderioChat({
       attributeFilter: ["data-theme"],
     });
 
+    let shadowObserver: MutationObserver | null = null;
+    const attachShadowObserver = () => {
+      const host = document.getElementById(WIDGET_HOST_ID);
+      if (host && host.shadowRoot && !shadowObserver) {
+        shadowObserver = new MutationObserver(() => {
+          applyThemeToShadowRoot();
+        });
+        shadowObserver.observe(host.shadowRoot, {
+          childList: true,
+          subtree: true,
+        });
+      }
+    };
+
+    const shadowCheckInterval = setInterval(() => {
+      attachShadowObserver();
+      if (shadowObserver) {
+        clearInterval(shadowCheckInterval);
+      }
+    }, 250);
+
     return () => {
       clearInterval(interval);
+      clearInterval(shadowCheckInterval);
       observer.disconnect();
+      shadowObserver?.disconnect();
     };
   }, [brandColorDark, brandColorLight, shouldShow]);
 
