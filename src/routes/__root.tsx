@@ -12,6 +12,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import Preloader from "@/components/Preloader";
+import ZanderioChat from "@/components/ZanderioChat";
 
 function NotFoundComponent() {
   return (
@@ -169,6 +170,7 @@ function RootComponent() {
       <div className={mounted && showPreloader ? "invisible h-0 overflow-hidden" : "visible"}>
         <Outlet />
       </div>
+      <ZanderioChat isPreloaderActive={!mounted || showPreloader} homeOnly={true} />
     </QueryClientProvider>
   );
 }
